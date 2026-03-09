@@ -20,6 +20,7 @@ DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 JOBS_DIR = Path(os.path.join(DATA_DIR, "jobs"))
 JOBS_DIR.mkdir(parents=True, exist_ok=True)
 JOBS_FILE = JOBS_DIR / "jobs.jsonl"
+INTAKE_FILE = JOBS_DIR / "intake.json"
 
 # ---------------------------------------------------------------------------
 # Supabase backend
@@ -93,10 +94,7 @@ def _locked_append_job(job_dict: dict):
 # ---------------------------------------------------------------------------
 
 VALID_PRIORITIES = {"P0", "P1", "P2", "P3"}
-VALID_PROJECTS = {
-    "barber-crm", "openclaw", "delhi-palace",
-    "prestress-calc", "concrete-canoe",
-}
+VALID_PROJECTS = None  # Accept any project name (set to a set of strings to restrict)
 
 
 class JobValidationError(ValueError):
@@ -112,7 +110,7 @@ def validate_job(project: str, task: str, priority: str = "P1") -> None:
         raise JobValidationError(f"Task too long ({len(task)} chars, max 5000)")
     if priority not in VALID_PRIORITIES:
         raise JobValidationError(f"Invalid priority '{priority}', must be one of {VALID_PRIORITIES}")
-    if project and project not in VALID_PROJECTS:
+    if VALID_PROJECTS and project and project not in VALID_PROJECTS:
         raise JobValidationError(
             f"Unknown project '{project}', must be one of {VALID_PROJECTS}"
         )
@@ -166,9 +164,10 @@ def create_job(project: str, task: str, priority: str = "P1", api_key_id: str = 
     job_dict["idempotency_key"] = job_dict["id"]
 
     if not _use_supabase():
-        # AUDIT LOG ONLY — not source of truth for job state
+        # Local fallback: store in JSONL audit log (also readable by get_pending_jobs)
         _locked_append_job(job_dict)
-        raise RuntimeError("Supabase is required for queue state; refusing JSONL queue fallback")
+        logger.info(f"Job created (local): {job.id}")
+        return job
 
     sb = _sb()
     insert_payload = {
@@ -215,19 +214,59 @@ def get_job(job_id: str) -> dict:
     return None
 
 
-def get_pending_jobs(limit: int = 10):
-    """Get pending jobs from Supabase only (single source of truth)."""
-    if not _use_supabase():
-        logger.error("Supabase unavailable; queue dispatch disabled (no JSONL fallback)")
+def _load_intake_jobs() -> list:
+    """Load jobs from the intake JSON file (used by the HTTP intake API)."""
+    if not INTAKE_FILE.exists():
+        return []
+    try:
+        with open(INTAKE_FILE, "r") as f:
+            data = json.load(f)
+        if isinstance(data, dict):
+            return list(data.values())
+        return data if isinstance(data, list) else []
+    except (json.JSONDecodeError, IOError):
         return []
 
-    sb = _sb()
-    rows = sb["select"](
-        "jobs",
-        "status=eq.pending&order=priority.asc,created_at.asc",
-        limit=limit,
-    )
-    return rows or []
+
+def _normalize_intake_job(job: dict) -> dict:
+    """Normalize an intake job record to the shape the runner expects."""
+    return {
+        "id": job.get("job_id") or job.get("id", ""),
+        "project": job.get("project_name") or job.get("project", ""),
+        "task": job.get("description") or job.get("task", ""),
+        "priority": job.get("priority", "P2"),
+        "status": job.get("status", "queued"),
+        "created_at": job.get("created_at", ""),
+        "assigned_agent": job.get("assigned_agent"),
+        "task_type": job.get("task_type"),
+        "budget_limit": job.get("budget_limit"),
+    }
+
+
+def get_pending_jobs(limit: int = 10):
+    """Get pending jobs. Uses Supabase if available, otherwise reads local intake JSON."""
+    if _use_supabase():
+        sb = _sb()
+        rows = sb["select"](
+            "jobs",
+            "status=eq.pending&order=priority.asc,created_at.asc",
+            limit=limit,
+        )
+        if rows:
+            return rows
+
+    # Local fallback: read from intake JSON (written by the HTTP intake API)
+    all_jobs = _load_intake_jobs()
+    pending = [
+        _normalize_intake_job(j) for j in all_jobs
+        if j.get("status") in ("queued", "pending")
+    ]
+    # Sort by priority then creation time
+    priority_order = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
+    pending.sort(key=lambda j: (priority_order.get(j.get("priority", "P2"), 2), j.get("created_at", "")))
+    if pending:
+        logger.info(f"Found {len(pending)} pending job(s) from local intake storage")
+    return pending[:limit]
 
 
 def update_job_status(
@@ -272,23 +311,42 @@ def update_job_status(
             return False
         logger.warning(f"Supabase update failed for {job_id}, writing audit JSONL only")
 
-    # AUDIT LOG ONLY — not source of truth for job state
-    if not JOBS_FILE.exists():
-        return False
-    with open(JOBS_FILE, "r+") as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
+    # Update JSONL audit log
+    if JOBS_FILE.exists():
+        with open(JOBS_FILE, "r+") as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            try:
+                jobs = [json.loads(line) for line in f if line.strip()]
+                for job in jobs:
+                    if job["id"] == job_id:
+                        job.update(updates)
+                f.seek(0)
+                f.truncate()
+                for job in jobs:
+                    f.write(json.dumps(job) + "\n")
+            finally:
+                fcntl.flock(f, fcntl.LOCK_UN)
+
+    # Also update intake JSON so local get_pending_jobs() won't re-pick this job
+    if INTAKE_FILE.exists():
         try:
-            jobs = [json.loads(line) for line in f if line.strip()]
-            for job in jobs:
-                if job["id"] == job_id:
-                    job.update(updates)
-            f.seek(0)
-            f.truncate()
-            for job in jobs:
-                f.write(json.dumps(job) + "\n")
-        finally:
-            fcntl.flock(f, fcntl.LOCK_UN)
-    logger.info(f"Job {job_id} -> {status} (JSONL)")
+            with open(INTAKE_FILE, "r") as f:
+                intake_data = json.load(f)
+            if isinstance(intake_data, dict):
+                for key, job in intake_data.items():
+                    jid = job.get("job_id") or job.get("id", "")
+                    if jid == job_id:
+                        job.update(updates)
+                        # Also update status under the intake field name
+                        job["status"] = status
+                tmp = str(INTAKE_FILE) + ".tmp"
+                with open(tmp, "w") as f:
+                    json.dump(intake_data, f, indent=2, default=str)
+                os.replace(tmp, str(INTAKE_FILE))
+        except (json.JSONDecodeError, IOError) as e:
+            logger.warning(f"Could not update intake JSON for {job_id}: {e}")
+
+    logger.info(f"Job {job_id} -> {status} (local)")
     return True
 
 
@@ -307,8 +365,15 @@ def list_jobs(status: str = "all", *, limit: int = 200, offset: int = 0, project
         if rows is not None:
             return rows
 
-    # Fallback
+    # Fallback: merge JSONL + intake JSON
     jobs = _locked_read_jobs()
+    seen_ids = {j.get("id") for j in jobs}
+    # Include jobs from intake JSON that aren't already in JSONL
+    for ij in _load_intake_jobs():
+        normalized = _normalize_intake_job(ij)
+        if normalized["id"] not in seen_ids:
+            jobs.append(normalized)
+            seen_ids.add(normalized["id"])
     if status != "all":
         jobs = [j for j in jobs if j.get("status") == status]
     if project:

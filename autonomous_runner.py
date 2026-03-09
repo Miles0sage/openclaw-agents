@@ -4284,13 +4284,8 @@ class AutonomousRunner:
         logger.info("Poll loop started")
         while self._running:
             try:
-                if not self._supabase_client:
-                    logger.error("Supabase unavailable; skipping poll cycle")
-                    await asyncio.sleep(self.poll_interval)
-                    continue
-
-                # Periodic stale-lease recovery (every ~60s)
-                if (time.time() - self._last_lease_reclaim_ts) >= 60:
+                # Periodic stale-lease recovery (every ~60s) — only if Supabase is available
+                if self._supabase_client and (time.time() - self._last_lease_reclaim_ts) >= 60:
                     try:
                         reclaimed = await reclaim_stale_leases(self._supabase_client)
                         if reclaimed:

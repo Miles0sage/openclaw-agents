@@ -19,6 +19,9 @@ logger = logging.getLogger("openclaw.job_lease")
 LEASE_DURATION_SECONDS = 300
 HEARTBEAT_INTERVAL_SECONDS = 60
 
+# In-memory lease tracking for local mode (no Supabase)
+_local_leases: dict[str, str] = {}  # job_id -> execution_id
+
 
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -40,7 +43,7 @@ class JobLease:
         self._released = False
 
     async def start_heartbeat(self):
-        if self._heartbeat_task is None:
+        if self._heartbeat_task is None and self._client is not None:
             self._heartbeat_task = asyncio.create_task(self._heartbeat_loop())
 
     async def _heartbeat_loop(self):
@@ -87,8 +90,18 @@ async def acquire_lease(job_id: str, supabase_client) -> Optional[JobLease]:
         JobLease on success, None when already leased/taken.
     """
     if not supabase_client:
-        logger.error("Cannot acquire lease for %s: Supabase client unavailable", job_id)
-        return None
+        # Local mode: use in-memory lease tracking
+        if job_id in _local_leases:
+            logger.debug("Local lease already held for %s", job_id)
+            return None
+        execution_id = str(uuid.uuid4())
+        _local_leases[job_id] = execution_id
+        # Update local job status
+        from job_manager import update_job_status
+        update_job_status(job_id, "running")
+        lease = JobLease(job_id=job_id, execution_id=execution_id, supabase_client=None)
+        logger.info("Acquired local lease on %s with execution_id=%s", job_id, execution_id)
+        return lease
 
     execution_id = str(uuid.uuid4())
     lease_expires_at = (
@@ -138,7 +151,12 @@ async def mark_completed(
     Mark a job terminal-success only if execution_id still matches.
     """
     if not supabase_client:
-        return False
+        # Local mode
+        _local_leases.pop(job_id, None)
+        from job_manager import update_job_status
+        update_job_status(job_id, final_status)
+        logger.info("Marked %s as %s (local)", job_id, final_status)
+        return True
 
     updates = {
         "status": final_status,
@@ -184,7 +202,12 @@ async def mark_failed(
     Mark a job terminal-failed only if execution_id still matches.
     """
     if not supabase_client:
-        return False
+        # Local mode
+        _local_leases.pop(job_id, None)
+        from job_manager import update_job_status
+        update_job_status(job_id, final_status, error=error)
+        logger.info("Marked %s as %s (local): %s", job_id, final_status, error[:100])
+        return True
 
     updates = {
         "status": final_status,
