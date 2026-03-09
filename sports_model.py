@@ -2,7 +2,7 @@
 Sports Prediction Engine — Phase 3: XGBoost NBA model + betting recommendations
 
 Uses nba_api for historical data, XGBoost for win probability predictions.
-Models saved to os.environ.get("OPENCLAW_DATA_DIR", "./data")/models/.
+Models saved to ./data/models/.
 
 Composes with sportsbook_odds.py to produce full predict→odds→EV→Kelly pipeline.
 """
@@ -22,7 +22,7 @@ if not os.environ.get("ODDS_API_KEY"):
     except Exception:
         pass
 
-MODEL_DIR = Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/models")
+MODEL_DIR = Path("./data/models")
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
 # Cache for NBA API calls (rate-limited at ~2 req/sec)

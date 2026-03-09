@@ -32,7 +32,7 @@ logger = logging.getLogger("ceo_engine")
 # Paths
 # ---------------------------------------------------------------------------
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 CEO_DIR = os.path.join(DATA_DIR, "ceo")
 GOALS_PATH = os.path.join(CEO_DIR, "goals.json")
 DECISIONS_PATH = os.path.join(CEO_DIR, "decisions.jsonl")

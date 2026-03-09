@@ -29,9 +29,9 @@ logger = logging.getLogger("tmux_spawner")
 # ═══════════════════════════════════════════════════════════════
 
 TMUX_SESSION = "openclaw-agents"
-WORKTREE_BASE = os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), ".worktrees"
-LOG_FILE = "os.environ.get("OPENCLAW_DATA_DIR", "./data")/tmux_agents.log"
-DEFAULT_REPO = "/root/openclaw"
+WORKTREE_BASE = "./.worktrees"
+LOG_FILE = "./data/tmux_agents.log"
+DEFAULT_REPO = "."
 CLAUDE_CMD = "/root/.local/bin/claude"  # Claude Code CLI (full path for tmux)
 # Full tool access mode for spawned agents.
 # --allowedTools with wildcards gives full tool access without interactive prompts.
@@ -81,7 +81,7 @@ class TmuxSpawner:
         Returns concatenated content of IDENTITY.md, USER.md, HEARTBEAT.md, TOOLS.md
         plus today's daily log. All files sized for token efficiency (~2KB each).
         """
-        workspace = Path(os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "workspace")
+        workspace = Path("./workspace")
         if not workspace.exists():
             return ""
 
@@ -201,7 +201,7 @@ class TmuxSpawner:
             prompt = f"[WORKSPACE CONTEXT]\n{bootstrap}\n\n[USER MESSAGE]\n{prompt}"
 
         # Escape prompt for shell (write to file to avoid escaping nightmares)
-        agent_outputs_dir = "os.environ.get("OPENCLAW_DATA_DIR", "./data")/agent_outputs"
+        agent_outputs_dir = "./data/agent_outputs"
         os.makedirs(agent_outputs_dir, exist_ok=True)
         prompt_file = f"{agent_outputs_dir}/openclaw-prompt-{job_id}.txt"
         with open(prompt_file, "w") as f:
@@ -225,7 +225,7 @@ class TmuxSpawner:
             sf.write(f'echo "Agent {job_id} starting in {work_dir}..."\n')
             sf.write(f'> {output_file}\n')  # truncate output file
             # Heartbeat: background subshell writes heartbeat every 30s for watchdog
-            heartbeat_dir = "os.environ.get("OPENCLAW_DATA_DIR", "./data")/agent_outputs/heartbeats"
+            heartbeat_dir = "./data/agent_outputs/heartbeats"
             heartbeat_file = f"{heartbeat_dir}/heartbeat-{job_id}"
             sf.write(f'mkdir -p {heartbeat_dir}\n')
             sf.write(f'( while true; do date +%s > {heartbeat_file}; sleep 30; done ) &\n')
@@ -411,7 +411,7 @@ class TmuxSpawner:
             return result.stdout
         # Pane gone — try the saved output file
         if job_id:
-            output_file = f"os.environ.get("OPENCLAW_DATA_DIR", "./data")/agent_outputs/openclaw-output-{job_id}.txt"
+            output_file = f"./data/agent_outputs/openclaw-output-{job_id}.txt"
             if os.path.exists(output_file):
                 with open(output_file, "r") as f:
                     return f.read()
@@ -456,7 +456,7 @@ class TmuxSpawner:
         self._cleanup_worktree(job_id, repo_path)
 
         # Clean up prompt file
-        prompt_file = f"os.environ.get("OPENCLAW_DATA_DIR", "./data")/agent_outputs/openclaw-prompt-{job_id}.txt"
+        prompt_file = f"./data/agent_outputs/openclaw-prompt-{job_id}.txt"
         if os.path.exists(prompt_file):
             os.remove(prompt_file)
 

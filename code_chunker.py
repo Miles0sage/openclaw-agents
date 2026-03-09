@@ -363,7 +363,7 @@ if __name__ == "__main__":
 
     chunker = TreeSitterChunker()
 
-    test_file = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "gateway.py"
+    test_file = sys.argv[1] if len(sys.argv) > 1 else "./gateway.py"
     print(f"Chunking {test_file}...")
 
     chunks = chunker.chunk_file(test_file)

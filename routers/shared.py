@@ -49,7 +49,7 @@ from cost_gates import get_cost_gates, check_cost_budget, BudgetStatus
 logger = logging.getLogger("openclaw_gateway")
 
 # ── Config & constants ──────────────────────────────────────────────────
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 SESSIONS_DIR = pathlib.Path(os.getenv("OPENCLAW_SESSIONS_DIR", os.path.join(DATA_DIR, "sessions")))
 
 def _apply_env_overrides(cfg: dict) -> dict:

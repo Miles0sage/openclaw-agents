@@ -16,7 +16,7 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 PROPOSALS_FILE = os.path.join(DATA_DIR, "jobs", "proposals.jsonl")
 
 # Per 1M tokens pricing (USD)

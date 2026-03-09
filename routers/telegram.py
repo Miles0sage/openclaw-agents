@@ -47,11 +47,11 @@ router = APIRouter(prefix="/telegram", tags=["telegram"])
 # ── Constants ────────────────────────────────────────────────────────────────
 TELEGRAM_OWNER_ID = os.getenv("TELEGRAM_USER_ID", "")
 CODERCLAW_BOT_TOKEN = os.getenv("CODERCLAW_BOT_TOKEN", "")
-CODERCLAW_SESSIONS_DIR = pathlib.Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/coderclaw_sessions")
+CODERCLAW_SESSIONS_DIR = pathlib.Path("./data/coderclaw_sessions")
 CODERCLAW_SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ── Persistent dedup for Telegram webhooks (survives gateway restarts) ──
-_TG_DEDUP_FILE = pathlib.Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/tg_dedup.json")
+_TG_DEDUP_FILE = pathlib.Path("./data/tg_dedup.json")
 _TG_DEDUP_TTL = 600  # 10 minutes
 
 # Task patterns
@@ -247,7 +247,7 @@ def _load_workspace_bootstrap() -> str:
     Returns concatenated content of IDENTITY.md, USER.md, HEARTBEAT.md, TOOLS.md
     plus today's daily log. All files sized for token efficiency (~2KB each).
     """
-    workspace = pathlib.Path(os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "workspace")
+    workspace = pathlib.Path("./workspace")
     if not workspace.exists():
         return ""
 
@@ -328,7 +328,7 @@ def _cc_get_session(chat_id) -> dict:
     return {
         "chat_id": chat_id,
         "claude_session_id": None,
-        "project": "/root/openclaw",
+        "project": ".",
         "history": [],
         "created_at": datetime.now(timezone.utc).isoformat()
     }
@@ -555,7 +555,7 @@ async def coderclaw_webhook(request: Request):
             # /remote — Start a new remote-control session
             try:
                 import subprocess as _sp
-                cwd = session.get("project", "/root/openclaw")
+                cwd = session.get("project", ".")
 
                 # Kill any existing remote-control window first
                 _sp.run(["tmux", "kill-window", "-t", "remote-control"], capture_output=True, timeout=5)
@@ -655,7 +655,7 @@ async def coderclaw_webhook(request: Request):
         out_match = _re_tg.match(r'^/output\s+(\S+)', text.strip(), _re_tg.IGNORECASE)
         if out_match:
             job_id = out_match.group(1)
-            output_file = f"os.environ.get("OPENCLAW_DATA_DIR", "./data")/agent_outputs/openclaw-output-{job_id}.txt"
+            output_file = f"./data/agent_outputs/openclaw-output-{job_id}.txt"
             if os.path.exists(output_file):
                 with open(output_file) as f:
                     content = f.read()
@@ -836,7 +836,7 @@ async def telegram_webhook(request: Request):
                     for i, task in enumerate(tasks[:4]):  # Max 4 parallel
                         job_id = f"tg-parallel-{int(time.time())}-{i}"
                         prompt = (
-                            f"You are an OpenClaw agent working on the VPS. Working directory: .\n"
+                            f"You are an OpenClaw agent working on the VPS. Working directory: ./\n"
                             f"Task from Miles via Telegram: {task}\n\n"
                             f"Do the work. Be thorough. When done, write a summary."
                         )
@@ -863,7 +863,7 @@ async def telegram_webhook(request: Request):
                     # Single agent task
                     job_id = f"tg-{int(time.time())}"
                     prompt = (
-                        f"You are an OpenClaw agent working on the VPS. Working directory: .\n"
+                        f"You are an OpenClaw agent working on the VPS. Working directory: ./\n"
                         f"Task from Miles via Telegram: {tg_agent_match}\n\n"
                         f"Do the work. Be thorough. When done, write a summary of what you did."
                     )

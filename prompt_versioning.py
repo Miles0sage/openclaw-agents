@@ -13,7 +13,7 @@ Features:
   - Maintain parent-child relationships for prompt lineage
   - Query performance metrics across versions
 
-Database: os.environ.get("OPENCLAW_DATA_DIR", "./data")/prompt_versions.db
+Database: ./data/prompt_versions.db
 Schema:
   - prompt_versions: version_id, agent_key, system_prompt, created_at, is_active
   - version_outcomes: version_id, success (bool), job_id, timestamp
@@ -34,7 +34,7 @@ from typing import Optional, List, Dict, Any
 logger = logging.getLogger("prompt_versioning")
 
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 PROMPT_VERSIONS_DB = os.path.join(DATA_DIR, "prompt_versions.db")
 
 

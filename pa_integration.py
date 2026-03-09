@@ -2,7 +2,7 @@
 PA Integration — Bidirectional bridge between PA Worker and Autonomous Runner.
 
 The PA (Personal Assistant) is a Cloudflare Worker running Gemini Flash-Lite
-at localhost:8001. This module provides:
+at assistant.example.com. This module provides:
 
 1. Request handling: PA sends structured requests, we dispatch to runner
 2. Status tracking: All PA requests logged to data/pa/requests.jsonl
@@ -20,10 +20,10 @@ from typing import Optional
 
 logger = logging.getLogger("pa_integration")
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 PA_REQUESTS_DIR = os.path.join(DATA_DIR, "pa")
 PA_REQUESTS_LOG = os.path.join(PA_REQUESTS_DIR, "requests.jsonl")
-PA_CALLBACK_URL = os.environ.get("PA_CALLBACK_URL", "https://localhost:8001/api/callback")
+PA_CALLBACK_URL = os.environ.get("PA_CALLBACK_URL", "https://assistant.example.com/api/callback")
 
 # Valid PA actions
 VALID_ACTIONS = frozenset([

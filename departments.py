@@ -20,7 +20,7 @@ from pathlib import Path
 PROJECT_ROOTS = {
     "barber-crm": "/root/Barber-CRM/nextjs-app",
     "delhi-palace": "/root/Delhi-Palace",
-    "openclaw": "./",
+    "openclaw": ".",
     "prestress-calc": "/root/Mathcad-Scripts",
     "concrete-canoe": "/root/concrete-canoe-project2026",
 }

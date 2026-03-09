@@ -21,7 +21,7 @@ logger = logging.getLogger("proposal_generator")
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 
-DATA_DIR = Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/proposals")
+DATA_DIR = Path("./data/proposals")
 INDEX_PATH = DATA_DIR / "proposals.jsonl"
 
 VALID_BUSINESS_TYPES = ["restaurant", "barbershop", "dental", "auto", "realestate", "other"]
@@ -1085,7 +1085,7 @@ def _generate_proposal_html(
                 <p>AI-Powered Business Solutions<br>Flagstaff, Arizona</p>
             </div>
             <div class="footer-contact">
-                <p>your-gateway.example.com</p>
+                <p>gateway.example.com</p>
                 <p>Flagstaff, AZ 86001</p>
             </div>
         </div>

@@ -22,7 +22,7 @@ import logging
 logger = logging.getLogger("openclaw_logger")
 
 # D1 Database path (SQLite-compatible)
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 DB_PATH = os.getenv("OPENCLAW_LOG_DB", os.path.join(DATA_DIR, "events", "audit.db"))
 
 

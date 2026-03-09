@@ -92,7 +92,7 @@ async def execute_with_ide(
     prompt: str,
     tools: Optional[list] = None,
     system_prompt: str = "",
-    workspace: str = "/root/openclaw",
+    workspace: str = ".",
     job_id: str = "",
     phase: str = "",
     priority: str = "P2",
@@ -449,7 +449,7 @@ async def execute_ide_with_fallback(
     prompt: str,
     tools: Optional[list] = None,
     system_prompt: str = "",
-    workspace: str = "/root/openclaw",
+    workspace: str = ".",
     job_id: str = "",
     phase: str = "",
     priority: str = "P2",
@@ -543,7 +543,7 @@ if __name__ == "__main__":
         result2 = await execute_with_ide(
             prompt=(
                 "Use the sports_predict tool with action='predict' to get today's NBA predictions. "
-                "Then write a brief summary to os.environ.get("OPENCLAW_DATA_DIR", "./data")/betting/ide_test_report.md "
+                "Then write a brief summary to ./data/betting/ide_test_report.md "
                 "listing each game and the predicted winner."
             ),
             job_id="ide-test-002",

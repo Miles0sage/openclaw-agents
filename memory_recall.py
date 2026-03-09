@@ -422,7 +422,7 @@ def recall_recent(days: int = 7, limit: int = 20) -> List[Dict]:
 
         # Load from memories.jsonl
         mem_file = os.path.join(
-            os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")"), "memories.jsonl"
+            os.environ.get("OPENCLAW_DATA_DIR", "./data"), "memories.jsonl"
         )
         if os.path.exists(mem_file):
             with open(mem_file) as f:

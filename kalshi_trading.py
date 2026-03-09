@@ -105,7 +105,7 @@ def _get_client(authenticated: bool = False):
 
         if authenticated:
             key_id = os.environ.get("KALSHI_API_KEY_ID", "")
-            key_path = os.environ.get("KALSHI_PRIVATE_KEY_PATH", "os.environ.get("OPENCLAW_DATA_DIR", "./data")/trading/kalshi_private.pem")
+            key_path = os.environ.get("KALSHI_PRIVATE_KEY_PATH", "./data/trading/kalshi_private.pem")
 
             if not key_id:
                 return None, "KALSHI_API_KEY_ID not set. Generate API key at kalshi.com/account/api"

@@ -107,7 +107,7 @@ async def hand_daily_cost_report() -> HandResult:
         # Try sending to Slack
         try:
             from gateway import send_slack_message
-            channel = os.environ.get("SLACK_REPORT_CHANNEL", "general")
+            channel = os.environ.get("SLACK_REPORT_CHANNEL", "C0AFE4QHKH7")
             await send_slack_message(channel, f"*Daily Cost Report*\n```{report}```")
         except Exception:
             pass
@@ -209,7 +209,7 @@ async def hand_health_check() -> HandResult:
         if not all_ok:
             try:
                 from gateway import send_slack_message
-                channel = os.environ.get("SLACK_REPORT_CHANNEL", "general")
+                channel = os.environ.get("SLACK_REPORT_CHANNEL", "C0AFE4QHKH7")
                 await send_slack_message(channel, f"*Health Alert*\n```{output}```")
             except Exception:
                 pass
@@ -344,7 +344,7 @@ async def hand_email_triage() -> HandResult:
         # Send to Slack
         try:
             from gateway import send_slack_message
-            channel = os.environ.get("SLACK_REPORT_CHANNEL", "general")
+            channel = os.environ.get("SLACK_REPORT_CHANNEL", "C0AFE4QHKH7")
             await send_slack_message(channel, f"*Email Triage Report*\n```{report}```")
         except Exception:
             pass
@@ -508,7 +508,7 @@ async def hand_ai_news_research() -> HandResult:
         # Send to Slack
         try:
             from routers.shared import send_slack_message
-            channel = os.environ.get("SLACK_REPORT_CHANNEL", "general")
+            channel = os.environ.get("SLACK_REPORT_CHANNEL", "C0AFE4QHKH7")
             await send_slack_message(channel, report)
         except Exception as slack_err:
             logger.warning(f"AI news: Slack send failed: {slack_err}")

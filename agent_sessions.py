@@ -26,7 +26,7 @@ from typing import Optional
 
 logger = logging.getLogger("agent_sessions")
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 AGENT_SESSIONS_DIR = os.path.join(DATA_DIR, "agent_sessions")
 
 # Limits

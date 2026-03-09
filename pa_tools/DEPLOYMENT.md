@@ -5,12 +5,12 @@
 All four PA automation tools are complete and tested with mock data. Ready for production deployment.
 
 **Files created**:
-- `/root/openclaw/pa_tools/finance/__init__.py` — Finance tracking + alerts
-- `/root/openclaw/pa_tools/health/__init__.py` — Sleep/activity monitoring
-- `/root/openclaw/pa_tools/news/__init__.py` — News digest aggregation
-- `/root/openclaw/pa_tools/travel/__init__.py` — Route optimization + booking stubs
-- `/root/openclaw/pa_tools/orchestrator.py` — Coordinates all tasks
-- `/root/openclaw/pa_tools_cron.py` — Gateway integration module
+- `./pa_tools/finance/__init__.py` — Finance tracking + alerts
+- `./pa_tools/health/__init__.py` — Sleep/activity monitoring
+- `./pa_tools/news/__init__.py` — News digest aggregation
+- `./pa_tools/travel/__init__.py` — Route optimization + booking stubs
+- `./pa_tools/orchestrator.py` — Coordinates all tasks
+- `./pa_tools_cron.py` — Gateway integration module
 
 ## Quick Start (5 minutes)
 
@@ -35,7 +35,7 @@ All tools work with mock data by default. No API keys required to see it working
 
 ### 2. Enable Gateway Integration
 
-Edit `/root/openclaw/gateway.py`:
+Edit `./gateway.py`:
 
 **Find** (around line 20):
 ```python
@@ -122,7 +122,7 @@ Open your Notion workspace and create 3 databases:
 
 ### 2. Set Up Environment Variables
 
-Add to `/root/openclaw/.env`:
+Add to `./.env`:
 
 ```bash
 # Notion (REQUIRED for data export)
@@ -229,7 +229,7 @@ PA Tools Orchestrator
 ### View Live Crons
 ```bash
 # SSH into gateway
-ssh user@your-server-ip
+ssh root@your-server-ip -p 18789
 
 # Check scheduler status
 journalctl -u openclaw-gateway -f | grep PA
@@ -255,7 +255,7 @@ print(f'Notion configured: {fa.has_notion}')
 ## Troubleshooting
 
 ### "ModuleNotFoundError: No module named 'pa_tools'"
-**Fix**: Make sure you're running from `/root/openclaw/`:
+**Fix**: Make sure you're running from `./`:
 ```bash
 cd /root/openclaw
 python3 -m pa_tools.finance
@@ -264,14 +264,14 @@ python3 -m pa_tools.finance
 ### "Notion not configured" warning
 **Fix**: Set `NOTION_TOKEN` and database IDs in `.env`
 ```bash
-echo "NOTION_TOKEN=ntn_xxxxx" >> /root/openclaw/.env
+echo "NOTION_TOKEN=ntn_xxxxx" >> ./.env
 systemctl restart openclaw-gateway
 ```
 
 ### Mock data instead of real data
 **Fix**: Verify API tokens are in `.env` and valid:
 ```bash
-source /root/openclaw/.env
+source ./.env
 echo "Plaid token: $PLAID_ACCESS_TOKEN"
 echo "Notion token: $NOTION_TOKEN"
 ```

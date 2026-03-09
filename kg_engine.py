@@ -36,7 +36,7 @@ logger = logging.getLogger("openclaw.kg")
 # Constants
 # ---------------------------------------------------------------------------
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 KG_DB_PATH = os.path.join(DATA_DIR, "kg", "knowledge_graph.db")
 
 

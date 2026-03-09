@@ -12,7 +12,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-PREDICTIONS_DIR = Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/predictions")
+PREDICTIONS_DIR = Path("./data/predictions")
 PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
 
 

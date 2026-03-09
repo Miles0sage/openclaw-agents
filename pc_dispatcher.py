@@ -30,7 +30,7 @@ PC_OLLAMA_URL = os.getenv("PC_OLLAMA_URL", "http://100.67.6.27:11434")
 PC_OLLAMA_MODEL = os.getenv("PC_OLLAMA_MODEL", "qwen2.5-coder:7b")
 
 # Job storage (in-memory + disk)
-JOBS_DIR = Path(os.getenv("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")) / "pc_jobs"
+JOBS_DIR = Path(os.getenv("OPENCLAW_DATA_DIR", "./data")) / "pc_jobs"
 JOBS_DIR.mkdir(parents=True, exist_ok=True)
 
 # In-memory job cache

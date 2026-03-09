@@ -417,7 +417,7 @@ def _decompose_task(job: dict) -> List[dict]:
     return []
 
 
-async def maybe_decompose_and_execute(job: dict, project_root: str = "/root/openclaw") -> Optional[dict]:
+async def maybe_decompose_and_execute(job: dict, project_root: str = ".") -> Optional[dict]:
     """
     Analyze if a job should be decomposed into parallel sub-tasks.
     If yes, spawn tmux agents for each sub-task, wait for completion,

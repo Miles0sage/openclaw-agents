@@ -481,17 +481,17 @@ if research_router:
     app.include_router(research_router)
 
 # Static files
-app.mount("/static", StaticFiles(directory=os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "static"), name="static")
-app.mount("/dashboard/v2", StaticFiles(directory=os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "public/dashboard"), name="dashboard_v2")
-app.mount("/dashboard_app", StaticFiles(directory=os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "dashboard_app"), name="dashboard_app")
+app.mount("/static", StaticFiles(directory="./static"), name="static")
+app.mount("/dashboard/v2", StaticFiles(directory="./public/dashboard"), name="dashboard_v2")
+app.mount("/dashboard_app", StaticFiles(directory="./dashboard_app"), name="dashboard_app")
 
 # Analytics dashboard (React app built by Cursor)
-_analytics_dir = os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "public/analytics-dashboard"
+_analytics_dir = "./public/analytics-dashboard"
 if os.path.isdir(_analytics_dir):
     app.mount("/analytics", StaticFiles(directory=_analytics_dir, html=True), name="analytics_dashboard")
 
 # Docs site (MkDocs built by OpenCode)
-_docs_dir = os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "site"
+_docs_dir = "./site"
 if os.path.isdir(_docs_dir):
     app.mount("/docs", StaticFiles(directory=_docs_dir, html=True), name="docs_site")
 

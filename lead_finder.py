@@ -20,7 +20,7 @@ from pathlib import Path
 
 logger = logging.getLogger("lead_finder")
 
-LEADS_DIR = "os.environ.get("OPENCLAW_DATA_DIR", "./data")/leads"
+LEADS_DIR = "./data/leads"
 SERPAPI_KEY = os.getenv("SERPAPI_KEY", "")  # Optional: for structured Google results
 
 

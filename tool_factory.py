@@ -70,7 +70,7 @@ TOOL_TIMEOUT = 30
 HTTP_TIMEOUT = 10
 
 # Database path
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 DB_PATH = os.path.join(DATA_DIR, "dynamic_tools.db")
 
 

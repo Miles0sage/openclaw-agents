@@ -9,13 +9,13 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Optional
 
-QUEUE_DIR = Path(os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "services/cursor-tasks/queue")
-DONE_DIR = Path(os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "services/cursor-tasks/done")
+QUEUE_DIR = Path("./services/cursor-tasks/queue")
+DONE_DIR = Path("./services/cursor-tasks/done")
 QUEUE_DIR.mkdir(parents=True, exist_ok=True)
 DONE_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def create_task(prompt: str, project_path: str = "/root/openclaw", priority: str = "normal") -> str:
+def create_task(prompt: str, project_path: str = ".", priority: str = "normal") -> str:
     task_id = f"cursor_{uuid.uuid4().hex[:10]}"
     task = {
         "id": task_id, "prompt": prompt, "project_path": project_path,
@@ -58,7 +58,7 @@ router = APIRouter(prefix="/api/cursor", tags=["cursor"])
 
 class CursorTaskRequest(BaseModel):
     prompt: str
-    project_path: str = "/root/openclaw"
+    project_path: str = "."
     priority: str = "normal"
 
 

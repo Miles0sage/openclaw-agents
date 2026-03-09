@@ -24,7 +24,7 @@ from threading import Lock
 
 logger = logging.getLogger("guardrail_auto_apply")
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 CHANGES_FILE = os.path.join(DATA_DIR, "guardrail_changes.jsonl")
 GUARDRAIL_CONFIG_FILE = os.path.join(DATA_DIR, "guardrail_config.json")
 

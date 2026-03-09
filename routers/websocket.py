@@ -273,10 +273,10 @@ async def glasses_websocket(websocket: WebSocket):
                 logger.info(f"[VISIONCLAW] Frame from {device_id}: {resolution}, {frame_size} bytes")
 
                 # Save latest frame for debug
-                os.makedirs("os.environ.get("OPENCLAW_DATA_DIR", "./data")/visionclaw", exist_ok=True)
+                os.makedirs("./data/visionclaw", exist_ok=True)
                 try:
                     frame_bytes = b64mod.b64decode(frame_b64)
-                    with open(f"os.environ.get("OPENCLAW_DATA_DIR", "./data")/visionclaw/latest_frame.jpg", "wb") as f:
+                    with open(f"./data/visionclaw/latest_frame.jpg", "wb") as f:
                         f.write(frame_bytes)
                 except Exception:
                     pass

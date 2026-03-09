@@ -12,7 +12,7 @@ exploration phase and jump straight into productive work.
 
 Usage:
     from repo_map import generate_repo_map
-    summary = generate_repo_map("/root/openclaw", max_depth=3)
+    summary = generate_repo_map(".", max_depth=3)
 """
 
 import os
@@ -366,5 +366,5 @@ def generate_compact_map(root_dir: str) -> str:
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
     import sys
-    target = sys.argv[1] if len(sys.argv) > 1 else "/root/openclaw"
+    target = sys.argv[1] if len(sys.argv) > 1 else "."
     print(generate_repo_map(target))

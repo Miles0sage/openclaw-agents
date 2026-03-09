@@ -221,7 +221,7 @@ def get_tool_usage_breakdown(job_id: str) -> dict:
             "timeline": [list of tool calls in chronological order]
         }
     """
-    audit_path = "os.environ.get("OPENCLAW_DATA_DIR", "./data")/audit/tool_calls.jsonl"
+    audit_path = "./data/audit/tool_calls.jsonl"
     entries = _read_jsonl(audit_path, lambda e: e.get("job_id") == job_id)
 
     if not entries:

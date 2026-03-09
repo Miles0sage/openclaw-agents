@@ -189,7 +189,7 @@ class Runbook:
     }
 
     def __init__(self, max_alerts: int = 500, alert_file: str = ""):
-        data_dir = os.getenv("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+        data_dir = os.getenv("OPENCLAW_DATA_DIR", "./data")
         self.max_alerts = max_alerts
         self.alert_file = alert_file or os.path.join(data_dir, "alerts.jsonl")
         self._alerts: list[Alert] = []

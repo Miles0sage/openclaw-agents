@@ -205,7 +205,7 @@ class OutputVerifier:
 
     def __init__(
         self,
-        cost_file: str = os.path.join(os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")"), "costs", "costs.jsonl"),
+        cost_file: str = os.path.join(os.environ.get("OPENCLAW_DATA_DIR", "./data"), "costs", "costs.jsonl"),
         budget_per_job: float = 5.0,
         budget_daily: float = 20.0,
         budget_monthly: float = 1000.0,

@@ -38,7 +38,7 @@ logger = logging.getLogger("openclaw_email")
 # Configuration
 # -----------------------------------------------------------------------
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 EMAIL_LOG_FILE = os.path.join(DATA_DIR, "events", "emails.jsonl")
 NOTIFICATION_DEDUP_FILE = os.path.join(DATA_DIR, "events", "notification_dedup.json")
 NOTIFICATION_HISTORY_FILE = os.path.join(DATA_DIR, "events", "notification_history.jsonl")

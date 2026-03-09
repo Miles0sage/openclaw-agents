@@ -11,10 +11,10 @@ import asyncio
 
 # Load environment variables
 from dotenv import load_dotenv
-load_dotenv(os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), ".env")
+load_dotenv("./.env")
 
 # Add openclaw to path so we can import agent_tools
-sys.path.insert(0, "/root/openclaw")
+sys.path.insert(0, ".")
 from agent_tools import execute_tool, AGENT_TOOLS
 
 # Try MCP SDK first, fall back to raw stdio protocol

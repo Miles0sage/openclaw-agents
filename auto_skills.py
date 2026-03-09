@@ -14,8 +14,8 @@ from pathlib import Path
 logger = logging.getLogger("openclaw.auto_skills")
 
 SKILLS_DIR = Path("/root/.claude/skills")
-JOBS_DIR = Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/jobs/runs")
-REFLECTIONS_DIR = Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/reflections")
+JOBS_DIR = Path("./data/jobs/runs")
+REFLECTIONS_DIR = Path("./data/reflections")
 
 # Minimum thresholds for skill extraction
 MIN_PLAN_STEPS = 3          # Don't extract trivial jobs
@@ -412,7 +412,7 @@ def backfill_skills(limit: int = 50) -> list[str]:
         return []
 
     extracted = []
-    jobs_jsonl = Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/jobs/jobs.jsonl")
+    jobs_jsonl = Path("./data/jobs/jobs.jsonl")
 
     if not jobs_jsonl.exists():
         return []

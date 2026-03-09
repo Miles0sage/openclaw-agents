@@ -40,7 +40,7 @@ MAX_SUB_QUESTIONS = 10
 MAX_PERPLEXITY_CALLS = 8
 MAX_WEB_SCRAPES = 6
 SESSION_TIMEOUT_SEC = 300  # 5 minutes
-DATA_DIR = Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/research")
+DATA_DIR = Path("./data/research")
 LOG_PATH = DATA_DIR / "research_log.jsonl"
 
 # ─── Domain Mode Configs ─────────────────────────────────────────────────────

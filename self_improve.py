@@ -21,7 +21,7 @@ from dataclasses import dataclass, asdict
 
 logger = logging.getLogger("self_improve")
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 METRICS_FILE = os.path.join(DATA_DIR, "metrics", "agent_performance.jsonl")
 RETRO_DIR = os.path.join(DATA_DIR, "retrospectives")
 

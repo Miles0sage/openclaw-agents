@@ -35,7 +35,7 @@ logging.basicConfig(
 logger = logging.getLogger("workflow_engine")
 
 # Storage configuration - use dynamic getters for test compatibility
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 
 def get_workflows_dir() -> Path:
     """Get workflows directory, reading from environment each time"""

@@ -543,7 +543,7 @@ def _scan_schedule(params: dict = None) -> str:
     }
 
     # Get recent scan history
-    report_dir = "os.environ.get("OPENCLAW_DATA_DIR", "./data")/betting/daily_reports"
+    report_dir = "./data/betting/daily_reports"
     recent_reports = []
     try:
         report_files = sorted(glob.glob(f"{report_dir}/*.json"), reverse=True)[:7]
@@ -573,7 +573,7 @@ def _scan_schedule(params: dict = None) -> str:
     return json.dumps({
         "schedule": schedule_info,
         "recent_scans": recent_reports,
-        "scan_log": "os.environ.get("OPENCLAW_DATA_DIR", "./data")/betting/scan.log",
+        "scan_log": "./data/betting/scan.log",
         "next_action": "Install cron entry if you haven't already. See schedule.cron_entry above.",
     }, default=str)
 

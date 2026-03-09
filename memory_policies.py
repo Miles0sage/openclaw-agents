@@ -18,7 +18,7 @@ from pathlib import Path
 
 logger = logging.getLogger("memory_policies")
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 MEMORIES_FILE = os.path.join(DATA_DIR, "memories.jsonl")
 DEDUP_THRESHOLD = 0.85  # cosine similarity above this = duplicate
 

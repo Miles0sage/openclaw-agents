@@ -45,7 +45,7 @@ from enum import Enum
 
 logger = logging.getLogger("coding_factory_cron")
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 DB_PATH = os.path.join(DATA_DIR, "coding_factory.db")
 RATE_LIMIT_WINDOW = 3600  # seconds (1 hour)
 RATE_LIMIT_PER_ENGINE = 3  # max tasks per hour per engine

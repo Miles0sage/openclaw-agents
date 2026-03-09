@@ -50,7 +50,7 @@ logger = logging.getLogger("github_integration")
 # Storage
 # ---------------------------------------------------------------------------
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 GITHUB_DELIVERY_FILE = os.path.join(DATA_DIR, "jobs", "github_deliveries.json")
 
 
@@ -212,7 +212,7 @@ class GitHubClient:
             project_paths = {
                 "barber-crm": "/root/Barber-CRM",
                 "delhi-palace": "/root/Delhi-Palace",
-                "openclaw": "/root/openclaw",
+                "openclaw": ".",
                 "prestress-calc": "/root/Mathcad-Scripts",
                 "concrete-canoe": "/root/concrete-canoe-project2026",
             }

@@ -353,7 +353,7 @@ async def run_eval(task_subset: list[str] = None, dry_run: bool = False,
     try:
         from gateway import send_slack_message
         await send_slack_message(
-            os.environ.get("SLACK_REPORT_CHANNEL", "general"),
+            os.environ.get("SLACK_REPORT_CHANNEL", "C0AFE4QHKH7"),
             f"Eval complete: {report.run_id}\n"
             f"Score: {report.total_score:.1%} ({report.total_passed}/{report.total_tasks} passed)\n"
             f"Cost: ${report.total_cost_usd:.4f}\n"

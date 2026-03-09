@@ -292,7 +292,7 @@ from cost_tracker import (
 # Constants
 # ---------------------------------------------------------------------------
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 JOB_RUNS_DIR = Path(os.path.join(DATA_DIR, "jobs", "runs"))
 DEFAULT_POLL_INTERVAL = 10        # seconds between job queue checks
 DEFAULT_MAX_CONCURRENT = 3        # max parallel job executions (VPS: 4 CPU / 8GB RAM)
@@ -763,7 +763,7 @@ def _trim_context(text: str, max_tokens: int = 2000) -> str:
 PROJECT_ROOTS = {
     "barber-crm": "/root/Barber-CRM/nextjs-app",
     "delhi-palace": "/root/Delhi-Palace",
-    "openclaw": "/root/openclaw",
+    "openclaw": ".",
     "prestress-calc": "/root/Mathcad-Scripts",
     "concrete-canoe": "/root/concrete-canoe-project2026",
 }
@@ -881,7 +881,7 @@ def _build_context_bundle(step: PlanStep, research: str, previous_results: list)
     resolved_paths = []
     for fp in file_paths:
         if not fp.startswith("/"):
-            candidate = os.path.join("/root/openclaw", fp)
+            candidate = os.path.join(".", fp)
             if os.path.exists(candidate):
                 resolved_paths.append(candidate)
         elif os.path.exists(fp):
@@ -1204,7 +1204,7 @@ async def _call_agent_sdk(
         max_turns = phase_turns.get(phase, 20)
 
     # Determine working directory
-    cwd = workspace if workspace else "/root/openclaw"
+    cwd = workspace if workspace else "."
 
     # Build the full prompt with system context
     full_prompt = prompt
@@ -1464,7 +1464,7 @@ async def _call_agent(agent_key: str, prompt: str, conversation: list = None,
 
                 result = await execute_with_oz_fallback(
                     prompt=prompt,
-                    workspace=oz_workspace or "/root/openclaw",
+                    workspace=oz_workspace or ".",
                     job_id=job_id,
                     phase=phase,
                     priority=priority,
@@ -1506,7 +1506,7 @@ async def _call_agent(agent_key: str, prompt: str, conversation: list = None,
             result = await execute_ide_with_fallback(
                 prompt=prompt,
                 tools=tools,
-                workspace=ide_workspace or "/root/openclaw",
+                workspace=ide_workspace or ".",
                 job_id=job_id,
                 phase=phase,
                 priority=priority,
@@ -2849,7 +2849,7 @@ async def _code_review_phase(
     project_paths = {
         "barber-crm":     "/root/Barber-CRM",
         "delhi-palace":   "/root/Delhi-Palace",
-        "openclaw":       "/root/openclaw",
+        "openclaw":       ".",
         "prestress-calc": "/root/Mathcad-Scripts",
         "concrete-canoe": "/root/concrete-canoe-project2026",
     }
@@ -3170,7 +3170,7 @@ async def _verify_phase(job: dict, agent_key: str, execution_results: list,
     project_paths = {
         "barber-crm":    "/root/Barber-CRM",
         "delhi-palace":  "/root/Delhi-Palace",
-        "openclaw":      "/root/openclaw",
+        "openclaw":      ".",
         "prestress-calc":"/root/Mathcad-Scripts",
         "concrete-canoe":"/root/concrete-canoe-project2026",
     }
@@ -3358,7 +3358,7 @@ async def _deliver_phase(job: dict, agent_key: str, verify_result: dict,
     project_paths = {
         "barber-crm":    "/root/Barber-CRM",
         "delhi-palace":  "/root/Delhi-Palace",
-        "openclaw":      "/root/openclaw",
+        "openclaw":      ".",
         "prestress-calc":"/root/Mathcad-Scripts",
         "concrete-canoe":"/root/concrete-canoe-project2026",
     }
@@ -4679,7 +4679,7 @@ class AutonomousRunner:
             if not existing_checkpoint:  # don't decompose resumed jobs
                 try:
                     supervisor_result = await maybe_decompose_and_execute(
-                        job, project_root=project_root or "/root/openclaw"
+                        job, project_root=project_root or "."
                     )
                     if supervisor_result:
                         logger.info(

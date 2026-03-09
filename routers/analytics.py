@@ -17,7 +17,7 @@ from routers.shared import logger, CONFIG
 router = APIRouter(prefix="/api/analytics", tags=["analytics"])
 
 # Configuration
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 
 
 def parse_event_log(log_path: pathlib.Path, limit: int = 10000) -> List[Dict[str, Any]]:

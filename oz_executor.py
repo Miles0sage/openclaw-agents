@@ -314,7 +314,7 @@ async def _poll_run_status(run_id: str) -> dict:
 
 async def execute_with_oz_fallback(
     prompt: str,
-    workspace: str = "/root/openclaw",
+    workspace: str = ".",
     timeout: int = DEFAULT_TIMEOUT,
     job_id: str = "",
     phase: str = "",

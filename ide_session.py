@@ -26,7 +26,7 @@ logger = logging.getLogger("ide_session")
 
 # Session storage directory
 SESSIONS_DIR = os.path.join(
-    os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")"),
+    os.environ.get("OPENCLAW_DATA_DIR", "./data"),
     "sessions",
 )
 

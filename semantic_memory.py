@@ -37,7 +37,7 @@ class SemanticMemoryIndex:
     Provides fast semantic search without external vector DB.
     """
 
-    def __init__(self, data_dir: str = "os.environ.get("OPENCLAW_DATA_DIR", "./data")", memory_dir: str = "/root/.claude/projects/-root/memory"):
+    def __init__(self, data_dir: str = "./data", memory_dir: str = "/root/.claude/projects/-root/memory"):
         self.data_dir = data_dir
         self.memory_dir = memory_dir
         self.index_file = os.path.join(data_dir, "semantic_index.pkl")

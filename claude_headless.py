@@ -47,7 +47,7 @@ class ClaudeHeadless:
     async def run(
         self,
         prompt: str,
-        cwd: str = "/root/openclaw",
+        cwd: str = ".",
         timeout: Optional[int] = None,
         model: Optional[str] = None,
         max_turns: int = 10,
@@ -190,7 +190,7 @@ Be thorough. Find real issues, not just style nitpicks.
 """
         return await self.run(prompt, cwd=repo_path, model="opus", max_turns=15)
 
-    async def fix_test(self, test_file: str, error: str, project_path: str = "/root/openclaw") -> Dict[str, Any]:
+    async def fix_test(self, test_file: str, error: str, project_path: str = ".") -> Dict[str, Any]:
         """
         Auto-fix a failing test.
 

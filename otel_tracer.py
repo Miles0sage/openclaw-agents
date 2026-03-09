@@ -38,7 +38,7 @@ logger = logging.getLogger("openclaw.tracer")
 # Constants
 # ---------------------------------------------------------------------------
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 TRACES_DIR = os.path.join(DATA_DIR, "traces")
 TRACES_LOG = os.path.join(TRACES_DIR, "traces.jsonl")
 MAX_TRACE_AGE_DAYS = 7

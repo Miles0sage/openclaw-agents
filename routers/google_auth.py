@@ -90,7 +90,7 @@ async def oauth_start():
         client_id = creds["client_id"]
 
         import urllib.parse
-        redirect_uri = "os.getenv("GATEWAY_URL", "http://localhost:8000")/oauth/callback"
+        redirect_uri = "https://gateway.example.com/oauth/callback"
         params = urllib.parse.urlencode({
             "client_id": client_id,
             "redirect_uri": redirect_uri,
@@ -100,7 +100,7 @@ async def oauth_start():
             "prompt": "consent",
         })
         auth_url = f"https://accounts.google.com/o/oauth2/auth?{params}"
-        gateway_url = "os.getenv("GATEWAY_URL", "http://localhost:8000")/oauth/exchange"
+        gateway_url = "https://gateway.example.com/oauth/exchange"
         html = f"""<!DOCTYPE html>
 <html><head><title>OpenClaw — Google OAuth</title>
 <style>body{{font-family:system-ui;background:#09090b;color:#fafafa;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0}}
@@ -178,7 +178,7 @@ async def oauth_exchange(code: str = None):
             "code": code,
             "client_id": creds["client_id"],
             "client_secret": creds["client_secret"],
-            "redirect_uri": "os.getenv("GATEWAY_URL", "http://localhost:8000")/oauth/callback",
+            "redirect_uri": "https://gateway.example.com/oauth/callback",
             "grant_type": "authorization_code",
         }, timeout=15)
         token_data = token_resp.json()
@@ -222,7 +222,7 @@ async def oauth_callback(code: str = None, error: str = None):
                 "code": code,
                 "client_id": creds["client_id"],
                 "client_secret": creds["client_secret"],
-                "redirect_uri": "os.getenv("GATEWAY_URL", "http://localhost:8000")/oauth/callback",
+                "redirect_uri": "https://gateway.example.com/oauth/callback",
                 "grant_type": "authorization_code",
             }, timeout=15)
             token_data = token_resp.json()

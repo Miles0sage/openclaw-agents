@@ -47,7 +47,7 @@ PHASE_PROGRESS = {
 # Auto-prune completed jobs older than this threshold
 PRUNE_THRESHOLD_SECONDS = 3600  # 1 hour
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 JOBS_DIR = os.path.join(DATA_DIR, "jobs")
 
 

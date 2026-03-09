@@ -15,7 +15,7 @@ from pathlib import Path
 
 logger = logging.getLogger("reflexion")
 
-REFLECTIONS_DIR = Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/reflections")
+REFLECTIONS_DIR = Path("./data/reflections")
 
 
 def ensure_dir():

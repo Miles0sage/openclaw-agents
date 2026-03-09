@@ -20,7 +20,7 @@ load_dotenv()
 logger = logging.getLogger("bet_tracker")
 
 # Directories
-DATA_DIR = Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/betting")
+DATA_DIR = Path("./data/betting")
 LEDGER_FILE = DATA_DIR / "bet_ledger.json"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 

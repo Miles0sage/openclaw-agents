@@ -173,7 +173,7 @@ class AgentRouter:
         "root cause", "trace", "profiling", "memory usage"
     ]
 
-    def __init__(self, config_path: str = os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "config.json", enable_caching: bool = True):
+    def __init__(self, config_path: str = "./config.json", enable_caching: bool = True):
         """
         Initialize router with optional config file
 

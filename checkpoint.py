@@ -22,7 +22,7 @@ from pathlib import Path
 
 logger = logging.getLogger("checkpoint")
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 DB_PATH = os.path.join(DATA_DIR, "checkpoints.db")
 
 

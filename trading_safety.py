@@ -12,7 +12,7 @@ from dataclasses import dataclass, asdict, field
 from pathlib import Path
 from typing import Optional
 
-DATA_DIR = Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/trading")
+DATA_DIR = Path("./data/trading")
 CONFIG_PATH = DATA_DIR / "config.json"
 TRADE_LOG_PATH = DATA_DIR / "trade_log.jsonl"
 

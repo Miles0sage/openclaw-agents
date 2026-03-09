@@ -27,7 +27,7 @@ router = APIRouter()
 async def root():
     """Serve the OpenClaw sales landing page."""
     try:
-        sales_path = os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "static/sales/index.html"
+        sales_path = "./static/sales/index.html"
         with open(sales_path, "r") as f:
             html_content = f.read()
         return HTMLResponse(content=html_content)
@@ -54,7 +54,7 @@ async def root():
 async def sales_page():
     """Serve the OpenClaw sales landing page (alias)."""
     try:
-        sales_path = os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "static/sales/index.html"
+        sales_path = "./static/sales/index.html"
         with open(sales_path, "r") as f:
             return HTMLResponse(content=f.read())
     except FileNotFoundError:
@@ -65,7 +65,7 @@ async def sales_page():
 async def visionclaw_page():
     """Serve the VisionClaw open-source smart glasses page."""
     try:
-        with open(os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "static/visionclaw/index.html", "r") as f:
+        with open("./static/visionclaw/index.html", "r") as f:
             return HTMLResponse(content=f.read())
     except FileNotFoundError:
         return HTMLResponse(content="<h1>Page not found</h1>", status_code=404)
@@ -75,7 +75,7 @@ async def visionclaw_page():
 async def nightowl_page():
     """Serve the NightOwl Security landing page."""
     try:
-        with open(os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "static/nightowl/index.html", "r") as f:
+        with open("./static/nightowl/index.html", "r") as f:
             return HTMLResponse(content=f.read())
     except FileNotFoundError:
         return HTMLResponse(content="<h1>Page not found</h1>", status_code=404)
@@ -104,8 +104,8 @@ async def security_scan_api(request: Request):
             "created_at": datetime.now(timezone.utc).isoformat(),
         }
 
-        os.makedirs("os.environ.get("OPENCLAW_DATA_DIR", "./data")/scans", exist_ok=True)
-        with open("os.environ.get("OPENCLAW_DATA_DIR", "./data")/scans/scans.jsonl", "a") as f:
+        os.makedirs("./data/scans", exist_ok=True)
+        with open("./data/scans/scans.jsonl", "a") as f:
             f.write(json.dumps(scan_log) + "\n")
 
         try:
@@ -145,7 +145,7 @@ async def security_scan_api(request: Request):
 async def terms_page():
     """Serve the Terms of Service page."""
     try:
-        terms_path = os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "landing/terms.html"
+        terms_path = "./landing/terms.html"
         with open(terms_path, "r") as f:
             html_content = f.read()
         return HTMLResponse(content=html_content)
@@ -194,7 +194,7 @@ async def privacy_page():
 async def dashboard_v2_root():
     """Serve the AI Dev Dashboard v2 (index.html)."""
     try:
-        dashboard_path = os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "public/dashboard/index.html"
+        dashboard_path = "./public/dashboard/index.html"
         with open(dashboard_path, "r") as f:
             html_content = f.read()
         return HTMLResponse(content=html_content)
@@ -298,7 +298,7 @@ async def test_exempt():
 async def dashboard(request: Request):
     """Serve HTML dashboard (no auth required)"""
     try:
-        dashboard_path = os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "dashboard.html"
+        dashboard_path = "./dashboard.html"
         with open(dashboard_path, 'r') as f:
             html_content = f.read()
         if request.method in ["GET", "HEAD", "OPTIONS"]:
@@ -331,7 +331,7 @@ async def prestress_course(page: str):
 async def intake_form():
     """Serve the client intake form page (no auth)"""
     try:
-        intake_path = os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), "static/sales/intake.html"
+        intake_path = "./static/sales/intake.html"
         with open(intake_path, 'r') as f:
             return HTMLResponse(content=f.read())
     except FileNotFoundError:

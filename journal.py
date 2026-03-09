@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger("openclaw.journal")
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 DEFAULT_TRACE_DIR = os.path.join(DATA_DIR, "traces")
 
 EVENT_TYPES = (

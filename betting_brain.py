@@ -63,7 +63,7 @@ if not os.environ.get("ODDS_API_KEY"):
 logger = logging.getLogger("betting_brain")
 
 # CLV logging directory
-CLV_LOG_DIR = Path("os.environ.get("OPENCLAW_DATA_DIR", "./data")/betting")
+CLV_LOG_DIR = Path("./data/betting")
 CLV_LOG_DIR.mkdir(parents=True, exist_ok=True)
 CLV_LOG_FILE = CLV_LOG_DIR / "clv_log.json"
 

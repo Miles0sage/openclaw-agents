@@ -117,7 +117,7 @@ Example: `https://www.notion.so/workspace/12345678-abcd-1234-...` → ID is `123
 
 The PA Tools crons are registered via a dedicated integration module. To enable:
 
-Edit `/root/openclaw/gateway.py` in the lifespan startup section (around line 119):
+Edit `./gateway.py` in the lifespan startup section (around line 119):
 
 ```python
 # Add import at top

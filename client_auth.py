@@ -8,7 +8,7 @@ Provides:
 - Stripe integration with Price IDs, overage metering, and customer portal
 - Admin endpoints for client management
 
-Storage: os.environ.get("OPENCLAW_DATA_DIR", "./data")/clients/clients.json (persistent JSON)
+Storage: ./data/clients/clients.json (persistent JSON)
 Endpoints:
   - POST   /api/intake                    (requires X-Client-Key)
   - GET    /api/jobs                      (requires X-Client-Key)
@@ -53,7 +53,7 @@ logger = logging.getLogger("openclaw_billing")
 # CONFIGURATION
 # ═══════════════════════════════════════════════════════════════════════
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "./data")
 CLIENTS_FILE = os.path.join(DATA_DIR, "clients", "clients.json")
 
 PLANS = {
@@ -519,8 +519,8 @@ async def create_checkout_session(
                 "line_items": line_items,
                 "mode": "subscription",
                 "client_reference_id": client["client_id"],
-                "success_url": os.environ.get("STRIPE_SUCCESS_URL", os.environ.get("STRIPE_SUCCESS_URL", "http://localhost:8000/success")),
-                "cancel_url": os.environ.get("STRIPE_CANCEL_URL", os.environ.get("STRIPE_CANCEL_URL", "http://localhost:8000/cancel")),
+                "success_url": os.environ.get("STRIPE_SUCCESS_URL", "https://example.com/success"),
+                "cancel_url": os.environ.get("STRIPE_CANCEL_URL", "https://example.com/cancel"),
                 "metadata": {"plan_id": plan_id},
             }
 
@@ -762,7 +762,7 @@ async def billing_portal(
     try:
         portal_session = stripe.billing_portal.Session.create(
             customer=stripe_customer_id,
-            return_url=os.environ.get("STRIPE_PORTAL_RETURN_URL", os.environ.get("STRIPE_PORTAL_RETURN_URL", "http://localhost:8000/dashboard")),
+            return_url=os.environ.get("STRIPE_PORTAL_RETURN_URL", "https://dashboard.example.com"),
         )
         logger.info(f"Created billing portal session for customer {stripe_customer_id}")
         return {"url": portal_session.url}

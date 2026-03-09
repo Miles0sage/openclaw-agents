@@ -107,7 +107,7 @@ async def verify_output(request: Request):
         raise HTTPException(status_code=503, detail="Verifier not initialized")
     data = await request.json()
     files = data.get("files", [])
-    work_dir = data.get("work_dir", "/root/openclaw")
+    work_dir = data.get("work_dir", ".")
     job_id = data.get("job_id")
     result = _output_verifier.verify_all(job_id or "manual", files, work_dir)
     return {
@@ -295,7 +295,7 @@ async def vapi_call_webhook(request: Request):
             customer = call_data.get("customer", {})
 
             # Save transcript
-            calls_dir = "os.environ.get("OPENCLAW_DATA_DIR", "./data")/calls"
+            calls_dir = "./data/calls"
             os.makedirs(calls_dir, exist_ok=True)
             transcript_path = os.path.join(calls_dir, f"{call_id}.json")
             with open(transcript_path, "w") as f:
@@ -662,7 +662,7 @@ async def capture_lead(request: Request):
         }
 
         # --- Save to disk ---
-        leads_dir = "os.environ.get("OPENCLAW_DATA_DIR", "./data")/leads"
+        leads_dir = "./data/leads"
         os.makedirs(leads_dir, exist_ok=True)
 
         lead_path = os.path.join(leads_dir, f"{ts_str}_{slug}.json")
@@ -722,7 +722,7 @@ async def capture_lead(request: Request):
 async def list_leads():
     """List all captured leads (most recent first)."""
     try:
-        leads_dir = "os.environ.get("OPENCLAW_DATA_DIR", "./data")/leads"
+        leads_dir = "./data/leads"
         if not os.path.exists(leads_dir):
             return {"leads": [], "total": 0}
 
@@ -1090,7 +1090,7 @@ async def hand_logs(hand_name: str, limit: int = 20):
     """Get recent execution logs for a Hand."""
     try:
         import os as _os
-        log_file = _os.path.join("os.environ.get("OPENCLAW_DATA_DIR", "./data")/hands_logs", f"{hand_name}.jsonl")
+        log_file = _os.path.join("./data/hands_logs", f"{hand_name}.jsonl")
         if not _os.path.exists(log_file):
             return {"hand": hand_name, "logs": [], "count": 0}
         logs = []

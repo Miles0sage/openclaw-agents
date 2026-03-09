@@ -1983,7 +1983,7 @@ def _email_triage(max_emails: int = 20, auto_draft: bool = False, vip_senders: l
         vip_senders = []
 
     HARDCODED_VIP = [
-        "user@example.com",
+        "contact@example.com",
         "info@openai.com",
         "support@github.com",
         "noreply@github.com",
@@ -2344,7 +2344,7 @@ def execute_tool(tool_name: str, tool_input: dict) -> str:
         elif tool_name == "shell_execute":
             return _shell_execute(tool_input["command"], tool_input.get("cwd", "/root"), tool_input.get("timeout", 60))
         elif tool_name == "git_operations":
-            return _git_operations(tool_input["action"], tool_input.get("repo_path", "/root/openclaw"),
+            return _git_operations(tool_input["action"], tool_input.get("repo_path", "."),
                                    tool_input.get("args", ""), tool_input.get("files", []))
         elif tool_name == "vercel_deploy":
             return _vercel_deploy(tool_input["action"], tool_input.get("project_path", ""),
@@ -3059,7 +3059,7 @@ def _save_memory(content: str, tags: list = None, importance: int = 5) -> str:
         pass
 
     # ALWAYS write to JSONL (semantic search indexes this file, not Supabase)
-    mem_file = os.path.join(os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")"), "memories.jsonl")
+    mem_file = os.path.join(os.environ.get("OPENCLAW_DATA_DIR", "./data"), "memories.jsonl")
     os.makedirs(os.path.dirname(mem_file), exist_ok=True)
     record = {"id": str(db_id), "content": content, "tags": tags or [], "importance": importance,
               "timestamp": now}
@@ -3068,7 +3068,7 @@ def _save_memory(content: str, tags: list = None, importance: int = 5) -> str:
 
     # Invalidate semantic index so next search picks up new memory
     try:
-        idx_file = os.path.join(os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")"), "semantic_index.pkl")
+        idx_file = os.path.join(os.environ.get("OPENCLAW_DATA_DIR", "./data"), "semantic_index.pkl")
         if os.path.exists(idx_file):
             os.remove(idx_file)
     except Exception:
@@ -3118,7 +3118,7 @@ def _search_memory(query: str, limit: int = 5) -> str:
         pass
 
     # JSONL fallback
-    mem_file = os.path.join(os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")"), "memories.jsonl")
+    mem_file = os.path.join(os.environ.get("OPENCLAW_DATA_DIR", "./data"), "memories.jsonl")
     if not os.path.exists(mem_file):
         return "No memories found"
     with open(mem_file) as f:
@@ -3206,7 +3206,7 @@ def _recall_memory(query: str, limit: int = 5, memory_sources: list = None, proj
 
 def _kill_job(job_id: str) -> str:
     """Cancel a running or pending job."""
-    kill_flags_file = os.path.join(os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")"), "jobs", "kill_flags.json")
+    kill_flags_file = os.path.join(os.environ.get("OPENCLAW_DATA_DIR", "./data"), "jobs", "kill_flags.json")
     os.makedirs(os.path.dirname(kill_flags_file), exist_ok=True)
     flags = {}
     if os.path.exists(kill_flags_file):
@@ -3338,7 +3338,7 @@ def _send_slack_message(message: str, channel: str = None) -> str:
 # Rate limiter: track sends per hour
 _sms_send_log: list[float] = []
 _SMS_RATE_LIMIT = 10  # max sends per hour
-_SMS_LOG_FILE = os.path.join(os.getenv("DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")"), "sms_log.jsonl")
+_SMS_LOG_FILE = os.path.join(os.getenv("DATA_DIR", "./data"), "sms_log.jsonl")
 
 # Shared in-memory inbox for received SMS — gateway appends here on each inbound Twilio webhook.
 # Agents can read it via the sms_history tool. maxlen=100 caps memory usage.
@@ -3568,7 +3568,7 @@ def _shell_execute(command: str, cwd: str = "/root", timeout: int = 60) -> str:
         return f"Error: {e}"
 
 
-def _git_operations(action: str, repo_path: str = "/root/openclaw", args: str = "", files: list = None) -> str:
+def _git_operations(action: str, repo_path: str = ".", args: str = "", files: list = None) -> str:
     """Perform git operations."""
     if not os.path.isdir(repo_path):
         return f"Directory not found: {repo_path}"
@@ -4806,7 +4806,7 @@ def _claude_headless(tool_input: dict) -> str:
                 result = loop.run_until_complete(
                     headless.run(
                         prompt=tool_input.get("prompt", ""),
-                        cwd=tool_input.get("cwd", "/root/openclaw"),
+                        cwd=tool_input.get("cwd", "."),
                         timeout=tool_input.get("timeout"),
                         model=tool_input.get("model"),
                         max_turns=tool_input.get("max_turns", 10),
@@ -4817,7 +4817,7 @@ def _claude_headless(tool_input: dict) -> str:
                 # Code review
                 result = loop.run_until_complete(
                     headless.review_pr(
-                        repo_path=tool_input.get("repo_path", "/root/openclaw"),
+                        repo_path=tool_input.get("repo_path", "."),
                         branch=tool_input.get("branch", "HEAD"),
                         pr_number=tool_input.get("pr_number"),
                     )
@@ -4829,7 +4829,7 @@ def _claude_headless(tool_input: dict) -> str:
                     headless.fix_test(
                         test_file=tool_input.get("test_file", ""),
                         error=tool_input.get("error", ""),
-                        project_path=tool_input.get("project_path", "/root/openclaw"),
+                        project_path=tool_input.get("project_path", "."),
                     )
                 )
 
@@ -4838,7 +4838,7 @@ def _claude_headless(tool_input: dict) -> str:
                 result = loop.run_until_complete(
                     headless.build_feature(
                         spec=tool_input.get("spec", ""),
-                        project_path=tool_input.get("project_path", "/root/openclaw"),
+                        project_path=tool_input.get("project_path", "."),
                     )
                 )
 
@@ -4847,7 +4847,7 @@ def _claude_headless(tool_input: dict) -> str:
                 result = loop.run_until_complete(
                     headless.debug_issue(
                         issue_description=tool_input.get("error", ""),
-                        project_path=tool_input.get("project_path", "/root/openclaw"),
+                        project_path=tool_input.get("project_path", "."),
                     )
                 )
 
@@ -4855,7 +4855,7 @@ def _claude_headless(tool_input: dict) -> str:
                 # Code audit
                 result = loop.run_until_complete(
                     headless.audit_code(
-                        target_path=tool_input.get("repo_path", "/root/openclaw"),
+                        target_path=tool_input.get("repo_path", "."),
                         focus=tool_input.get("focus", "security"),
                     )
                 )
@@ -6240,7 +6240,7 @@ def _auto_test(action: str, project_path: str, framework: str = "auto",
     except ImportError:
         return json.dumps({
             "status": "error",
-            "error": "auto_test_runner module not found. Ensure auto_test_runner.py is in the project directory"
+            "error": "auto_test_runner module not found. Ensure auto_test_runner.py is in ./"
         })
 
     try:
@@ -6384,7 +6384,7 @@ def _aider_build(repo_path: str, prompt: str, model: str = "gemini/gemini-2.5-fl
         # Set Gemini API key in environment
         env = os.environ.copy()
         if "GEMINI_API_KEY" not in env:
-            env_file = os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), ".env"
+            env_file = "./.env"
             if os.path.exists(env_file):
                 with open(env_file) as f:
                     for line in f:
@@ -6432,7 +6432,7 @@ def _gemini_cli_build(repo_path: str, prompt: str) -> str:
         # Set Gemini API key in environment
         env = os.environ.copy()
         if "GEMINI_API_KEY" not in env:
-            env_file = os.path.join(os.environ.get("OPENCLAW_BASE_DIR", "."), ".env"
+            env_file = "./.env"
             if os.path.exists(env_file):
                 with open(env_file) as f:
                     for line in f:

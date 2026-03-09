@@ -22,7 +22,7 @@ logger = logging.getLogger("tool_router")
 
 # Audit log path
 AUDIT_LOG_DIR = os.path.join(
-    os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")"),
+    os.environ.get("OPENCLAW_DATA_DIR", "./data"),
     "audit",
 )
 AUDIT_LOG_PATH = os.path.join(AUDIT_LOG_DIR, "tool_calls.jsonl")
