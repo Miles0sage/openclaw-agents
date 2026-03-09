@@ -1,0 +1,21 @@
+id: refactor-to-async
+category: refactor
+difficulty: medium
+description: |
+  Convert blocking service methods to async and await downstream IO.
+agent_key: coder_agent
+max_cost_usd: 0.08
+max_duration_sec: 90
+
+setup:
+  files:
+    - path: src/service.py
+      content: |
+        class Service:
+            def fetch(self):
+                return 1
+
+expected:
+  files:
+    - path: src/service.py
+      contains: ["async def", "await"]

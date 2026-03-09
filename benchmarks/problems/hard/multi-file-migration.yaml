@@ -1,0 +1,46 @@
+id: multi-file-migration
+category: refactor
+difficulty: hard
+description: |
+  Migrate sync SQLAlchemy stack to async across model/repo/service/api.
+agent_key: elite_coder_agent
+department: engineering
+max_cost_usd: 0.15
+max_duration_sec: 180
+min_quality_score: 0.6
+tags: [refactor, async, sqlalchemy, multi-file]
+
+setup:
+  files:
+    - path: src/models/user.py
+      content: |
+        from sqlalchemy.ext.declarative import declarative_base
+        Base = declarative_base()
+    - path: src/repos/user_repo.py
+      content: |
+        from sqlalchemy.orm import Session
+        class UserRepo:
+            def get_by_id(self, user_id: int):
+                return None
+    - path: src/services/user_service.py
+      content: |
+        class UserService:
+            def get_user(self, user_id: int):
+                return None
+    - path: src/api/users.py
+      content: |
+        def get_user(user_id: int):
+            pass
+
+expected:
+  files:
+    - path: src/models/user.py
+      contains: ["async"]
+      not_contains: ["declarative_base()"]
+    - path: src/repos/user_repo.py
+      contains: ["async def", "AsyncSession", "await"]
+      not_contains: ["Session)"]
+    - path: src/services/user_service.py
+      contains: ["async def", "await"]
+    - path: src/api/users.py
+      contains: ["async def", "await"]

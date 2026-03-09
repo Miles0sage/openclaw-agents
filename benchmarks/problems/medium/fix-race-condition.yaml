@@ -1,0 +1,31 @@
+id: fix-race-condition
+category: bug_fix
+difficulty: medium
+description: |
+  Fix race condition in async counter service with locking.
+agent_key: coder_agent
+max_cost_usd: 0.08
+max_duration_sec: 90
+tags: [concurrency, race-condition, async]
+
+setup:
+  files:
+    - path: src/counter.py
+      content: |
+        import asyncio
+
+        class CounterService:
+            def __init__(self):
+                self._count = 0
+
+            async def increment(self) -> int:
+                current = self._count
+                await asyncio.sleep(0.001)
+                self._count = current + 1
+                return self._count
+
+expected:
+  files:
+    - path: src/counter.py
+      contains: ["Lock"]
+      regex_match: ['async with self\\._lock|await self\\._lock\\.acquire']

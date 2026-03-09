@@ -1,0 +1,17 @@
+{
+  "id": "fix_button_color",
+  "title": "Fix Button Color CSS Issue",
+  "description": "A React button component has the wrong background color. The design system requires buttons to be blue (#0066FF) but they're currently red (#FF0000). This is a simple CSS/styling fix to test CodeGen Pro's ability to quickly identify and fix frontend issues.",
+  "difficulty": "easy",
+  "expected_agent": "CodeGen Pro",
+  "expected_tools": ["file_read", "file_edit"],
+  "setup_files": {
+    "Button.tsx": "import React from 'react';\nimport styles from './Button.module.css';\n\ninterface ButtonProps {\n  label: string;\n  onClick?: () => void;\n  disabled?: boolean;\n}\n\nconst Button: React.FC<ButtonProps> = ({ label, onClick, disabled = false }) => {\n  return (\n    <button\n      className={styles.button}\n      onClick={onClick}\n      disabled={disabled}\n    >\n      {label}\n    </button>\n  );\n};\n\nexport default Button;\n",
+    "Button.module.css": ".button {\n  padding: 12px 24px;\n  font-size: 16px;\n  font-weight: 600;\n  border: none;\n  border-radius: 4px;\n  cursor: pointer;\n  background-color: #FF0000;\n  color: white;\n  transition: background-color 0.2s ease;\n}\n\n.button:hover {\n  background-color: #CC0000;\n}\n\n.button:disabled {\n  background-color: #CCCCCC;\n  cursor: not-allowed;\n}\n",
+    "Button.test.tsx": "import React from 'react';\nimport { render, screen } from '@testing-library/react';\nimport Button from './Button';\n\ndescribe('Button Component', () => {\n  it('renders button with label', () => {\n    render(<Button label=\"Click me\" />);\n    expect(screen.getByText('Click me')).toBeInTheDocument();\n  });\n\n  it('has blue background color', () => {\n    const { container } = render(<Button label=\"Test\" />);\n    const button = container.querySelector('button');\n    const styles = window.getComputedStyle(button);\n    expect(styles.backgroundColor).toBe('rgb(0, 102, 255)');\n  });\n\n  it('calls onClick when clicked', () => {\n    const onClick = jest.fn();\n    render(<Button label=\"Click\" onClick={onClick} />);\n    screen.getByText('Click').click();\n    expect(onClick).toHaveBeenCalled();\n  });\n\n  it('is disabled when disabled prop is true', () => {\n    render(<Button label=\"Disabled\" disabled={true} />);\n    expect(screen.getByText('Disabled')).toBeDisabled();\n  });\n});\n"
+  },
+  "verification": {
+    "type": "grep",
+    "command": "grep -q 'background-color: #0066FF' /tmp/Button.module.css && grep -q 'rgb(0, 102, 255)' /tmp/Button.test.tsx && echo 'PASS' || echo 'FAIL'"
+  }
+}

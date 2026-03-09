@@ -1,0 +1,375 @@
+{
+  "suite_name": "all",
+  "timestamp": "2026-03-09T20:03:18.705973+00:00",
+  "summary": {
+    "total": 15,
+    "passed": 0,
+    "failed": 15,
+    "pass_rate": 0.0,
+    "avg_score": 0.8003,
+    "total_cost_usd": 0.0,
+    "total_duration_sec": 0.01
+  },
+  "by_difficulty": {
+    "medium": {
+      "total": 5,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    "hard": {
+      "total": 5,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    "easy": {
+      "total": 5,
+      "passed": 0,
+      "pass_rate": 0.0
+    }
+  },
+  "by_category": {
+    "feature": {
+      "total": 5,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    "security": {
+      "total": 2,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    "bug_fix": {
+      "total": 3,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    "refactor": {
+      "total": 3,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    "architecture": {
+      "total": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    "performance": {
+      "total": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    }
+  },
+  "results": [
+    {
+      "problem_id": "add-auth-middleware",
+      "category": "feature",
+      "difficulty": "medium",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/2",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "add-pagination",
+      "category": "feature",
+      "difficulty": "medium",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/1",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "add-rate-limiter",
+      "category": "security",
+      "difficulty": "medium",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/1",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "fix-race-condition",
+      "category": "bug_fix",
+      "difficulty": "medium",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/1",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "refactor-to-async",
+      "category": "refactor",
+      "difficulty": "medium",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/1",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "add-event-sourcing",
+      "category": "architecture",
+      "difficulty": "hard",
+      "passed": false,
+      "overall_score": 0.886,
+      "file_checks": "0/1",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "architecture_designer",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "add-websocket-support",
+      "category": "feature",
+      "difficulty": "hard",
+      "passed": false,
+      "overall_score": 0.782,
+      "file_checks": "0/1",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "elite_coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "efficiency": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "implement-rbac",
+      "category": "security",
+      "difficulty": "hard",
+      "passed": false,
+      "overall_score": 0.893,
+      "file_checks": "0/2",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "security_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "multi-file-migration",
+      "category": "refactor",
+      "difficulty": "hard",
+      "passed": false,
+      "overall_score": 0.782,
+      "file_checks": "0/4",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "elite_coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "efficiency": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "optimize-n-plus-one",
+      "category": "performance",
+      "difficulty": "hard",
+      "passed": false,
+      "overall_score": 0.782,
+      "file_checks": "0/1",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "elite_coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "efficiency": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "add-404-page",
+      "category": "feature",
+      "difficulty": "easy",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/2",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "add-env-variable",
+      "category": "feature",
+      "difficulty": "easy",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/2",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "fix-button-color",
+      "category": "bug_fix",
+      "difficulty": "easy",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/1",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "fix-typo-in-readme",
+      "category": "bug_fix",
+      "difficulty": "easy",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/1",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "rename-function",
+      "category": "refactor",
+      "difficulty": "easy",
+      "passed": false,
+      "overall_score": 0.815,
+      "file_checks": "0/2",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.7,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    }
+  ]
+}

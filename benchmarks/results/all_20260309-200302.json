@@ -1,0 +1,16 @@
+{
+  "suite_name": "all",
+  "timestamp": "2026-03-09T20:03:02.925119+00:00",
+  "summary": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "pass_rate": 0.0,
+    "avg_score": 0.0,
+    "total_cost_usd": 0,
+    "total_duration_sec": 0
+  },
+  "by_difficulty": {},
+  "by_category": {},
+  "results": []
+}

@@ -1,0 +1,21 @@
+id: fix-typo-in-readme
+category: bug_fix
+difficulty: easy
+description: |
+  Fix typo in README: change "instalation" to "installation".
+agent_key: coder_agent
+max_cost_usd: 0.03
+max_duration_sec: 45
+
+setup:
+  files:
+    - path: README.md
+      content: |
+        # Project
+        Instalation steps are below.
+
+expected:
+  files:
+    - path: README.md
+      contains: ["installation"]
+      not_contains: ["Instalation", "instalation"]

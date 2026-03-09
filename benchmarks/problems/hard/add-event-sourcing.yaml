@@ -1,0 +1,20 @@
+id: add-event-sourcing
+category: architecture
+difficulty: hard
+description: |
+  Add event sourcing write model with append-only event store and projector.
+agent_key: architecture_designer
+max_cost_usd: 0.15
+max_duration_sec: 180
+
+setup:
+  files:
+    - path: src/domain.py
+      content: |
+        class Account:
+            balance = 0
+
+expected:
+  files:
+    - path: src/domain.py
+      contains: ["Event", "append", "project"]
