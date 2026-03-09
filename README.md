@@ -76,15 +76,28 @@ pip install -r requirements.txt
 
 # Configure
 cp .env.example .env
-# Edit .env with your API keys
+# Edit .env — set GATEWAY_AUTH_TOKEN and at least one LLM provider key
+
+# Setup (creates required data directories)
+python setup.py
 
 # Run gateway
 python gateway.py
 
-# Submit a job
-curl -X POST http://localhost:8000/api/job \
+# Register a demo client
+curl -X POST http://localhost:8000/api/admin/clients \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "Fix the login button color to blue", "project": "my-app"}'
+  -H "X-Auth-Token: YOUR_GATEWAY_AUTH_TOKEN" \
+  -d '{"name": "Demo User", "email": "demo@example.com", "plan": "starter"}'
+
+# Submit a job (use the api_key from the response above)
+curl -X POST http://localhost:8000/api/intake \
+  -H "Content-Type: application/json" \
+  -H "X-Client-Key: YOUR_API_KEY" \
+  -d '{"project_name": "my-app", "description": "Fix the login button color to blue", "task_type": "bug_fix"}'
+
+# Check job status
+curl http://localhost:8000/api/jobs
 ```
 
 ---
@@ -96,7 +109,10 @@ curl -X POST http://localhost:8000/api/job \
 Copy `.env.example` and fill in your keys:
 
 ```bash
-# Required (at least one LLM provider)
+# Required
+GATEWAY_AUTH_TOKEN=        # Admin auth token (required to start)
+
+# LLM Providers (at least one required)
 ANTHROPIC_API_KEY=        # Claude models
 DEEPSEEK_API_KEY=         # Kimi/DeepSeek models (cheapest)
 
