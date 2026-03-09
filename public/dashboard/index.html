@@ -277,6 +277,100 @@
         .hidden {
             display: none;
         }
+
+        /* === Cursor UI Polish: Animations === */
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scale-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .animate-slide-up {
+            animation: slide-up 0.4s ease-out both;
+        }
+
+        .animate-scale-in {
+            animation: scale-in 0.3s ease-out both;
+        }
+
+        /* Stagger children for sequential card entrance */
+        .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+        .stagger-children > *:nth-child(2) { animation-delay: 60ms; }
+        .stagger-children > *:nth-child(3) { animation-delay: 120ms; }
+        .stagger-children > *:nth-child(4) { animation-delay: 180ms; }
+        .stagger-children > *:nth-child(5) { animation-delay: 240ms; }
+        .stagger-children > *:nth-child(6) { animation-delay: 300ms; }
+
+        /* Card hover effects */
+        .glass-card {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1), 0 0 0 1px rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile touch targets */
+        @media (pointer: coarse) {
+            * { -webkit-tap-highlight-color: transparent; }
+
+            .touch-target {
+                min-height: 44px;
+                min-width: 44px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        /* Prevent horizontal scroll on mobile */
+        body {
+            overflow-x: hidden;
+        }
+
+        /* Chart responsive fix */
+        .chart-container canvas {
+            max-width: 100%;
+        }
+
+        /* Nav bar polish */
+        nav, .nav-bar {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        /* Smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.5);
+        }
+
+        /* Button hover polish */
+        button {
+            transition: all 0.2s ease;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
     </style>
 </head>
 <body>
@@ -293,16 +387,16 @@
                         <div class="refresh-dot"></div>
                         <span>Live • <span id="lastUpdate">updating...</span></span>
                     </div>
-                    <button id="refreshBtn" class="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors">
+                    <button id="refreshBtn" class="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors touch-target">
                         Refresh Now
                     </button>
                 </div>
             </div>
 
             <!-- System Status Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 stagger-children">
                 <!-- Gateway Status -->
-                <div class="glass-card success p-6">
+                <div class="glass-card success p-6 animate-scale-in">
                     <div class="metric-label mb-2">Gateway Status</div>
                     <div class="metric-value mb-3">●</div>
                     <div id="gatewayStatus" class="status-badge healthy">
@@ -311,21 +405,21 @@
                 </div>
 
                 <!-- API Latency -->
-                <div class="glass-card p-6">
+                <div class="glass-card p-6 animate-scale-in">
                     <div class="metric-label mb-2">API Latency</div>
                     <div id="apiLatency" class="metric-value">--</div>
                     <div class="text-xs text-slate-400 mt-1">ms</div>
                 </div>
 
                 <!-- Active Jobs -->
-                <div class="glass-card p-6">
+                <div class="glass-card p-6 animate-scale-in">
                     <div class="metric-label mb-2">Active Jobs</div>
                     <div id="activeJobsCount" class="metric-value">0</div>
                     <div class="text-xs text-slate-400 mt-1">running</div>
                 </div>
 
                 <!-- Daily Cost -->
-                <div class="glass-card p-6">
+                <div class="glass-card p-6 animate-scale-in">
                     <div class="metric-label mb-2">Daily Cost</div>
                     <div id="dailyCost" class="metric-value">$--</div>
                     <div class="text-xs text-slate-400 mt-1">24h burn</div>
@@ -333,9 +427,9 @@
             </div>
 
             <!-- Health Metrics -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 stagger-children">
                 <!-- Uptime -->
-                <div class="glass-card p-6">
+                <div class="glass-card p-6 animate-slide-up">
                     <div class="metric-label mb-3">Uptime</div>
                     <div id="uptimeValue" class="text-2xl font-bold">--h</div>
                     <div class="mt-4 space-y-2 text-sm">
@@ -350,7 +444,7 @@
                 </div>
 
                 <!-- CPU Usage -->
-                <div class="glass-card p-6">
+                <div class="glass-card p-6 animate-slide-up">
                     <div class="metric-label mb-3">CPU Usage</div>
                     <div id="cpuValue" class="text-2xl font-bold">--</div>
                     <div class="mt-4 space-y-2 text-sm">
@@ -362,7 +456,7 @@
                 </div>
 
                 <!-- Agents -->
-                <div class="glass-card p-6">
+                <div class="glass-card p-6 animate-slide-up">
                     <div class="metric-label mb-3">Active Agents</div>
                     <div id="agentCount" class="text-2xl font-bold">--</div>
                     <div class="mt-4 space-y-2 text-sm">
@@ -379,9 +473,9 @@
         <div class="max-w-7xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Live Job Queue (Left Column - 2/3) -->
-                <div class="lg:col-span-2">
+                <div class="lg:col-span-2 space-y-6">
                     <!-- Analytics: Agent Performance Cards -->
-                    <div class="glass-card p-6 mb-6">
+                    <div class="glass-card p-6 animate-slide-up">
                         <h2 class="text-xl font-bold mb-4 flex items-center">
                             <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
                             Agent Performance Analytics
@@ -394,7 +488,7 @@
                     </div>
 
                     <!-- Analytics: Cost Breakdown Chart -->
-                    <div class="glass-card p-6 mb-6">
+                    <div class="glass-card p-6 animate-slide-up">
                         <h2 class="text-xl font-bold mb-4">Daily/Weekly Cost Analytics</h2>
                         <div class="chart-container">
                             <canvas id="costAnalyticsChart"></canvas>
@@ -430,9 +524,9 @@
                 </div>
 
                 <!-- Right Sidebar -->
-                <div class="space-y-6">
+                <div class="space-y-6 stagger-children">
                     <!-- Cost Breakdown -->
-                    <div class="glass-card p-6">
+                    <div class="glass-card p-6 animate-slide-up">
                         <h2 class="text-lg font-bold mb-4">Cost Breakdown</h2>
                         <div id="costBreakdown" class="space-y-3">
                             <div class="cost-bar">
@@ -454,7 +548,7 @@
                     </div>
 
                     <!-- Model Usage -->
-                    <div class="glass-card p-6">
+                    <div class="glass-card p-6 animate-slide-up">
                         <h2 class="text-lg font-bold mb-4">Model Distribution</h2>
                         <div class="chart-container">
                             <canvas id="modelChart"></canvas>
@@ -462,7 +556,7 @@
                     </div>
 
                     <!-- Job Status Distribution -->
-                    <div class="glass-card p-6">
+                    <div class="glass-card p-6 animate-slide-up">
                         <h2 class="text-lg font-bold mb-4">Job Status</h2>
                         <div class="space-y-3">
                             <div class="flex justify-between items-center text-sm">
@@ -487,7 +581,7 @@
             </div>
 
             <!-- Analytics: Job History Table -->
-            <div class="glass-card p-6 mt-6">
+            <div class="glass-card p-6 mt-6 animate-slide-up">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold">Job History Analytics</h2>
                     <div class="flex gap-2">
@@ -498,7 +592,7 @@
                             <option value="running">Running</option>
                             <option value="pending">Pending</option>
                         </select>
-                        <button id="jobHistoryRefresh" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors">
+                        <button id="jobHistoryRefresh" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors touch-target">
                             Refresh
                         </button>
                     </div>
@@ -525,7 +619,7 @@
             </div>
 
             <!-- Tool Usage Heatmap -->
-            <div class="glass-card p-6 mt-6">
+            <div class="glass-card p-6 mt-6 animate-slide-up">
                 <h2 class="text-lg font-bold mb-4">Tool Usage Heatmap (24h)</h2>
                 <div id="toolHeatmap" class="heatmap">
                     <!-- Generated by JS -->
@@ -533,7 +627,7 @@
             </div>
 
             <!-- Recent Job Results -->
-            <div class="glass-card p-6 mt-6">
+            <div class="glass-card p-6 mt-6 animate-slide-up">
                 <h2 class="text-lg font-bold mb-4">Recent Job Results</h2>
                 <div id="recentResults" class="space-y-3">
                     <div class="text-sm text-slate-400 py-8 text-center">Loading...</div>
