@@ -1,0 +1,35 @@
+# Secrets
+.env
+*.key
+*.pem
+credentials.json
+supabase_config.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Data (runtime)
+data/
+*.jsonl
+*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/

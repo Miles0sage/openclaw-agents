@@ -1,0 +1,19 @@
+# Core
+fastapi>=0.104.0
+uvicorn>=0.24.0
+httpx>=0.25.0
+pydantic>=2.5.0
+
+# Scheduling
+apscheduler>=3.10.0
+
+# LLM Providers
+anthropic>=0.39.0
+openai>=1.50.0
+
+# Storage (optional — falls back to local JSON)
+supabase>=2.0.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0

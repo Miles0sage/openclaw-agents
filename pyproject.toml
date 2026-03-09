@@ -1,0 +1,164 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openclaw"
+version = "4.2.0"
+description = "Multi-agent AI job pipeline with 12 specialist agents, 75+ MCP tools, and 4-tier LLM fallback"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Miles", email = "miles@cybershield.agency" }
+]
+requires-python = ">=3.11"
+keywords = [
+    "agent",
+    "autonomous",
+    "ai",
+    "pipeline",
+    "mcp",
+    "fastapi",
+    "multi-agent",
+    "llm",
+    "task-decomposition"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+
+dependencies = [
+    "fastapi==0.109.0",
+    "uvicorn>=0.35.0",
+    "starlette>=0.35.0",
+    "pydantic==2.12.4",
+    "pydantic-core==2.41.5",
+    "requests==2.32.3",
+    "httpx==0.28.1",
+    "websockets==15.0.1",
+    "anthropic==0.78.0",
+    "fastmcp==3.1.0",
+    "openai>=1.0.0",
+    "python-dotenv==1.2.1",
+    "click==8.3.1",
+    "pyyaml==6.0.2",
+    "cryptography==43.0.0",
+    "stripe==14.3.0",
+    "slack-sdk>=3.25.0",
+    "python-telegram-bot>=20.0",
+    "pandas==2.3.3",
+    "numpy==2.4.2",
+    "scikit-learn==1.8.0",
+    "networkx==3.6.1",
+    "pypdf==6.7.2",
+    "openpyxl==3.1.5",
+    "lxml==6.0.2",
+    "pillow==12.1.0",
+    "markitdown>=0.1.0",
+    "APScheduler==3.11.2",
+    "rich==14.3.3",
+    "docstring-parser==0.17.0",
+    "psutil==7.2.2"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.0.2",
+    "pytest-cov>=4.0.0",
+    "mypy>=1.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=1.3.0"
+]
+
+science = [
+    "torch>=2.0.0",
+    "scipy==1.17.0",
+    "matplotlib==3.10.8",
+    "pymc>=5.0.0",
+    "arviz>=0.15.0"
+]
+
+docs = [
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "sphinx-autodoc-typehints>=1.20.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/cybershield-agency/openclaw"
+Documentation = "https://github.com/cybershield-agency/openclaw#readme"
+Repository = "https://github.com/cybershield-agency/openclaw.git"
+"Bug Tracker" = "https://github.com/cybershield-agency/openclaw/issues"
+Changelog = "https://github.com/cybershield-agency/openclaw/releases"
+
+[project.scripts]
+openclaw = "cli.openclaw_cli:main"
+
+[tool.setuptools]
+packages = ["openclaw", "cli", "pipeline"]
+
+[tool.setuptools.package-data]
+openclaw = ["**/*.json", "**/*.yaml", "**/*.txt"]
+cli = ["*.py"]
+pipeline = ["*.py"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv"
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "--cov=openclaw --cov=cli --cov=pipeline --cov-report=term-missing"
+minversion = "9.0"
