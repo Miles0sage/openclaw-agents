@@ -1,6 +1,6 @@
 # OpenClaw Agent System v4.2
 
-**Date**: 2026-03-04 | **Owner**: Miles (Cybershield Agency) | **Platform**: VPS 152.53.55.207
+**Date**: 2026-03-04 | **Owner**: Miles (Cybershield Agency) | **Platform**: VPS your-server-ip
 **Capabilities**: Multi-agent job pipeline, 75+ MCP tools, 4-tier LLM fallback, persistent memory, eval harness
 **Models**: Claude Opus 4.6, MiniMax M2.5, Grok grok-3-mini, Kimi 2.5, Gemini 2.5 Flash
 

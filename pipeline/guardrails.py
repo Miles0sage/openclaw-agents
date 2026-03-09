@@ -11,7 +11,7 @@ from pathlib import Path
 
 logger = logging.getLogger("autonomous_runner")
 
-DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "/root/openclaw/data")
+DATA_DIR = os.environ.get("OPENCLAW_DATA_DIR", "os.environ.get("OPENCLAW_DATA_DIR", "./data")")
 KILL_FLAGS_PATH = Path(os.path.join(DATA_DIR, "jobs", "kill_flags.json"))
 
 
