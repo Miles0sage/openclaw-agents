@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: "Avenir Next", "Sora", "Segoe UI", sans-serif;
+    background:
+      radial-gradient(circle at top left, rgba(34, 211, 238, 0.1), transparent 28%),
+      linear-gradient(135deg, #020617 0%, #030712 45%, #0f172a 100%);
+  }
+
+  * {
+    scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+  }
+
+  ::selection {
+    background: rgba(249, 115, 22, 0.3);
+    color: #fff7ed;
+  }
+}
