@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Dev Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%);
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .glass-card.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .glass-card.danger {
+            border-left: 4px solid var(--danger);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-badge.healthy {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-badge.degraded {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-badge.unhealthy {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .pulse {
+            animation: pulse-animation 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-animation {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        .job-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .job-row:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        .job-row:last-child {
+            border-bottom: none;
+        }
+
+        .job-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .job-status.pending {
+            background-color: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+
+        .job-status.running {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .job-status.done {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .job-status.failed {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .refresh-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .refresh-dot {
+            display: inline-block;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background-color: #10b981;
+            animation: pulse-animation 2s infinite;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            gap: 4px;
+            margin-top: 1rem;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .cost-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            margin-bottom: 0.75rem;
+        }
+
+        .cost-bar-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            min-width: 100px;
+        }
+
+        .cost-bar-fill {
+            flex: 1;
+            height: 24px;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .cost-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .cost-bar-value {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #6366f1;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .loading-skeleton {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1));
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(99, 102, 241, 0.2);
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fade-in 0.3s ease-in;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen py-6 px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="max-w-7xl mx-auto mb-8">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2">OpenClaw Dev Dashboard</h1>
+                    <p class="text-slate-400">Real-time system metrics & job pipeline monitoring</p>
+                </div>
+                <div class="text-right">
+                    <div class="refresh-indicator">
+                        <div class="refresh-dot"></div>
+                        <span>Live • <span id="lastUpdate">updating...</span></span>
+                    </div>
+                    <button id="refreshBtn" class="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors">
+                        Refresh Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- System Status Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <!-- Gateway Status -->
+                <div class="glass-card success p-6">
+                    <div class="metric-label mb-2">Gateway Status</div>
+                    <div class="metric-value mb-3">●</div>
+                    <div id="gatewayStatus" class="status-badge healthy">
+                        <span>✓ Healthy</span>
+                    </div>
+                </div>
+
+                <!-- API Latency -->
+                <div class="glass-card p-6">
+                    <div class="metric-label mb-2">API Latency</div>
+                    <div id="apiLatency" class="metric-value">--</div>
+                    <div class="text-xs text-slate-400 mt-1">ms</div>
+                </div>
+
+                <!-- Active Jobs -->
+                <div class="glass-card p-6">
+                    <div class="metric-label mb-2">Active Jobs</div>
+                    <div id="activeJobsCount" class="metric-value">0</div>
+                    <div class="text-xs text-slate-400 mt-1">running</div>
+                </div>
+
+                <!-- Daily Cost -->
+                <div class="glass-card p-6">
+                    <div class="metric-label mb-2">Daily Cost</div>
+                    <div id="dailyCost" class="metric-value">$--</div>
+                    <div class="text-xs text-slate-400 mt-1">24h burn</div>
+                </div>
+            </div>
+
+            <!-- Health Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <!-- Uptime -->
+                <div class="glass-card p-6">
+                    <div class="metric-label mb-3">Uptime</div>
+                    <div id="uptimeValue" class="text-2xl font-bold">--h</div>
+                    <div class="mt-4 space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Memory</span>
+                            <span id="memoryUsage">--</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div id="memoryBar" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CPU Usage -->
+                <div class="glass-card p-6">
+                    <div class="metric-label mb-3">CPU Usage</div>
+                    <div id="cpuValue" class="text-2xl font-bold">--</div>
+                    <div class="mt-4 space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">1h errors</span>
+                            <span id="errorCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agents -->
+                <div class="glass-card p-6">
+                    <div class="metric-label mb-3">Active Agents</div>
+                    <div id="agentCount" class="text-2xl font-bold">--</div>
+                    <div class="mt-4 space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Total tools</span>
+                            <span>81+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Live Job Queue (Left Column - 2/3) -->
+                <div class="lg:col-span-2">
+                    <!-- Analytics: Agent Performance Cards -->
+                    <div class="glass-card p-6 mb-6">
+                        <h2 class="text-xl font-bold mb-4 flex items-center">
+                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
+                            Agent Performance Analytics
+                        </h2>
+                        <div id="analyticsAgentCards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="loading-skeleton h-24 rounded"></div>
+                            <div class="loading-skeleton h-24 rounded"></div>
+                            <div class="loading-skeleton h-24 rounded"></div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics: Cost Breakdown Chart -->
+                    <div class="glass-card p-6 mb-6">
+                        <h2 class="text-xl font-bold mb-4">Daily/Weekly Cost Analytics</h2>
+                        <div class="chart-container">
+                            <canvas id="costAnalyticsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6">
+                        <h2 class="text-xl font-bold mb-4 flex items-center">
+                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3 pulse"></span>
+                            Live Job Queue
+                        </h2>
+
+                        <div id="jobsContainer" class="space-y-2 max-h-96 overflow-y-auto">
+                            <div class="job-row">
+                                <div class="loading-skeleton h-4 rounded w-3/4"></div>
+                                <div class="loading-skeleton h-4 rounded w-1/2"></div>
+                                <div class="loading-skeleton h-4 rounded w-1/3"></div>
+                                <div class="loading-skeleton h-4 rounded w-1/4"></div>
+                                <div class="loading-skeleton h-4 rounded w-1/4"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agent Performance -->
+                    <div class="glass-card p-6 mt-6">
+                        <h2 class="text-xl font-bold mb-4">Agent Performance</h2>
+                        <div id="agentPerformance" class="space-y-4">
+                            <div class="loading-skeleton h-20 rounded"></div>
+                            <div class="loading-skeleton h-20 rounded"></div>
+                            <div class="loading-skeleton h-20 rounded"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar -->
+                <div class="space-y-6">
+                    <!-- Cost Breakdown -->
+                    <div class="glass-card p-6">
+                        <h2 class="text-lg font-bold mb-4">Cost Breakdown</h2>
+                        <div id="costBreakdown" class="space-y-3">
+                            <div class="cost-bar">
+                                <div class="cost-bar-label">Daily</div>
+                                <div class="cost-bar-fill"><div class="cost-bar-inner" style="width: 0%"></div></div>
+                                <div class="cost-bar-value">$--</div>
+                            </div>
+                            <div class="cost-bar">
+                                <div class="cost-bar-label">Weekly</div>
+                                <div class="cost-bar-fill"><div class="cost-bar-inner" style="width: 0%"></div></div>
+                                <div class="cost-bar-value">$--</div>
+                            </div>
+                            <div class="cost-bar">
+                                <div class="cost-bar-label">Monthly</div>
+                                <div class="cost-bar-fill"><div class="cost-bar-inner" style="width: 0%"></div></div>
+                                <div class="cost-bar-value">$--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Usage -->
+                    <div class="glass-card p-6">
+                        <h2 class="text-lg font-bold mb-4">Model Distribution</h2>
+                        <div class="chart-container">
+                            <canvas id="modelChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Job Status Distribution -->
+                    <div class="glass-card p-6">
+                        <h2 class="text-lg font-bold mb-4">Job Status</h2>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-400">Completed</span>
+                                <span id="jobDone" class="font-semibold text-green-400">0</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-400">Running</span>
+                                <span id="jobRunning" class="font-semibold text-blue-400">0</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-400">Pending</span>
+                                <span id="jobPending" class="font-semibold text-amber-400">0</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-400">Failed</span>
+                                <span id="jobFailed" class="font-semibold text-red-400">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics: Job History Table -->
+            <div class="glass-card p-6 mt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold">Job History Analytics</h2>
+                    <div class="flex gap-2">
+                        <select id="jobHistoryFilter" class="px-3 py-2 bg-slate-700 rounded-lg text-sm font-medium text-slate-200 border border-slate-600">
+                            <option value="">All Statuses</option>
+                            <option value="done">Completed</option>
+                            <option value="failed">Failed</option>
+                            <option value="running">Running</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                        <button id="jobHistoryRefresh" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors">
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                <div id="jobHistoryContainer" class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="border-b border-slate-600">
+                            <tr class="text-slate-400 text-xs uppercase">
+                                <th class="text-left py-3 px-4">Job ID</th>
+                                <th class="text-left py-3 px-4">Agent</th>
+                                <th class="text-left py-3 px-4">Status</th>
+                                <th class="text-right py-3 px-4">Duration (s)</th>
+                                <th class="text-right py-3 px-4">Cost</th>
+                                <th class="text-left py-3 px-4">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobHistoryRows" class="divide-y divide-slate-700">
+                            <tr class="text-slate-400">
+                                <td class="py-4 px-4" colspan="6">Loading job history...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tool Usage Heatmap -->
+            <div class="glass-card p-6 mt-6">
+                <h2 class="text-lg font-bold mb-4">Tool Usage Heatmap (24h)</h2>
+                <div id="toolHeatmap" class="heatmap">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+
+            <!-- Recent Job Results -->
+            <div class="glass-card p-6 mt-6">
+                <h2 class="text-lg font-bold mb-4">Recent Job Results</h2>
+                <div id="recentResults" class="space-y-3">
+                    <div class="text-sm text-slate-400 py-8 text-center">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts JS -->
+    <script>
+        let modelChart = null;
+        const chartColors = {
+            'claude-opus-4': '#6366f1',
+            'claude-sonnet': '#8b5cf6',
+            'kimi-2.5': '#ec4899',
+            'deepseek-v3': '#f59e0b',
+            'gemini-2.5': '#10b981',
+            'grok-3': '#06b6d4'
+        };
+
+        // API URL detection
+        const getApiUrl = (endpoint) => {
+            const proto = window.location.protocol;
+            const host = window.location.hostname;
+            const port = window.location.port ? `:${window.location.port}` : '';
+            return `${proto}//${host}${port}${endpoint}`;
+        };
+
+        // Fetch dashboard data
+        async function fetchDashboardData() {
+            try {
+                // Fetch health
+                const health = await fetch(getApiUrl('/api/health')).then(r => r.json()).catch(() => ({}));
+
+                // Fetch jobs from monitoring endpoint
+                const jobsData = await fetch(getApiUrl('/api/monitoring/active')).then(r => r.json()).catch(() => ({ jobs: [] }));
+                const jobs = jobsData.jobs || [];
+
+                // Fetch costs
+                const costsData = await fetch(getApiUrl('/api/monitoring/costs')).then(r => r.json()).catch(() => ({ metrics: {} }));
+
+                updateSystemStatus(health);
+                updateJobQueue(jobs);
+                updateCosts(costsData.metrics || costsData);
+                updateLastUpdate();
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            }
+        }
+
+        // Fetch analytics data
+        async function fetchAnalyticsData() {
+            try {
+                // Fetch agent analytics
+                const agentAnalytics = await fetch(getApiUrl('/api/analytics/agents'))
+                    .then(r => r.json())
+                    .catch(() => ({ agent_stats: {} }));
+
+                // Fetch cost analytics
+                const costAnalytics = await fetch(getApiUrl('/api/analytics/costs'))
+                    .then(r => r.json())
+                    .catch(() => ({ total_cost: 0, daily_costs: {}, by_agent: {} }));
+
+                // Fetch job analytics
+                const jobAnalytics = await fetch(getApiUrl('/api/analytics/jobs?limit=50'))
+                    .then(r => r.json())
+                    .catch(() => ({ jobs: [] }));
+
+                updateAgentAnalyticsCards(agentAnalytics.agent_stats || {});
+                updateCostAnalyticsChart(costAnalytics);
+                updateJobHistoryTable(jobAnalytics.jobs || []);
+            } catch (error) {
+                console.error('Error fetching analytics data:', error);
+            }
+        }
+
+        function updateSystemStatus(health) {
+            // API Latency
+            if (health.api_latency_ms !== undefined) {
+                document.getElementById('apiLatency').textContent = Math.round(health.api_latency_ms);
+            }
+
+            // Gateway Status
+            const gatewayStatus = document.getElementById('gatewayStatus');
+            if (health.status === 'healthy') {
+                gatewayStatus.className = 'status-badge healthy';
+                gatewayStatus.innerHTML = '<span>✓ Healthy</span>';
+            } else if (health.status === 'degraded') {
+                gatewayStatus.className = 'status-badge degraded';
+                gatewayStatus.innerHTML = '<span>⚠ Degraded</span>';
+            } else {
+                gatewayStatus.className = 'status-badge unhealthy';
+                gatewayStatus.innerHTML = '<span>✗ Unhealthy</span>';
+            }
+
+            // Uptime
+            if (health.uptime_hours !== undefined) {
+                document.getElementById('uptimeValue').textContent = Math.round(health.uptime_hours) + 'h';
+            }
+
+            // Memory
+            if (health.memory_usage_mb !== undefined) {
+                const memPercent = Math.min((health.memory_usage_mb / 16000) * 100, 100);
+                document.getElementById('memoryUsage').textContent = health.memory_usage_mb.toFixed(0) + ' MB';
+                document.getElementById('memoryBar').style.width = memPercent + '%';
+            }
+
+            // CPU
+            if (health.cpu_usage_percent !== undefined) {
+                document.getElementById('cpuValue').textContent = health.cpu_usage_percent.toFixed(1) + '%';
+            }
+
+            // Errors
+            if (health.errors_last_hour !== undefined) {
+                document.getElementById('errorCount').textContent = health.errors_last_hour;
+            }
+        }
+
+        function updateJobQueue(jobs) {
+            const container = document.getElementById('jobsContainer');
+
+            if (!jobs || jobs.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-slate-400">No active jobs</div>';
+                document.getElementById('activeJobsCount').textContent = '0';
+                return;
+            }
+
+            document.getElementById('activeJobsCount').textContent = jobs.filter(j => j.status === 'running').length;
+
+            const jobsHtml = jobs.slice(0, 10).map((job, idx) => {
+                const statusClass = `job-status ${job.status || 'pending'}`;
+                const elapsed = job.created_at ? Math.round((Date.now() - new Date(job.created_at).getTime()) / 1000) : 0;
+                const cost = job.cost_usd ? `$${job.cost_usd.toFixed(4)}` : '$--';
+
+                return `
+                    <div class="job-row fade-in">
+                        <div class="truncate text-sm">${job.task || job.id}</div>
+                        <span class="${statusClass}">${(job.status || 'pending').toUpperCase()}</span>
+                        <div class="text-sm text-slate-400">${elapsed}s</div>
+                        <div class="text-sm text-slate-400">${cost}</div>
+                        <div class="text-sm text-slate-500">${job.agent || '--'}</div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = jobsHtml;
+
+            // Update status counts
+            const statuses = {
+                done: jobs.filter(j => j.status === 'done').length,
+                running: jobs.filter(j => j.status === 'running').length,
+                pending: jobs.filter(j => j.status === 'pending').length,
+                failed: jobs.filter(j => j.status === 'failed').length
+            };
+
+            Object.entries(statuses).forEach(([status, count]) => {
+                const el = document.getElementById(`job${status.charAt(0).toUpperCase() + status.slice(1)}`);
+                if (el) el.textContent = count;
+            });
+
+            // Update agent performance
+            updateAgentPerformance(jobs);
+        }
+
+        function updateAgentPerformance(jobs) {
+            const agentStats = {};
+            jobs.forEach(job => {
+                const agent = job.agent || 'unknown';
+                if (!agentStats[agent]) {
+                    agentStats[agent] = { total: 0, success: 0, cost: 0 };
+                }
+                agentStats[agent].total++;
+                if (job.status === 'done') agentStats[agent].success++;
+                agentStats[agent].cost += job.cost_usd || 0;
+            });
+
+            const performanceHtml = Object.entries(agentStats)
+                .sort((a, b) => b[1].total - a[1].total)
+                .slice(0, 5)
+                .map(([agent, stats]) => {
+                    const successRate = stats.total > 0 ? Math.round((stats.success / stats.total) * 100) : 0;
+                    return `
+                        <div class="p-3 bg-slate-800 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold text-sm">${agent}</span>
+                                <span class="text-xs text-slate-400">${successRate}% success</span>
+                            </div>
+                            <div class="flex gap-2 text-xs text-slate-400">
+                                <span>Jobs: ${stats.total}</span>
+                                <span>Cost: $${stats.cost.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            document.getElementById('agentPerformance').innerHTML = performanceHtml || '<div class="text-slate-400">No agent data</div>';
+        }
+
+        function updateCosts(metrics) {
+            if (!metrics) return;
+
+            // Handle both old format (daily/weekly/monthly) and new format (total_cost + by_model)
+            const dailyCost = metrics.daily_cost_usd || (metrics.total_cost / 7) || 0;
+            const weeklyCost = metrics.weekly_cost_usd || metrics.total_cost || 0;
+            const monthlyCost = metrics.monthly_cost_usd || (metrics.total_cost * 4.3) || 0;
+
+            const costs = {
+                daily: dailyCost,
+                weekly: weeklyCost,
+                monthly: monthlyCost
+            };
+
+            const maxCost = Math.max(costs.daily, costs.weekly, costs.monthly) || 100;
+
+            const costBars = document.getElementById('costBreakdown').querySelectorAll('.cost-bar');
+            costBars[0].querySelector('.cost-bar-inner').style.width = (costs.daily / maxCost * 100) + '%';
+            costBars[0].querySelector('.cost-bar-value').textContent = '$' + costs.daily.toFixed(4);
+
+            costBars[1].querySelector('.cost-bar-inner').style.width = (costs.weekly / maxCost * 100) + '%';
+            costBars[1].querySelector('.cost-bar-value').textContent = '$' + costs.weekly.toFixed(4);
+
+            costBars[2].querySelector('.cost-bar-inner').style.width = (costs.monthly / maxCost * 100) + '%';
+            costBars[2].querySelector('.cost-bar-value').textContent = '$' + costs.monthly.toFixed(4);
+
+            document.getElementById('dailyCost').textContent = '$' + costs.daily.toFixed(4);
+
+            // Model distribution
+            if (metrics.by_model) {
+                updateModelChart(metrics.by_model);
+            }
+
+            // Tool heatmap (synthetic if not available)
+            if (metrics.tool_usage) {
+                updateToolHeatmap(metrics.tool_usage);
+            } else if (metrics.by_agent) {
+                // Generate a simple heatmap from agent usage
+                const toolUsage = {};
+                Object.entries(metrics.by_agent || {}).forEach(([agent, cost], idx) => {
+                    toolUsage[`hour_${idx % 24}`] = Math.round(cost * 100);
+                });
+                updateToolHeatmap(toolUsage);
+            }
+        }
+
+        function updateModelChart(data) {
+            const ctx = document.getElementById('modelChart');
+            if (!ctx) return;
+
+            const labels = Object.keys(data);
+            const values = Object.values(data);
+            const colors = labels.map(label => chartColors[label] || '#6366f1');
+
+            if (modelChart) {
+                modelChart.data.labels = labels;
+                modelChart.data.datasets[0].data = values;
+                modelChart.data.datasets[0].backgroundColor = colors;
+                modelChart.update();
+            } else {
+                modelChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: colors,
+                            borderColor: '#1e293b',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#e2e8f0', padding: 12, font: { size: 12 } }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateToolHeatmap(toolUsage) {
+            const container = document.getElementById('toolHeatmap');
+            const hours = Array.from({ length: 24 }, (_, i) => i);
+
+            const heatmapHtml = hours.map(hour => {
+                const usage = toolUsage[`hour_${hour}`] || 0;
+                const intensity = Math.min(usage / 100, 1);
+                const color = `rgba(99, 102, 241, ${0.2 + intensity * 0.8})`;
+                return `
+                    <div class="heatmap-cell" style="background-color: ${color}; border: 1px solid rgba(99, 102, 241, 0.3);" title="${hour}:00 - ${usage} uses">
+                        ${hour}
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = heatmapHtml;
+        }
+
+        function updateLastUpdate() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('lastUpdate').textContent = time;
+        }
+
+        // Update agent analytics cards
+        function updateAgentAnalyticsCards(agentStats) {
+            const container = document.getElementById('analyticsAgentCards');
+            if (!agentStats || Object.keys(agentStats).length === 0) {
+                container.innerHTML = '<div class="text-slate-400 col-span-full text-center py-8">No agent data available</div>';
+                return;
+            }
+
+            const cardsHtml = Object.entries(agentStats)
+                .sort((a, b) => (b[1].jobs_completed || 0) - (a[1].jobs_completed || 0))
+                .slice(0, 6)
+                .map(([agent, stats]) => {
+                    const successRate = stats.success_rate || 0;
+                    const costBg = successRate >= 80 ? 'bg-green-900/20' : successRate >= 50 ? 'bg-yellow-900/20' : 'bg-red-900/20';
+                    const costColor = successRate >= 80 ? 'text-green-400' : successRate >= 50 ? 'text-yellow-400' : 'text-red-400';
+
+                    return `
+                        <div class="p-4 rounded-lg border border-slate-600 ${costBg}">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="font-semibold text-sm truncate">${agent}</div>
+                                <div class="${costColor} text-xs font-bold">${Math.round(successRate)}%</div>
+                            </div>
+                            <div class="space-y-2 text-xs text-slate-300">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Jobs:</span>
+                                    <span class="font-semibold">${stats.jobs_completed || 0}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Avg Cost:</span>
+                                    <span class="font-semibold">$${(stats.avg_cost_usd || 0).toFixed(4)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Total Cost:</span>
+                                    <span class="font-semibold">${(stats.total_cost_usd || 0).toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            container.innerHTML = cardsHtml || '<div class="text-slate-400 col-span-full text-center py-8">No agent data</div>';
+        }
+
+        // Update cost analytics chart
+        let costAnalyticsChartInstance = null;
+        function updateCostAnalyticsChart(costAnalytics) {
+            const ctx = document.getElementById('costAnalyticsChart');
+            if (!ctx) return;
+
+            const dailyCosts = costAnalytics.daily_costs || {};
+            const lastDays = Object.entries(dailyCosts)
+                .sort((a, b) => new Date(a[0]) - new Date(b[0]))
+                .slice(-30);
+
+            const labels = lastDays.map(([date]) => {
+                const d = new Date(date);
+                return `${d.getMonth()+1}/${d.getDate()}`;
+            });
+            const data = lastDays.map(([_, cost]) => cost);
+
+            if (costAnalyticsChartInstance) {
+                costAnalyticsChartInstance.data.labels = labels;
+                costAnalyticsChartInstance.data.datasets[0].data = data;
+                costAnalyticsChartInstance.update();
+            } else {
+                costAnalyticsChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Daily Cost ($)',
+                            data: data,
+                            backgroundColor: 'rgba(99, 102, 241, 0.6)',
+                            borderColor: '#6366f1',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: '#e2e8f0', padding: 12, font: { size: 12 } }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                            },
+                            x: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Update job history table
+        function updateJobHistoryTable(jobs) {
+            const container = document.getElementById('jobHistoryRows');
+            if (!jobs || jobs.length === 0) {
+                container.innerHTML = '<tr class="text-slate-400"><td class="py-4 px-4" colspan="6">No jobs found</td></tr>';
+                return;
+            }
+
+            const rowsHtml = jobs.slice(0, 30).map(job => {
+                const statusClass = {
+                    'done': 'text-green-400',
+                    'failed': 'text-red-400',
+                    'running': 'text-blue-400',
+                    'pending': 'text-yellow-400'
+                }[job.status || 'pending'] || 'text-slate-400';
+
+                const timestamp = new Date(job.timestamp || Date.now());
+                const timeStr = timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const dateStr = timestamp.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+                return `
+                    <tr class="hover:bg-slate-800/50 transition-colors">
+                        <td class="py-3 px-4 text-slate-300 font-mono text-xs truncate" title="${job.id || '--'}">${(job.id || '--').substring(0, 12)}</td>
+                        <td class="py-3 px-4 text-slate-300">${job.agent || '--'}</td>
+                        <td class="py-3 px-4">
+                            <span class="inline-block px-2 py-1 rounded text-xs font-semibold ${statusClass} bg-slate-800">
+                                ${(job.status || 'pending').toUpperCase()}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-right text-slate-300">${job.duration_seconds ? job.duration_seconds.toFixed(1) : '--'}</td>
+                        <td class="py-3 px-4 text-right text-slate-300 font-semibold">$${(job.cost_usd || 0).toFixed(4)}</td>
+                        <td class="py-3 px-4 text-slate-400 text-xs">${dateStr} ${timeStr}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            container.innerHTML = rowsHtml;
+        }
+
+        // Filter job history
+        document.getElementById('jobHistoryFilter').addEventListener('change', async (e) => {
+            const status = e.target.value;
+            try {
+                const url = status ? `/api/analytics/jobs?status=${status}&limit=50` : '/api/analytics/jobs?limit=50';
+                const data = await fetch(getApiUrl(url)).then(r => r.json()).catch(() => ({ jobs: [] }));
+                updateJobHistoryTable(data.jobs || []);
+            } catch (error) {
+                console.error('Error filtering jobs:', error);
+            }
+        });
+
+        // Refresh job history
+        document.getElementById('jobHistoryRefresh').addEventListener('click', fetchAnalyticsData);
+
+        // Refresh button
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            fetchDashboardData();
+            fetchAnalyticsData();
+        });
+
+        // Auto-refresh every 30 seconds
+        fetchDashboardData();
+        setInterval(fetchDashboardData, 30000);
+
+        // Update time display every second
+        setInterval(updateLastUpdate, 1000);
+    </script>
+</body>
+</html>

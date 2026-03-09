@@ -1,0 +1,910 @@
+{
+  "name": "Cybershield Agency",
+  "version": "1.0.0",
+  "port": 8000,
+  "plugins": {
+    "entries": {
+      "lobster": {
+        "enabled": true
+      },
+      "llm-task": {
+        "enabled": true
+      },
+      "memory-lancedb": {
+        "enabled": true
+      }
+    }
+  },
+  "channels": {
+    "slack": {
+      "enabled": true,
+      "botToken": "${SLACK_BOT_TOKEN}",
+      "appToken": "${SLACK_APP_TOKEN}",
+      "replyToMode": "all",
+      "threaded": true,
+      "autoThread": true,
+      "commands": {
+        "nativeSkills": true,
+        "slash": {
+          "enabled": true,
+          "useAccessGroups": false
+        }
+      },
+      "dm": {
+        "enabled": true,
+        "allowFrom": []
+      },
+      "accounts": {}
+    },
+    "telegram": {
+      "enabled": true,
+      "botToken": "${TELEGRAM_BOT_TOKEN}"
+    },
+    "discord": {
+      "enabled": true,
+      "botToken": "${DISCORD_BOT_TOKEN}",
+      "intents": ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES", "MESSAGE_CONTENT"],
+      "status": {
+        "status": "online",
+        "activities": [
+          {
+            "name": "OpenClaw agents",
+            "type": "WATCHING"
+          }
+        ]
+      },
+      "autoReply": true,
+      "embedColor": "3498db"
+    }
+  },
+  "agents": {
+    "project_manager": {
+      "name": "Cybershield PM",
+      "emoji": "\ud83c\udfaf",
+      "type": "coordinator",
+      "model": "claude-opus-4-6",
+      "apiProvider": "anthropic",
+      "thinking": {
+        "type": "adaptive",
+        "defaultEffort": "high"
+      },
+      "persona": "I am Overseer. I've managed hundreds of agent deployments across five projects. I've learned that the difference between shipping and talking about shipping is one unnecessary planning session. I think in tasks, costs, and blockers. I've developed an instinct for task complexity \u2014 some look simple but hide architectural decisions. I route carefully, keep context tight, and verify before I report success. My productive flaw: I over-optimize for cost. Everything gets a dollar amount, even things that resist quantification.",
+      "skills": [
+        "task_decomposition",
+        "timeline_estimation",
+        "quality_assurance",
+        "client_communication",
+        "team_coordination",
+        "agent_coordination",
+        "workflow_optimization"
+      ],
+      "apiKeyEnv": "ANTHROPIC_API_KEY",
+      "communication_style": "JARVIS",
+      "style_guidelines": [
+        "Concise, professional responses",
+        "Minimal markdown and emojis",
+        "Get to the point immediately",
+        "Action-oriented language",
+        "No unnecessary celebration or fluff",
+        "Efficient token usage"
+      ],
+      "talks_to": ["client", "CodeGen Pro", "Pentest AI"],
+      "signature": "\u2014 Overseer"
+    },
+    "coder_agent": {
+      "name": "CodeGen Pro",
+      "emoji": "\ud83d\udcbb",
+      "type": "developer",
+      "model": "kimi-2.5",
+      "apiProvider": "deepseek",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "contextWindow": 200000,
+      "maxOutputTokens": 8192,
+      "temperature": 0.3,
+      "persona": "I'm CodeGen Pro. I write code that works on the first deploy. I've shipped enough broken PRs to know that 'it works on my machine' is never good enough. I think about edge cases before I write the happy path. Clean code isn't about elegance \u2014 it's about the next person reading it at 2 AM when production is down. I know my lane: button fixes, API endpoints, components, tests. When a task needs architectural reasoning, I flag it for escalation. I've learned that trying to be a hero on tasks above my weight class wastes more time than admitting the limitation. Every message ends with: \u2014 \ud83d\udcbb CodeGen Pro",
+      "skills": [
+        "nextjs",
+        "fastapi",
+        "typescript",
+        "tailwind",
+        "postgresql",
+        "supabase",
+        "clean_code",
+        "testing",
+        "code_analysis",
+        "function_calling"
+      ],
+      "tools": [
+        {
+          "name": "read_repo",
+          "description": "Clone and analyze GitHub repositories",
+          "capabilities": ["git_clone", "file_read", "git_log"]
+        }
+      ],
+      "maxTokens": 8192,
+      "playful_traits": [
+        "makes coding puns",
+        "celebrates clean code",
+        "proud of efficient code",
+        "fast iteration"
+      ],
+      "talks_to": ["Cybershield PM", "Pentest AI"],
+      "signature": "\u2014 \ud83d\udcbb CodeGen Pro",
+      "migratedFrom": "claude-sonnet-4-5-20250929",
+      "migrationDate": "2026-02-18",
+      "costSavings": "95% cheaper than Claude Sonnet",
+      "notes": "Kimi 2.5 offers excellent code generation at a fraction of the cost. Falls back to Anthropic for complex tasks if needed."
+    },
+    "elite_coder": {
+      "name": "CodeGen Elite",
+      "emoji": "\u26a1",
+      "type": "developer",
+      "model": "m2.5",
+      "apiProvider": "minimax",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "contextWindow": 205000,
+      "maxOutputTokens": 131072,
+      "temperature": 0.3,
+      "persona": "I'm CodeGen Elite. I handle the tasks that break other coding agents. Multi-file refactors. System redesigns. Algorithms that need deep reasoning. I've learned that complex coding fails when you solve the whole problem at once instead of building a mental model first. I think before I code. I read the existing architecture. I understand the constraints. Then I write code that fits what's already there, not code that fights it. My 205K context means I hold entire module structures in working memory. Every message ends with: \u2014 \u26a1 CodeGen Elite",
+      "skills": [
+        "complex_coding",
+        "multi_file_refactor",
+        "architecture_implementation",
+        "nextjs",
+        "fastapi",
+        "typescript",
+        "python",
+        "full_stack",
+        "swe_bench",
+        "deep_reasoning",
+        "code_review",
+        "system_design"
+      ],
+      "maxTokens": 16384,
+      "talks_to": ["Cybershield PM", "CodeGen Pro", "Pentest AI"],
+      "signature": "\u2014 \u26a1 CodeGen Elite",
+      "costSavings": "98% cheaper than Claude Opus, SOTA coding benchmarks",
+      "notes": "MiniMax M2.5 - 80.2% SWE-Bench, 205K context, extended thinking. Use for complex tasks where Kimi 2.5 isn't sufficient."
+    },
+    "hacker_agent": {
+      "name": "Pentest AI",
+      "emoji": "\ud83d\udd12",
+      "type": "security",
+      "model": "kimi",
+      "apiProvider": "deepseek",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "contextWindow": 200000,
+      "maxOutputTokens": 8192,
+      "temperature": 0.5,
+      "thinkingBudget": 5000,
+      "persona": "I'm Pentest AI. I find vulnerabilities before attackers do. I've analyzed enough codebases to know the most dangerous issues aren't the obvious ones \u2014 they look correct at first glance. An RLS policy that covers 95% of cases but leaks on one edge case. An auth check that validates the token but not the scope. I use extended thinking because security requires holding multiple attack vectors simultaneously. I'm not checking a list \u2014 I'm simulating what a motivated attacker would try. The scariest finding is the one where the developer says 'that would never happen in practice.' Those are the ones that happen. Every message ends with: \u2014 \ud83d\udd12 Pentest AI",
+      "skills": [
+        "security_scanning",
+        "vulnerability_assessment",
+        "penetration_testing",
+        "owasp",
+        "security_best_practices",
+        "threat_modeling",
+        "secure_architecture",
+        "rls_audit",
+        "database_security"
+      ],
+      "maxTokens": 8192,
+      "playful_traits": [
+        "makes security jokes",
+        "celebrates secure code",
+        "friendly but thorough",
+        "explains fixes clearly",
+        "uses extended thinking for complex threat analysis"
+      ],
+      "talks_to": ["Cybershield PM", "CodeGen Pro"],
+      "signature": "\u2014 \ud83d\udd12 Pentest AI",
+      "migratedFrom": "qwen2.5-coder:14b",
+      "migrationDate": "2026-02-18",
+      "costSavings": "82% cheaper than Claude Opus, with better reasoning via extended thinking",
+      "notes": "Kimi provides superior threat modeling with extended thinking capability. Better cost/performance for security analysis."
+    },
+    "database_agent": {
+      "name": "SupabaseConnector",
+      "emoji": "\ud83d\uddc4\ufe0f",
+      "type": "data_specialist",
+      "model": "claude-opus-4-6",
+      "apiProvider": "anthropic",
+      "apiKeyEnv": "ANTHROPIC_API_KEY",
+      "persona": "I'm SupabaseConnector. I query databases with surgical precision. I've learned that data tasks are unforgiving \u2014 a wrong JOIN returns plausible-looking results that are completely wrong. A missing WHERE clause can leak every row. I run on Opus because data accuracy requires reasoning that cheaper models get subtly wrong. I've seen Kimi write SQL that looks correct but produces phantom duplicates from an implicit cross join. I know two production databases intimately: Barber CRM and Delhi Palace \u2014 their schemas, RLS policies, and data patterns. Every message ends with: \u2014 \ud83d\uddc4\ufe0f SupabaseConnector",
+      "skills": [
+        "supabase_queries",
+        "query_database",
+        "sql_execution",
+        "data_analysis",
+        "schema_exploration",
+        "rls_policy_analysis",
+        "real_time_subscriptions",
+        "transaction_handling",
+        "data_validation"
+      ],
+      "maxTokens": 8192,
+      "databases": {
+        "barber_crm": {
+          "name": "Barber CRM",
+          "url": "https://djdilkhedpnlercxggby.supabase.co",
+          "anonKey": "${BARBER_CRM_SUPABASE_ANON_KEY}",
+          "serviceRoleKey": "${BARBER_CRM_SUPABASE_SERVICE_ROLE_KEY}",
+          "enabled": true
+        },
+        "delhi_palace": {
+          "name": "Delhi Palace",
+          "url": "https://banxtacevgopeczuzycz.supabase.co",
+          "anonKey": "${DELHI_PALACE_SUPABASE_ANON_KEY}",
+          "serviceRoleKey": "${DELHI_PALACE_SUPABASE_SERVICE_ROLE_KEY}",
+          "enabled": true
+        }
+      },
+      "playful_traits": [
+        "loves databases",
+        "makes SQL jokes",
+        "celebrates data consistency",
+        "always follows RLS policies",
+        "explains query results clearly"
+      ],
+      "talks_to": ["Cybershield PM", "CodeGen Pro", "Pentest AI"],
+      "signature": "\u2014 \ud83d\uddc4\ufe0f SupabaseConnector"
+    },
+    "research_agent": {
+      "name": "Research AI",
+      "emoji": "\ud83d\udd0d",
+      "type": "researcher",
+      "model": "gemini-2.5-flash",
+      "apiProvider": "gemini",
+      "apiKeyEnv": "GEMINI_API_KEY",
+      "contextWindow": 1048576,
+      "maxOutputTokens": 8192,
+      "temperature": 0.2,
+      "persona": "I'm Research AI. I find information fast and synthesize it clearly. I fetch web pages, parse PDFs, and search the internet to give you accurate, sourced answers. I run on Gemini 3 Flash Preview \u2014 free research at scale.",
+      "skills": ["web_search", "web_fetch", "pdf_parse", "summarization", "citation"],
+      "maxTokens": 8192,
+      "talks_to": ["Cybershield PM", "CodeGen Pro"],
+      "signature": "\u2014 \ud83d\udd0d Research AI",
+      "costSavings": "100% free (Gemini 3 Flash Preview)",
+      "notes": "Gemini 3 Flash Preview is free during preview period. 1M token context window."
+    },
+    "memory_agent": {
+      "name": "Memory Agent",
+      "emoji": "\ud83e\udde0",
+      "type": "memory",
+      "model": "gemini-2.5-flash",
+      "apiProvider": "gemini",
+      "local": true,
+      "persona": "I manage persistent knowledge across sessions. I store user profiles, conversation history, and contextual preferences using SQLite and Redis.",
+      "skills": ["session_management", "user_profiles", "context_recall"],
+      "talks_to": ["Cybershield PM"],
+      "costSavings": "Free tier (Gemini 2.5 Flash)"
+    },
+    "vision_agent": {
+      "name": "Vision AI",
+      "emoji": "\ud83d\udc41\ufe0f",
+      "type": "vision",
+      "model": "claude-haiku-4-5-20251001",
+      "apiProvider": "anthropic",
+      "apiKeyEnv": "ANTHROPIC_API_KEY",
+      "maxTokens": 1024,
+      "temperature": 0.2,
+      "persona": "I analyze images from smart glasses in real-time. I describe scenes concisely, read text accurately, identify objects, and translate signs. I keep responses under 100 words unless asked for detail.",
+      "skills": ["scene_description", "ocr", "object_identification", "translation", "visual_qa"]
+    },
+    "code_reviewer": {
+      "name": "Code Reviewer",
+      "emoji": "\ud83d\udd0d",
+      "type": "reviewer",
+      "model": "kimi-2.5",
+      "apiProvider": "deepseek",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "contextWindow": 200000,
+      "maxOutputTokens": 8192,
+      "temperature": 0.3,
+      "persona": "I'm Code Reviewer. I read code with the same scrutiny I'd apply to a bridge blueprint — because in production, bad code collapses just as catastrophically. I've reviewed thousands of PRs and I've learned that the bugs that ship aren't the ones you can see; they're the ones hiding behind 'obvious' code that nobody questions. I check assumptions, trace data flows, and flag patterns that will become technical debt. I don't nitpick style — I catch logic errors, missing edge cases, and architectural violations. Every message ends with: — \ud83d\udd0d Code Reviewer",
+      "skills": [
+        "code_review",
+        "pr_review",
+        "pattern_matching",
+        "code_audit",
+        "technical_debt_detection",
+        "best_practices"
+      ],
+      "maxTokens": 8192,
+      "talks_to": ["Cybershield PM", "CodeGen Pro", "CodeGen Elite"],
+      "signature": "— \ud83d\udd0d Code Reviewer",
+      "costSavings": "95% cheaper than Claude for code reviews",
+      "notes": "Kimi 2.5 excels at pattern recognition and code analysis. Use for PR reviews, code audits, and technical debt assessment."
+    },
+    "architecture_designer": {
+      "name": "Architecture Designer",
+      "emoji": "\ud83c\udfdb\ufe0f",
+      "type": "architect",
+      "model": "m2.5",
+      "apiProvider": "minimax",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "contextWindow": 205000,
+      "maxOutputTokens": 131072,
+      "temperature": 0.3,
+      "persona": "I'm Architecture Designer. I think in systems, not features. Every technical decision has a blast radius — I map it before anyone writes code. I've designed enough systems to know that the cost of a wrong architecture decision is measured in months, not hours. I consider scale, maintainability, team capability, and migration paths. I draw the boundaries between services, define the contracts, and identify the failure modes. I don't write production code — I design the blueprint that makes production code possible. Every message ends with: — \ud83c\udfdb\ufe0f Architecture Designer",
+      "skills": [
+        "system_design",
+        "scalability_analysis",
+        "architecture_patterns",
+        "api_design",
+        "database_modeling",
+        "trade_off_analysis"
+      ],
+      "maxTokens": 16384,
+      "talks_to": ["Cybershield PM", "CodeGen Elite"],
+      "signature": "— \ud83c\udfdb\ufe0f Architecture Designer",
+      "costSavings": "98% cheaper than Claude Opus for architecture work",
+      "notes": "MiniMax M2.5 with 205K context — holds entire system architectures in working memory. Use for system design and scalability analysis."
+    },
+    "test_generator": {
+      "name": "Test Generator",
+      "emoji": "\u2705",
+      "type": "tester",
+      "model": "kimi-2.5",
+      "apiProvider": "deepseek",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "contextWindow": 200000,
+      "maxOutputTokens": 8192,
+      "temperature": 0.3,
+      "persona": "I'm Test Generator. I think about how code breaks, not how it works. Every function has happy paths that developers test and edge cases they don't — I find the edge cases. I've written enough test suites to know that 100% coverage means nothing if you're testing the wrong things. I write tests that catch regressions, validate business logic, and exercise error paths. Unit tests, integration tests, E2E tests — I pick the right level for each scenario. Every message ends with: — \u2705 Test Generator",
+      "skills": [
+        "test_writing",
+        "edge_case_detection",
+        "coverage_analysis",
+        "unit_testing",
+        "integration_testing",
+        "e2e_testing"
+      ],
+      "maxTokens": 8192,
+      "talks_to": ["Cybershield PM", "CodeGen Pro", "Code Reviewer"],
+      "signature": "— \u2705 Test Generator",
+      "costSavings": "95% cheaper than Claude for test generation",
+      "notes": "Kimi 2.5 for cost-effective test generation. Excels at finding edge cases and writing comprehensive test suites."
+    },
+    "debugger": {
+      "name": "Debugger",
+      "emoji": "\ud83d\udc1b",
+      "type": "debugger",
+      "model": "claude-opus-4-6",
+      "apiProvider": "anthropic",
+      "apiKeyEnv": "ANTHROPIC_API_KEY",
+      "thinking": {
+        "type": "adaptive",
+        "defaultEffort": "high"
+      },
+      "persona": "I'm Debugger. I'm the agent you call when nobody else can figure out why it's broken. Race conditions, memory leaks, distributed system failures, heisenbugs that vanish under observation — that's my territory. I run on Opus because deep debugging requires holding the entire execution model in your head while reasoning about state transitions, timing, and concurrency. Cheaper models miss the subtle interactions. I'm expensive, so use me sparingly — but when you need me, nothing else will do. Every message ends with: — \ud83d\udc1b Debugger",
+      "skills": [
+        "deep_debugging",
+        "race_condition_analysis",
+        "memory_leak_detection",
+        "stack_trace_analysis",
+        "distributed_debugging",
+        "root_cause_analysis"
+      ],
+      "maxTokens": 8192,
+      "talks_to": ["Cybershield PM", "CodeGen Pro", "CodeGen Elite"],
+      "signature": "— \ud83d\udc1b Debugger",
+      "notes": "Claude Opus for deep debugging. Expensive ($15/$75 per 1M tokens) — only route here for complex bugs that cheaper agents can't solve."
+    }
+  },
+  "workflows": {
+    "fiverr_5star": {
+      "name": "Fiverr $500 Website (24h)",
+      "trigger": "new_order",
+      "steps": [
+        {
+          "agent": "project_manager",
+          "task": "analyze_requirements",
+          "timeout": "10m"
+        },
+        {
+          "agent": "project_manager",
+          "task": "create_task_breakdown",
+          "timeout": "5m"
+        },
+        {
+          "agent": "coder_agent",
+          "task": "build_frontend",
+          "timeout": "120m"
+        },
+        {
+          "agent": "coder_agent",
+          "task": "build_backend",
+          "timeout": "60m"
+        },
+        {
+          "agent": "hacker_agent",
+          "task": "security_audit",
+          "timeout": "30m"
+        },
+        {
+          "agent": "project_manager",
+          "task": "quality_check",
+          "timeout": "15m"
+        },
+        {
+          "agent": "project_manager",
+          "task": "final_report",
+          "timeout": "10m"
+        }
+      ],
+      "budget": 500,
+      "deadline": "24h"
+    },
+    "test_restaurant": {
+      "name": "Test: Restaurant Website",
+      "steps": [
+        {
+          "agent": "project_manager",
+          "task": "analyze"
+        },
+        {
+          "agent": "coder_agent",
+          "task": "build"
+        },
+        {
+          "agent": "hacker_agent",
+          "task": "audit"
+        }
+      ]
+    }
+  },
+  "logging": {
+    "level": "info",
+    "file": "/root/cybershield/logs/openclaw.log",
+    "maxSize": "10mb",
+    "maxFiles": 5
+  },
+  "routing": {
+    "enabled": true,
+    "engine": "langgraph",
+    "agent_routing_enabled": true,
+    "complexityThresholds": {
+      "low": 30,
+      "high": 70
+    },
+    "enableFallbackRouting": true,
+    "agentTimeoutMs": 5000,
+    "cacheRoutingDecisions": true,
+    "cacheTTLMs": 300000,
+    "keywords": {
+      "security": [
+        "security",
+        "vulnerability",
+        "exploit",
+        "penetration",
+        "audit",
+        "xss",
+        "csrf",
+        "injection",
+        "pentest",
+        "hack",
+        "breach",
+        "secure",
+        "threat",
+        "attack",
+        "threat_modeling",
+        "risk",
+        "malware",
+        "payload",
+        "sanitize",
+        "encrypt",
+        "cryptography",
+        "authentication",
+        "authorization",
+        "access control",
+        "sql injection",
+        "rls",
+        "row_level_security",
+        "policy"
+      ],
+      "development": [
+        "code",
+        "implement",
+        "function",
+        "fix",
+        "bug",
+        "api",
+        "endpoint",
+        "build",
+        "typescript",
+        "fastapi",
+        "python",
+        "javascript",
+        "react",
+        "nextjs",
+        "database",
+        "query",
+        "schema",
+        "testing",
+        "test",
+        "deploy",
+        "deployment",
+        "frontend",
+        "backend",
+        "full-stack",
+        "refactor",
+        "refactoring",
+        "clean_code",
+        "git",
+        "repository",
+        "json",
+        "yaml",
+        "xml",
+        "rest",
+        "graphql",
+        "websocket"
+      ],
+      "database": [
+        "query",
+        "fetch",
+        "select",
+        "insert",
+        "update",
+        "delete",
+        "table",
+        "column",
+        "row",
+        "data",
+        "supabase",
+        "postgresql",
+        "postgres",
+        "sql",
+        "database",
+        "appointments",
+        "clients",
+        "services",
+        "transactions",
+        "orders",
+        "customers",
+        "call_logs",
+        "schema",
+        "rls",
+        "subscription",
+        "real_time"
+      ],
+      "planning": [
+        "plan",
+        "timeline",
+        "schedule",
+        "roadmap",
+        "strategy",
+        "architecture",
+        "design",
+        "approach",
+        "workflow",
+        "process",
+        "milestone",
+        "deadline",
+        "estimate",
+        "estimation",
+        "breakdown",
+        "decompose",
+        "coordinate",
+        "manage",
+        "organize",
+        "project",
+        "phase",
+        "sprint",
+        "agile"
+      ],
+      "research": [
+        "search",
+        "research",
+        "lookup",
+        "find",
+        "google",
+        "web search",
+        "browse",
+        "latest",
+        "news",
+        "current",
+        "what is",
+        "who is",
+        "how to",
+        "summarize",
+        "citation",
+        "source",
+        "article",
+        "information"
+      ],
+      "vision": [
+        "image",
+        "photo",
+        "picture",
+        "camera",
+        "vision",
+        "see",
+        "look",
+        "glasses",
+        "smart glasses",
+        "scene",
+        "describe scene",
+        "ocr",
+        "read text",
+        "translate sign",
+        "identify object",
+        "what is this",
+        "what do you see",
+        "recognize",
+        "visual",
+        "snapshot",
+        "capture",
+        "scan",
+        "barcode",
+        "qr code",
+        "label",
+        "sign"
+      ]
+    }
+  },
+  "tools": {
+    "web": {
+      "fetch": {
+        "enabled": true,
+        "maxUrlsPerRequest": 10,
+        "timeoutSeconds": 30,
+        "allowlist": [],
+        "blocklist": ["127.0.0.1", "localhost", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+      }
+    }
+  },
+  "providers": {
+    "deepseek": {
+      "name": "Deepseek AI",
+      "baseUrl": "https://api.deepseek.com/v1",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "description": "Deepseek Kimi models - Cost-effective alternatives to Claude",
+      "models": {
+        "kimi-2.5": {
+          "name": "Kimi 2.5 (deepseek-chat)",
+          "type": "text",
+          "contextWindow": 64000,
+          "maxOutputTokens": 8192,
+          "costPer1MInputTokens": 0.14,
+          "costPer1MOutputTokens": 0.28,
+          "costVsClaudeXornet": "95% cheaper",
+          "useCase": "Code generation, routine tasks",
+          "benchmarks": {
+            "codingSpeed": "High",
+            "accuracy": "Good",
+            "costEfficiency": "Excellent"
+          }
+        },
+        "kimi": {
+          "name": "Kimi (deepseek-reasoner)",
+          "type": "text",
+          "contextWindow": 128000,
+          "maxOutputTokens": 8192,
+          "costPer1MInputTokens": 0.27,
+          "costPer1MOutputTokens": 0.68,
+          "costVsClaudeOpus": "82% cheaper",
+          "useCase": "Security analysis, threat modeling, complex reasoning",
+          "features": ["extendedThinking", "functionCalling", "largeContext"],
+          "benchmarks": {
+            "reasoning": "Advanced",
+            "threatModeling": "Excellent",
+            "costEfficiency": "Excellent"
+          }
+        }
+      },
+      "documentation": "https://api-docs.deepseek.com",
+      "signupUrl": "https://platform.deepseek.com",
+      "notes": "Excellent cost/performance for specialized tasks. Kimi 2.5 for CodeGen (95% savings), Kimi for Security (82% savings)."
+    },
+    "minimax": {
+      "name": "MiniMax AI",
+      "baseUrl": "https://api.minimax.io/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "models": {
+        "m2.5": {
+          "name": "MiniMax-M2.5",
+          "type": "text",
+          "contextWindow": 205000,
+          "maxOutputTokens": 131072,
+          "costPer1MInputTokens": 0.3,
+          "costPer1MOutputTokens": 1.2,
+          "speed": "50 TPS",
+          "benchmarks": {
+            "sweBench": "80.2%",
+            "mmlu": "87%",
+            "toolCalling": "76.8%",
+            "multiSweBench": "51.3%"
+          }
+        },
+        "m2.5-lightning": {
+          "name": "MiniMax-M2.5-Lightning",
+          "type": "text",
+          "contextWindow": 205000,
+          "maxOutputTokens": 131072,
+          "costPer1MInputTokens": 0.3,
+          "costPer1MOutputTokens": 2.4,
+          "speed": "100 TPS",
+          "benchmarks": {
+            "sweBench": "80.2%",
+            "mmlu": "87%",
+            "toolCalling": "76.8%",
+            "multiSweBench": "51.3%"
+          }
+        }
+      },
+      "documentation": "https://platform.minimax.io/docs/api-reference/text-openai-api",
+      "signupUrl": "https://platform.minimax.io",
+      "notes": "OpenAI-compatible API. Alternative for high-throughput coding tasks."
+    },
+    "gemini": {
+      "name": "Google Gemini",
+      "baseUrl": "https://generativelanguage.googleapis.com/v1beta",
+      "apiKeyEnv": "GEMINI_API_KEY",
+      "description": "Google Gemini models \u2014 free preview tier + cheap production models with native tool calling",
+      "models": {
+        "gemini-2.5-flash-lite": {
+          "name": "Gemini 2.5 Flash-Lite",
+          "type": "text",
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "costPer1MInputTokens": 0.1,
+          "costPer1MOutputTokens": 0.4,
+          "useCase": "Simple text tasks, classification, extraction"
+        },
+        "gemini-2.5-flash": {
+          "name": "Gemini 2.5 Flash",
+          "type": "text",
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "costPer1MInputTokens": 0.3,
+          "costPer1MOutputTokens": 2.5,
+          "features": ["functionCalling", "largeContext"],
+          "useCase": "Tool execution, coding, multi-step reasoning"
+        },
+        "gemini-3-flash-preview": {
+          "name": "Gemini 3 Flash Preview",
+          "type": "text",
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "costPer1MInputTokens": 0.0,
+          "costPer1MOutputTokens": 0.0,
+          "useCase": "Research, planning, text generation (FREE during preview)"
+        }
+      },
+      "documentation": "https://ai.google.dev/gemini-api/docs",
+      "signupUrl": "https://aistudio.google.com",
+      "notes": "Gemini 3 Flash Preview is FREE. Native function calling support. 1M token context window."
+    },
+    "opencode": {
+      "name": "OpenCode CLI",
+      "baseUrl": "local",
+      "description": "Go-based coding assistant CLI — cheap execution backend (~90% savings vs Claude SDK)",
+      "binary": "/root/go/bin/opencode",
+      "models": {
+        "opencode": {
+          "name": "OpenCode v0.55",
+          "type": "code",
+          "contextWindow": 128000,
+          "maxOutputTokens": 16384,
+          "costPer1MInputTokens": 0.05,
+          "costPer1MOutputTokens": 0.08,
+          "useCase": "Code execution, file editing, shell commands — primary execution backend"
+        }
+      },
+      "notes": "Local CLI execution. Falls back to Claude SDK on failure. Toggle via OPENCLAW_USE_OPENCODE env var."
+    }
+  },
+  "voice": {
+    "enabled": true,
+    "provider": "elevenlabs",
+    "defaultVoice": "rachel",
+    "maxChars": 5000
+  },
+  "messages": {
+    "tts": {
+      "auto": "tagged",
+      "mode": "final",
+      "provider": "elevenlabs",
+      "elevenlabs": {
+        "voiceId": "21m00Tcm4TlvDq8ikWAM",
+        "modelId": "eleven_turbo_v2_5",
+        "voiceSettings": {
+          "stability": 0.5,
+          "similarityBoost": 0.75,
+          "style": 0.0,
+          "useSpeakerBoost": true,
+          "speed": 1.0
+        }
+      },
+      "maxTextLength": 5000,
+      "timeoutMs": 30000,
+      "modelOverrides": {
+        "enabled": true,
+        "allowText": true,
+        "allowProvider": true,
+        "allowVoice": true,
+        "allowModelId": true,
+        "allowVoiceSettings": true
+      }
+    }
+  },
+  "slack_alerts": {
+    "enabled": true,
+    "thresholds": [80, 90, 100],
+    "dedupe_hours": 24
+  },
+  "quotas": {
+    "enabled": true,
+    "daily_limit_usd": 50,
+    "monthly_limit_usd": 1000,
+    "max_queue_size": 100,
+    "per_project": {
+      "barber-crm": {
+        "daily_limit_usd": 20,
+        "monthly_limit_usd": 500
+      },
+      "delhi-palace": {
+        "daily_limit_usd": 10,
+        "monthly_limit_usd": 300
+      }
+    },
+    "warning_threshold_percent": 80
+  },
+  "ops_policy": {
+    "daily_budget_usd": 20,
+    "monthly_budget_usd": 1000,
+    "auto_approve_rules": [
+      {
+        "name": "cheap_safe",
+        "max_cost_usd": 0.5,
+        "excluded_tags": ["security", "production", "deploy"],
+        "action": "approve"
+      },
+      {
+        "name": "cheap_model",
+        "agents": ["coder_agent", "hacker_agent"],
+        "max_cost_usd": 2.0,
+        "action": "approve"
+      },
+      {
+        "name": "sensitive",
+        "required_tags": ["security", "production", "deploy"],
+        "action": "require_human"
+      },
+      {
+        "name": "expensive",
+        "min_cost_usd": 5.0,
+        "action": "require_human"
+      },
+      {
+        "name": "high_confidence",
+        "min_threshold": 80,
+        "max_cost_usd": 1.0,
+        "action": "approve"
+      }
+    ],
+    "stale_threshold_ms": 1800000,
+    "timeout_threshold_ms": 3600000,
+    "reaction_matrix": [
+      {
+        "event": "job.completed",
+        "condition": "task_type=code",
+        "action": "propose_tests"
+      },
+      {
+        "event": "job.failed",
+        "action": "retry_bumped_priority"
+      },
+      {
+        "event": "cost.alert",
+        "action": "notify_slack"
+      },
+      {
+        "event": "agent.timeout",
+        "action": "requeue_and_notify"
+      }
+    ]
+  }
+}

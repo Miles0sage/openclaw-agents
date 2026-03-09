@@ -1,0 +1,1647 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NightOwl Security — Find Vulnerabilities Before Hackers Do</title>
+    <meta
+      name="description"
+      content="Automated security scanning for websites and servers. Find vulnerabilities in minutes, not weeks. OWASP Top 10 coverage. Enterprise-grade tools."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ═══════════════════════════════════════════════════════
+   NightOwl Security — Terminal Noir x Corporate Security
+   ═══════════════════════════════════════════════════════ */
+
+      :root {
+        --bg-abyss: #06080c;
+        --bg-deep: #0a0e14;
+        --bg-surface: #0f1520;
+        --bg-elevated: #141c28;
+        --bg-card: #111923;
+
+        --owl-amber: #f0a500;
+        --owl-amber-dim: #c48800;
+        --owl-amber-glow: rgba(240, 165, 0, 0.15);
+        --owl-amber-bright: #ffc233;
+        --owl-cyan: #00e5c8;
+        --owl-cyan-dim: #00b89e;
+        --owl-cyan-glow: rgba(0, 229, 200, 0.12);
+        --owl-red: #ff3b5c;
+        --owl-red-glow: rgba(255, 59, 92, 0.15);
+        --owl-green: #00d26a;
+
+        --text-primary: #e8ecf2;
+        --text-secondary: #8a96a8;
+        --text-muted: #4d5b6e;
+        --text-ghost: #2a3545;
+
+        --border-subtle: rgba(255, 255, 255, 0.04);
+        --border-line: rgba(255, 255, 255, 0.07);
+
+        --font-display: "Outfit", sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: var(--font-display);
+        background: var(--bg-abyss);
+        color: var(--text-primary);
+        line-height: 1.6;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Ambient grid background */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          linear-gradient(rgba(240, 165, 0, 0.015) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(240, 165, 0, 0.015) 1px, transparent 1px);
+        background-size: 60px 60px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* Scan line effect */
+      body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--owl-amber), transparent);
+        opacity: 0.3;
+        animation: scanline 4s linear infinite;
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      @keyframes scanline {
+        0% {
+          transform: translateY(-100vh);
+        }
+        100% {
+          transform: translateY(100vh);
+        }
+      }
+
+      a {
+        color: var(--owl-amber);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      a:hover {
+        color: var(--owl-amber-bright);
+      }
+
+      .container {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 0 24px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ── NAV ── */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 16px 0;
+        background: rgba(6, 8, 12, 0.85);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border-subtle);
+        transition: padding 0.3s;
+      }
+
+      .nav-inner {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 18px;
+        color: var(--owl-amber);
+        letter-spacing: -0.5px;
+      }
+
+      .nav-owl {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .nav-owl svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+      }
+      .nav-links a {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        transition: color 0.2s;
+      }
+      .nav-links a:hover {
+        color: var(--text-primary);
+      }
+
+      .nav-cta {
+        font-family: var(--font-mono) !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        color: var(--bg-abyss) !important;
+        background: var(--owl-amber) !important;
+        padding: 8px 20px !important;
+        border-radius: var(--radius-sm) !important;
+        transition: all 0.2s !important;
+      }
+      .nav-cta:hover {
+        background: var(--owl-amber-bright) !important;
+        transform: translateY(-1px);
+      }
+
+      /* ── HERO ── */
+      .hero {
+        padding: 160px 0 100px;
+        text-align: center;
+        position: relative;
+      }
+
+      .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--owl-amber);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 28px;
+        padding: 6px 16px;
+        background: var(--owl-amber-glow);
+        border: 1px solid rgba(240, 165, 0, 0.15);
+        border-radius: 100px;
+      }
+
+      .hero-eyebrow .pulse {
+        width: 6px;
+        height: 6px;
+        background: var(--owl-amber);
+        border-radius: 50%;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          box-shadow: 0 0 0 0 rgba(240, 165, 0, 0.5);
+        }
+        50% {
+          opacity: 0.6;
+          box-shadow: 0 0 0 6px rgba(240, 165, 0, 0);
+        }
+      }
+
+      .hero h1 {
+        font-size: clamp(40px, 6vw, 72px);
+        font-weight: 900;
+        line-height: 1.05;
+        letter-spacing: -2px;
+        margin-bottom: 24px;
+      }
+
+      .hero h1 .gradient {
+        background: linear-gradient(
+          135deg,
+          var(--owl-amber) 0%,
+          var(--owl-amber-bright) 50%,
+          var(--owl-cyan) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-sub {
+        font-size: 18px;
+        color: var(--text-secondary);
+        max-width: 560px;
+        margin: 0 auto 48px;
+        line-height: 1.7;
+      }
+
+      /* ── SCAN FORM ── */
+      .scan-box {
+        max-width: 620px;
+        margin: 0 auto;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-line);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        position: relative;
+      }
+
+      .scan-box::before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: var(--radius-lg);
+        background: linear-gradient(
+          135deg,
+          rgba(240, 165, 0, 0.2),
+          transparent 40%,
+          transparent 60%,
+          rgba(0, 229, 200, 0.1)
+        );
+        z-index: -1;
+        padding: 1px;
+        mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        -webkit-mask-composite: xor;
+      }
+
+      .scan-box-header {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .scan-box-header::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        background: var(--owl-green);
+        border-radius: 50%;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      .scan-form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .scan-input-row {
+        display: flex;
+        gap: 12px;
+      }
+
+      .scan-input {
+        flex: 1;
+        font-family: var(--font-mono);
+        font-size: 14px;
+        padding: 14px 18px;
+        background: var(--bg-deep);
+        border: 1px solid var(--border-line);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .scan-input:focus {
+        border-color: var(--owl-amber);
+        box-shadow: 0 0 0 3px var(--owl-amber-glow);
+      }
+
+      .scan-input::placeholder {
+        color: var(--text-muted);
+      }
+
+      .scan-email {
+        font-family: var(--font-mono);
+        font-size: 14px;
+        padding: 14px 18px;
+        background: var(--bg-deep);
+        border: 1px solid var(--border-line);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        outline: none;
+        width: 100%;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .scan-email:focus {
+        border-color: var(--owl-amber);
+        box-shadow: 0 0 0 3px var(--owl-amber-glow);
+      }
+
+      .scan-email::placeholder {
+        color: var(--text-muted);
+      }
+
+      .scan-btn {
+        font-family: var(--font-mono);
+        font-size: 14px;
+        font-weight: 700;
+        padding: 14px 32px;
+        background: var(--owl-amber);
+        color: var(--bg-abyss);
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        white-space: nowrap;
+      }
+
+      .scan-btn:hover {
+        background: var(--owl-amber-bright);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 20px rgba(240, 165, 0, 0.3);
+      }
+
+      .scan-btn:active {
+        transform: translateY(0);
+      }
+
+      .scan-note {
+        font-size: 12px;
+        color: var(--text-muted);
+        text-align: center;
+        margin-top: 4px;
+      }
+
+      /* ── SCAN RESULTS (hidden initially) ── */
+      .scan-results {
+        display: none;
+        margin-top: 24px;
+        background: var(--bg-deep);
+        border: 1px solid var(--border-line);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+      }
+
+      .scan-results.active {
+        display: block;
+      }
+
+      .scan-results-header {
+        padding: 12px 18px;
+        background: var(--bg-elevated);
+        border-bottom: 1px solid var(--border-line);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--owl-amber);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .scan-terminal {
+        padding: 16px 18px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        line-height: 1.8;
+        color: var(--owl-cyan);
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .scan-terminal .line-prompt {
+        color: var(--owl-amber);
+      }
+      .scan-terminal .line-info {
+        color: var(--text-secondary);
+      }
+      .scan-terminal .line-warn {
+        color: var(--owl-amber);
+      }
+      .scan-terminal .line-crit {
+        color: var(--owl-red);
+      }
+      .scan-terminal .line-ok {
+        color: var(--owl-green);
+      }
+
+      /* ── STATS BAR ── */
+      .stats {
+        padding: 80px 0;
+        border-top: 1px solid var(--border-subtle);
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--border-line);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+      }
+
+      .stat-item {
+        background: var(--bg-surface);
+        padding: 36px 24px;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-family: var(--font-mono);
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--owl-amber);
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+
+      .stat-number .counting {
+        display: inline-block;
+      }
+
+      .stat-label {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* ── HOW IT WORKS ── */
+      .how-it-works {
+        padding: 100px 0;
+      }
+
+      .section-tag {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--owl-amber);
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        margin-bottom: 16px;
+      }
+
+      .section-title {
+        font-size: clamp(28px, 4vw, 42px);
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 56px;
+      }
+
+      .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+
+      .step-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-line);
+        border-radius: var(--radius-md);
+        padding: 36px 28px;
+        position: relative;
+        transition: all 0.3s;
+      }
+
+      .step-card:hover {
+        border-color: rgba(240, 165, 0, 0.2);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .step-num {
+        font-family: var(--font-mono);
+        font-size: 48px;
+        font-weight: 700;
+        color: var(--text-ghost);
+        line-height: 1;
+        margin-bottom: 20px;
+      }
+
+      .step-card:hover .step-num {
+        color: var(--owl-amber-dim);
+      }
+
+      .step-icon {
+        width: 44px;
+        height: 44px;
+        background: var(--owl-amber-glow);
+        border: 1px solid rgba(240, 165, 0, 0.15);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        font-size: 20px;
+      }
+
+      .step-card h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        letter-spacing: -0.3px;
+      }
+
+      .step-card p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.7;
+      }
+
+      /* ── WHAT WE FIND ── */
+      .findings {
+        padding: 100px 0;
+      }
+
+      .findings-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+      .finding-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 20px 24px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-line);
+        border-radius: var(--radius-sm);
+        transition: border-color 0.2s;
+      }
+
+      .finding-item:hover {
+        border-color: rgba(240, 165, 0, 0.15);
+      }
+
+      .finding-severity {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 4px 10px;
+        border-radius: 3px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .severity-critical {
+        background: rgba(255, 59, 92, 0.15);
+        color: var(--owl-red);
+      }
+      .severity-high {
+        background: rgba(255, 140, 0, 0.15);
+        color: #ff8c00;
+      }
+      .severity-medium {
+        background: rgba(240, 165, 0, 0.15);
+        color: var(--owl-amber);
+      }
+      .severity-info {
+        background: rgba(0, 229, 200, 0.12);
+        color: var(--owl-cyan);
+      }
+
+      .finding-text h4 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .finding-text p {
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+
+      /* ── PRICING ── */
+      .pricing {
+        padding: 100px 0;
+      }
+
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 56px;
+      }
+
+      .price-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-line);
+        border-radius: var(--radius-lg);
+        padding: 40px 32px;
+        position: relative;
+        transition: all 0.3s;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .price-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+      }
+
+      .price-card.featured {
+        border-color: var(--owl-amber);
+        background: linear-gradient(180deg, rgba(240, 165, 0, 0.06) 0%, var(--bg-surface) 40%);
+      }
+
+      .price-badge {
+        position: absolute;
+        top: -12px;
+        right: 24px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        padding: 5px 14px;
+        background: var(--owl-amber);
+        color: var(--bg-abyss);
+        border-radius: 100px;
+      }
+
+      .price-tier {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--owl-amber);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+      }
+
+      .price-card h3 {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .price-desc {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+        line-height: 1.6;
+      }
+
+      .price-amount {
+        font-family: var(--font-mono);
+        font-size: 44px;
+        font-weight: 700;
+        margin-bottom: 28px;
+      }
+
+      .price-amount .dollar {
+        font-size: 24px;
+        color: var(--text-muted);
+        vertical-align: top;
+        line-height: 2;
+      }
+      .price-amount .period {
+        font-size: 14px;
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+      .price-amount.free {
+        color: var(--owl-cyan);
+      }
+
+      .price-features {
+        list-style: none;
+        margin-bottom: 32px;
+        flex: 1;
+      }
+
+      .price-features li {
+        font-size: 14px;
+        color: var(--text-secondary);
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .price-features li::before {
+        content: "";
+        width: 5px;
+        height: 5px;
+        background: var(--owl-amber);
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .price-btn {
+        display: block;
+        text-align: center;
+        font-family: var(--font-mono);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 14px 24px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-line);
+        background: transparent;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .price-btn:hover {
+        border-color: var(--owl-amber);
+        color: var(--owl-amber);
+        background: var(--owl-amber-glow);
+      }
+
+      .price-btn.primary {
+        background: var(--owl-amber);
+        color: var(--bg-abyss);
+        border-color: var(--owl-amber);
+      }
+
+      .price-btn.primary:hover {
+        background: var(--owl-amber-bright);
+        box-shadow: 0 4px 20px rgba(240, 165, 0, 0.3);
+      }
+
+      /* ── TRUST ── */
+      .trust {
+        padding: 80px 0;
+      }
+
+      .trust-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+
+      .trust-item {
+        text-align: center;
+        padding: 32px 24px;
+      }
+
+      .trust-icon {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 16px;
+        background: var(--owl-amber-glow);
+        border: 1px solid rgba(240, 165, 0, 0.12);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+      }
+
+      .trust-item h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .trust-item p {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      /* ── FAQ ── */
+      .faq {
+        padding: 100px 0;
+      }
+
+      .faq-list {
+        max-width: 700px;
+      }
+
+      .faq-item {
+        border-bottom: 1px solid var(--border-line);
+      }
+
+      .faq-q {
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 20px 0;
+        font-family: var(--font-display);
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: color 0.2s;
+      }
+
+      .faq-q:hover {
+        color: var(--owl-amber);
+      }
+
+      .faq-q .arrow {
+        font-family: var(--font-mono);
+        font-size: 18px;
+        color: var(--text-muted);
+        transition:
+          transform 0.3s,
+          color 0.2s;
+      }
+
+      .faq-item.open .faq-q .arrow {
+        transform: rotate(45deg);
+        color: var(--owl-amber);
+      }
+
+      .faq-a {
+        max-height: 0;
+        overflow: hidden;
+        transition:
+          max-height 0.3s ease,
+          padding 0.3s ease;
+      }
+
+      .faq-item.open .faq-a {
+        max-height: 200px;
+        padding-bottom: 20px;
+      }
+
+      .faq-a p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.7;
+      }
+
+      /* ── CTA ── */
+      .cta-section {
+        padding: 100px 0;
+        text-align: center;
+      }
+
+      .cta-box {
+        background: linear-gradient(
+          135deg,
+          rgba(240, 165, 0, 0.08) 0%,
+          rgba(0, 229, 200, 0.04) 100%
+        );
+        border: 1px solid rgba(240, 165, 0, 0.12);
+        border-radius: var(--radius-lg);
+        padding: 64px 48px;
+      }
+
+      .cta-box h2 {
+        font-size: clamp(28px, 3.5vw, 38px);
+        font-weight: 800;
+        margin-bottom: 16px;
+      }
+
+      .cta-box p {
+        font-size: 16px;
+        color: var(--text-secondary);
+        margin-bottom: 32px;
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .cta-btn {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 14px;
+        font-weight: 700;
+        padding: 16px 40px;
+        background: var(--owl-amber);
+        color: var(--bg-abyss);
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.2s;
+      }
+
+      .cta-btn:hover {
+        background: var(--owl-amber-bright);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(240, 165, 0, 0.3);
+        color: var(--bg-abyss);
+      }
+
+      /* ── FOOTER ── */
+      .footer {
+        padding: 48px 0;
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .footer-brand {
+        font-family: var(--font-mono);
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 24px;
+      }
+      .footer-links a {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      .footer-links a:hover {
+        color: var(--text-secondary);
+      }
+
+      /* ── ANIMATIONS ── */
+      .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s ease;
+      }
+
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .reveal-delay-1 {
+        transition-delay: 0.1s;
+      }
+      .reveal-delay-2 {
+        transition-delay: 0.2s;
+      }
+      .reveal-delay-3 {
+        transition-delay: 0.3s;
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .steps-grid {
+          grid-template-columns: 1fr;
+        }
+        .findings-grid {
+          grid-template-columns: 1fr;
+        }
+        .pricing-grid {
+          grid-template-columns: 1fr;
+          max-width: 400px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        .trust-grid {
+          grid-template-columns: 1fr;
+        }
+        .scan-input-row {
+          flex-direction: column;
+        }
+        .footer-inner {
+          flex-direction: column;
+          gap: 16px;
+          text-align: center;
+        }
+        .hero {
+          padding: 130px 0 60px;
+        }
+        .cta-box {
+          padding: 40px 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══ NAV ═══ -->
+    <nav class="nav">
+      <div class="nav-inner">
+        <a href="#" class="nav-brand">
+          <span class="nav-owl"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="9" cy="12" r="2" />
+              <circle cx="15" cy="12" r="2" />
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" />
+              <path d="M12 2c-2 2-3 5-3 7s1 5 3 7c2-2 3-5 3-7s-1-5-3-7z" />
+              <path d="M6 6l2 3M18 6l-2 3" /></svg
+          ></span>
+          NightOwl
+        </a>
+        <div class="nav-links">
+          <a href="#how-it-works">How It Works</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+          <a href="#scan" class="nav-cta">Free Scan</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ═══ HERO ═══ -->
+    <section class="hero" id="scan">
+      <div class="container">
+        <div class="hero-eyebrow"><span class="pulse"></span> Scanning Engine Online</div>
+        <h1>Find vulnerabilities<br /><span class="gradient">before hackers do.</span></h1>
+        <p class="hero-sub">
+          Automated security scanning for your website and servers. Enterprise-grade tools, results
+          in minutes. No security team required.
+        </p>
+
+        <div class="scan-box">
+          <div class="scan-box-header">Target Scanner &mdash; Ready</div>
+          <form class="scan-form" id="scanForm">
+            <div class="scan-input-row">
+              <input
+                type="text"
+                class="scan-input"
+                id="scanUrl"
+                placeholder="https://example.com"
+                required
+              />
+              <button type="submit" class="scan-btn">Scan Now</button>
+            </div>
+            <input
+              type="email"
+              class="scan-email"
+              id="scanEmail"
+              placeholder="your@email.com — we'll send the full report"
+              required
+            />
+            <input type="hidden" id="scanType" value="quick" />
+            <p class="scan-note">
+              Free quick scan &mdash; no credit card required. Full report emailed in minutes.
+            </p>
+          </form>
+
+          <div class="scan-results" id="scanResults">
+            <div class="scan-results-header"><span>&#9611;</span> Scan Output</div>
+            <div class="scan-terminal" id="scanTerminal"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ STATS ═══ -->
+    <section class="stats">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-item reveal">
+            <div class="stat-number"><span class="counting" data-target="12847">0</span></div>
+            <div class="stat-label">Vulnerabilities Found</div>
+          </div>
+          <div class="stat-item reveal reveal-delay-1">
+            <div class="stat-number"><span class="counting" data-target="2431">0</span></div>
+            <div class="stat-label">Websites Scanned</div>
+          </div>
+          <div class="stat-item reveal reveal-delay-2">
+            <div class="stat-number">
+              <span class="counting" data-target="98">0</span><span>%</span>
+            </div>
+            <div class="stat-label">Had At Least 1 Issue</div>
+          </div>
+          <div class="stat-item reveal reveal-delay-3">
+            <div class="stat-number">
+              <span>&lt;</span><span class="counting" data-target="5">0</span><span>min</span>
+            </div>
+            <div class="stat-label">Average Scan Time</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ HOW IT WORKS ═══ -->
+    <section class="how-it-works" id="how-it-works">
+      <div class="container">
+        <div class="section-tag reveal">// Process</div>
+        <h2 class="section-title reveal">Three steps to secure.</h2>
+
+        <div class="steps-grid">
+          <div class="step-card reveal">
+            <div class="step-num">01</div>
+            <div class="step-icon">&#9906;</div>
+            <h3>Enter your target</h3>
+            <p>
+              Drop in your website URL, IP address, or domain. Our scanner accepts any publicly
+              accessible target.
+            </p>
+          </div>
+          <div class="step-card reveal reveal-delay-1">
+            <div class="step-num">02</div>
+            <div class="step-icon">&#9881;</div>
+            <h3>We probe everything</h3>
+            <p>
+              Port scanning, vulnerability detection, OWASP Top 10 checks, SSL analysis, header
+              inspection, and more &mdash; all automated.
+            </p>
+          </div>
+          <div class="step-card reveal reveal-delay-2">
+            <div class="step-num">03</div>
+            <div class="step-icon">&#9888;</div>
+            <h3>Get your report</h3>
+            <p>
+              Detailed findings ranked by severity with remediation steps. Know exactly what to fix
+              and how &mdash; no security degree needed.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ WHAT WE FIND ═══ -->
+    <section class="findings">
+      <div class="container">
+        <div class="section-tag reveal">// Detections</div>
+        <h2 class="section-title reveal">What we catch.</h2>
+
+        <div class="findings-grid">
+          <div class="finding-item reveal">
+            <span class="finding-severity severity-critical">CRITICAL</span>
+            <div class="finding-text">
+              <h4>SQL Injection</h4>
+              <p>Database queries accepting unsanitized input &mdash; full data breach risk.</p>
+            </div>
+          </div>
+          <div class="finding-item reveal reveal-delay-1">
+            <span class="finding-severity severity-critical">CRITICAL</span>
+            <div class="finding-text">
+              <h4>Remote Code Execution</h4>
+              <p>Server-side flaws allowing attackers to run arbitrary commands.</p>
+            </div>
+          </div>
+          <div class="finding-item reveal">
+            <span class="finding-severity severity-high">HIGH</span>
+            <div class="finding-text">
+              <h4>Cross-Site Scripting (XSS)</h4>
+              <p>Injected scripts stealing sessions, credentials, and user data.</p>
+            </div>
+          </div>
+          <div class="finding-item reveal reveal-delay-1">
+            <span class="finding-severity severity-high">HIGH</span>
+            <div class="finding-text">
+              <h4>Broken Authentication</h4>
+              <p>Weak login flows, session hijacking, missing rate limits.</p>
+            </div>
+          </div>
+          <div class="finding-item reveal">
+            <span class="finding-severity severity-medium">MEDIUM</span>
+            <div class="finding-text">
+              <h4>Security Misconfigurations</h4>
+              <p>Exposed admin panels, default credentials, verbose error pages.</p>
+            </div>
+          </div>
+          <div class="finding-item reveal reveal-delay-1">
+            <span class="finding-severity severity-medium">MEDIUM</span>
+            <div class="finding-text">
+              <h4>Missing Security Headers</h4>
+              <p>No CSP, HSTS, X-Frame-Options &mdash; easy wins most sites miss.</p>
+            </div>
+          </div>
+          <div class="finding-item reveal">
+            <span class="finding-severity severity-info">INFO</span>
+            <div class="finding-text">
+              <h4>SSL/TLS Issues</h4>
+              <p>Expired certs, weak ciphers, protocol downgrade vulnerabilities.</p>
+            </div>
+          </div>
+          <div class="finding-item reveal reveal-delay-1">
+            <span class="finding-severity severity-info">INFO</span>
+            <div class="finding-text">
+              <h4>Open Ports &amp; Services</h4>
+              <p>Unnecessary services exposed to the internet, increasing attack surface.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PRICING ═══ -->
+    <section class="pricing" id="pricing">
+      <div class="container">
+        <div class="section-tag reveal">// Pricing</div>
+        <h2 class="section-title reveal">Pick your scan depth.</h2>
+
+        <div class="pricing-grid">
+          <div class="price-card reveal">
+            <div class="price-tier">Recon</div>
+            <h3>Quick Scan</h3>
+            <p class="price-desc">
+              Port scan and service detection. See what's exposed to the internet.
+            </p>
+            <div class="price-amount free"><span class="dollar">$</span>0</div>
+            <ul class="price-features">
+              <li>Nmap port scan (1000 ports)</li>
+              <li>Service version detection</li>
+              <li>OS fingerprinting</li>
+              <li>Open port report</li>
+              <li>Email delivery</li>
+            </ul>
+            <button class="price-btn" onclick="selectPlan('quick')">Start Free Scan</button>
+          </div>
+
+          <div class="price-card featured reveal reveal-delay-1">
+            <div class="price-badge">Most Popular</div>
+            <div class="price-tier">Hunter</div>
+            <h3>Full Security Audit</h3>
+            <p class="price-desc">
+              Deep vulnerability scanning with OWASP Top 10 coverage and CVE detection.
+            </p>
+            <div class="price-amount"><span class="dollar">$</span>49</div>
+            <ul class="price-features">
+              <li>Everything in Quick Scan</li>
+              <li>Nuclei vulnerability scanner</li>
+              <li>CVE detection (10,000+ templates)</li>
+              <li>OWASP Top 10 checks</li>
+              <li>SSL/TLS analysis</li>
+              <li>Severity-ranked report</li>
+              <li>Remediation guidance</li>
+            </ul>
+            <button class="price-btn primary" onclick="selectPlan('full')">Get Full Audit</button>
+          </div>
+
+          <div class="price-card reveal reveal-delay-2">
+            <div class="price-tier">Fortress</div>
+            <h3>Deep Web Audit</h3>
+            <p class="price-desc">
+              Everything plus dynamic application testing. The full penetration test experience.
+            </p>
+            <div class="price-amount"><span class="dollar">$</span>149</div>
+            <ul class="price-features">
+              <li>Everything in Full Audit</li>
+              <li>ZAP DAST spider + active scan</li>
+              <li>Dynamic application testing</li>
+              <li>Authentication flow testing</li>
+              <li>API endpoint discovery</li>
+              <li>Detailed PDF report</li>
+              <li>30-day rescan included</li>
+              <li>Priority email support</li>
+            </ul>
+            <button class="price-btn" onclick="selectPlan('web')">Go Deep</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ TRUST ═══ -->
+    <section class="trust">
+      <div class="container">
+        <div class="trust-grid">
+          <div class="trust-item reveal">
+            <div class="trust-icon">&#128274;</div>
+            <h4>Enterprise-Grade Tools</h4>
+            <p>
+              Same scanning engines used by Fortune 500 security teams. Nmap, Nuclei, OWASP ZAP.
+            </p>
+          </div>
+          <div class="trust-item reveal reveal-delay-1">
+            <div class="trust-icon">&#9889;</div>
+            <h4>Results in Minutes</h4>
+            <p>
+              Not weeks. Our automated pipeline delivers findings faster than any manual pentest.
+            </p>
+          </div>
+          <div class="trust-item reveal reveal-delay-2">
+            <div class="trust-icon">&#128209;</div>
+            <h4>Actionable Reports</h4>
+            <p>
+              Every finding includes severity rating, technical details, and step-by-step
+              remediation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ FAQ ═══ -->
+    <section class="faq" id="faq">
+      <div class="container">
+        <div class="section-tag reveal">// FAQ</div>
+        <h2 class="section-title reveal">Common questions.</h2>
+
+        <div class="faq-list">
+          <div class="faq-item reveal">
+            <button class="faq-q">Is this legal? <span class="arrow">+</span></button>
+            <div class="faq-a">
+              <p>
+                Yes. You should only scan websites and servers that you own or have explicit
+                permission to test. Our terms require authorization before scanning any target.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item reveal">
+            <button class="faq-q">How long does a scan take? <span class="arrow">+</span></button>
+            <div class="faq-a">
+              <p>
+                Quick scans complete in 1&ndash;3 minutes. Full audits take 5&ndash;15 minutes
+                depending on the target size. Deep web audits can take up to 30 minutes for large
+                applications.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item reveal">
+            <button class="faq-q">
+              Will the scan affect my website? <span class="arrow">+</span>
+            </button>
+            <div class="faq-a">
+              <p>
+                Quick and Full scans are non-intrusive &mdash; they probe but don't modify anything.
+                Deep Web Audits use active scanning that sends test payloads, but nothing
+                destructive. We recommend running deep scans during low-traffic periods.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item reveal">
+            <button class="faq-q">What tools do you use? <span class="arrow">+</span></button>
+            <div class="faq-a">
+              <p>
+                Nmap for network reconnaissance, Nuclei for vulnerability detection with 10,000+
+                community templates, and OWASP ZAP for dynamic application security testing. These
+                are industry-standard open-source tools trusted by security professionals worldwide.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item reveal">
+            <button class="faq-q">
+              Can I rescan after fixing issues? <span class="arrow">+</span>
+            </button>
+            <div class="faq-a">
+              <p>
+                Free scans can be run anytime. Full Audit includes one free rescan within 7 days.
+                Deep Web Audit includes unlimited rescans for 30 days. We want you to verify your
+                fixes.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item reveal">
+            <button class="faq-q">
+              Do you offer remediation services? <span class="arrow">+</span>
+            </button>
+            <div class="faq-a">
+              <p>
+                Yes. If your scan reveals issues you need help fixing, our team can handle
+                remediation. Contact us after receiving your report for a custom quote.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ CTA ═══ -->
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-box reveal">
+          <h2>Your website has vulnerabilities.<br />Find them tonight.</h2>
+          <p>
+            98% of websites we scan have at least one security issue. Most don't know until it's too
+            late.
+          </p>
+          <a href="#scan" class="cta-btn">Start Free Scan</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-inner">
+          <div class="footer-brand">NightOwl Security &copy; 2026</div>
+          <div class="footer-links">
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+            <a href="mailto:security@example.com">Contact</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      /* ═══ COUNTER ANIMATION ═══ */
+      function animateCounters() {
+        document.querySelectorAll(".counting").forEach((el) => {
+          const target = parseInt(el.dataset.target);
+          const duration = 2000;
+          const start = performance.now();
+
+          function tick(now) {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = Math.floor(eased * target).toLocaleString();
+            if (progress < 1) requestAnimationFrame(tick);
+            else el.textContent = target.toLocaleString();
+          }
+          requestAnimationFrame(tick);
+        });
+      }
+
+      /* ═══ REVEAL ON SCROLL ═══ */
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              if (entry.target.closest(".stats")) animateCounters();
+            }
+          });
+        },
+        { threshold: 0.15 },
+      );
+
+      document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+
+      /* ═══ FAQ TOGGLE ═══ */
+      document.querySelectorAll(".faq-q").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const item = btn.parentElement;
+          const isOpen = item.classList.contains("open");
+          document.querySelectorAll(".faq-item.open").forEach((i) => i.classList.remove("open"));
+          if (!isOpen) item.classList.add("open");
+        });
+      });
+
+      /* ═══ PLAN SELECTION ═══ */
+      function selectPlan(type) {
+        document.getElementById("scanType").value = type;
+        document.getElementById("scanUrl").focus();
+        document.querySelector(".scan-box").scrollIntoView({ behavior: "smooth", block: "center" });
+
+        const labels = {
+          quick: "Free Quick Scan",
+          full: "Full Security Audit — $49",
+          web: "Deep Web Audit — $149",
+        };
+        document.querySelector(".scan-box-header").innerHTML =
+          '<span style="animation:pulse 2s ease-in-out infinite"></span> ' + labels[type];
+      }
+
+      /* ═══ SCAN FORM ═══ */
+      document.getElementById("scanForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const url = document.getElementById("scanUrl").value.trim();
+        const email = document.getElementById("scanEmail").value.trim();
+        const scanType = document.getElementById("scanType").value;
+        const btn = document.querySelector(".scan-btn");
+        const results = document.getElementById("scanResults");
+        const terminal = document.getElementById("scanTerminal");
+
+        if (!url || !email) return;
+
+        btn.textContent = "Scanning...";
+        btn.disabled = true;
+        results.classList.add("active");
+        terminal.innerHTML = "";
+
+        const lines = [
+          { text: `$ nightowl scan --target ${url} --type ${scanType}`, cls: "line-prompt" },
+          { text: `[*] Initializing NightOwl scanner v2.1...`, cls: "line-info", delay: 400 },
+          { text: `[*] Resolving target: ${url}`, cls: "line-info", delay: 800 },
+          { text: `[*] Starting port scan (TCP SYN)...`, cls: "line-info", delay: 1200 },
+          { text: `[+] Port 80/tcp open — HTTP`, cls: "line-ok", delay: 2000 },
+          { text: `[+] Port 443/tcp open — HTTPS`, cls: "line-ok", delay: 2400 },
+          { text: `[+] Port 22/tcp open — SSH`, cls: "line-warn", delay: 2800 },
+          { text: `[*] Enumerating services...`, cls: "line-info", delay: 3400 },
+          { text: `[!] Missing security header: X-Frame-Options`, cls: "line-warn", delay: 4000 },
+          {
+            text: `[!] Missing security header: Content-Security-Policy`,
+            cls: "line-warn",
+            delay: 4400,
+          },
+        ];
+
+        if (scanType !== "quick") {
+          lines.push(
+            {
+              text: `[*] Running Nuclei vulnerability templates...`,
+              cls: "line-info",
+              delay: 5000,
+            },
+            {
+              text: `[!!] CVE-2024-xxxxx — Potential XSS in query parameter`,
+              cls: "line-crit",
+              delay: 6000,
+            },
+            { text: `[!] Outdated server software detected`, cls: "line-warn", delay: 6500 },
+          );
+        }
+
+        lines.push(
+          { text: ``, cls: "line-info", delay: scanType === "quick" ? 5000 : 7000 },
+          {
+            text: `[*] Scan complete. Full report sent to ${email}`,
+            cls: "line-ok",
+            delay: scanType === "quick" ? 5500 : 7500,
+          },
+        );
+
+        lines.forEach((line) => {
+          setTimeout(() => {
+            const div = document.createElement("div");
+            div.className = line.cls;
+            div.textContent = line.text;
+            terminal.appendChild(div);
+            terminal.scrollTop = terminal.scrollHeight;
+          }, line.delay || 0);
+        });
+
+        // Actually submit to backend
+        try {
+          const resp = await fetch("/api/security/scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url, email, scan_type: scanType }),
+          });
+          const data = await resp.json();
+
+          setTimeout(
+            () => {
+              btn.textContent = "Scan Submitted";
+              if (data.scan_id) {
+                const div = document.createElement("div");
+                div.className = "line-ok";
+                div.textContent = `[*] Scan ID: ${data.scan_id} — You'll receive the full report via email.`;
+                terminal.appendChild(div);
+              }
+            },
+            scanType === "quick" ? 6000 : 8000,
+          );
+        } catch (err) {
+          setTimeout(
+            () => {
+              btn.textContent = "Scan Now";
+              btn.disabled = false;
+              const div = document.createElement("div");
+              div.className = "line-ok";
+              div.textContent = `[*] Scan queued. We'll email your report to ${email} shortly.`;
+              terminal.appendChild(div);
+            },
+            scanType === "quick" ? 6000 : 8000,
+          );
+        }
+      });
+    </script>
+  </body>
+</html>
