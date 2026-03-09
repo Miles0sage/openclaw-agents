@@ -340,28 +340,50 @@ async def ws_job_monitor(websocket: WebSocket, job_id: str):
 
     ws_mgr = get_ws_manager()
     monitor = get_job_monitor()
+    poll_interval_seconds = 1.0
+    heartbeat_interval_seconds = 30.0
 
     await websocket.accept()
     ws_mgr.connect(job_id, websocket)
     logger.info(f"[WS-MONITOR] Client connected for job {job_id}")
 
     try:
-        # Send initial state snapshot
-        state = monitor.get_live_state(job_id)
-        await websocket.send_json({"type": "snapshot", "job_id": job_id, "state": state})
+        last_state_signature = ""
+        last_heartbeat_at = time.monotonic()
 
-        # Keep connection alive — events are pushed via broadcast
+        async def send_state(message_type: str) -> bool:
+            nonlocal last_state_signature
+
+            state = monitor.get_live_state(job_id)
+            state_signature = json.dumps(state, sort_keys=True, default=str)
+            if message_type == "snapshot" or state_signature != last_state_signature:
+                await websocket.send_json({"type": message_type, "job_id": job_id, "state": state})
+                last_state_signature = state_signature
+                return True
+            return False
+
+        # Send initial state snapshot
+        await send_state("snapshot")
+
+        # Poll the live state so the client sees updates even if no explicit
+        # broadcast hook is wired from the event engine yet.
         while True:
             try:
-                msg = await asyncio.wait_for(websocket.receive_text(), timeout=30)
+                msg = await asyncio.wait_for(
+                    websocket.receive_text(),
+                    timeout=poll_interval_seconds,
+                )
                 if msg == "ping":
                     await websocket.send_json({"type": "pong"})
                 elif msg == "refresh":
-                    state = monitor.get_live_state(job_id)
-                    await websocket.send_json({"type": "snapshot", "job_id": job_id, "state": state})
+                    await send_state("snapshot")
             except asyncio.TimeoutError:
-                # Send keepalive
-                await websocket.send_json({"type": "heartbeat", "ts": time.time()})
+                sent_update = await send_state("update")
+                now = time.monotonic()
+
+                if not sent_update and now - last_heartbeat_at >= heartbeat_interval_seconds:
+                    await websocket.send_json({"type": "heartbeat", "ts": time.time()})
+                    last_heartbeat_at = now
     except Exception as e:
         logger.info(f"[WS-MONITOR] Client disconnected for job {job_id}: {e}")
     finally:
