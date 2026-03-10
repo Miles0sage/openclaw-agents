@@ -16,7 +16,6 @@ COPY pa_tools ./pa_tools
 COPY services ./services
 COPY static ./static
 COPY public ./public
-COPY dashboard_app ./dashboard_app
 COPY templates ./templates
 COPY config.json ./config.json
 COPY CLAUDE.md ./CLAUDE.md
