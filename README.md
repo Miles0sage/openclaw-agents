@@ -102,6 +102,23 @@ curl http://localhost:8000/api/jobs
 
 ---
 
+### Supabase (Optional)
+
+By default OpenClaw stores jobs locally in JSON files — no database needed. For production use with multiple devices, real-time queries, and job history persistence, you can connect Supabase:
+
+1. Create a free project at [supabase.com](https://supabase.com)
+2. Run the migration: Go to SQL Editor → paste contents of `supabase/migrations/001_create_jobs.sql` → Run
+3. Add to your `.env`:
+   ```
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_SERVICE_KEY=your-service-role-key
+   ```
+4. Restart the gateway — it auto-detects Supabase and switches from local JSON
+
+That's it. All existing features work identically in both modes.
+
+---
+
 ## Configuration
 
 ### Environment Variables
