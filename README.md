@@ -38,18 +38,27 @@ curl http://localhost:18789/health
 ```python
 import httpx
 
-task = {
-    "description": "Add dark mode toggle to login button",
-    "priority": "high"
-}
-
 response = httpx.post(
-    "http://localhost:18789/job",
-    json=task,
-    headers={"Authorization": "Bearer YOUR_API_KEY"}
+    "http://localhost:18789/api/job/create",
+    json={
+        "project": "my-project",
+        "task": "Add dark mode toggle to login button",
+        "priority": "P1"
+    },
+    headers={"X-Auth-Token": "YOUR_GATEWAY_TOKEN"}
 )
 
 print(response.json())
+# {"job_id": "job-20260310-...", "status": "pending"}
+```
+
+**Send a task (curl):**
+
+```bash
+curl -X POST http://localhost:18789/api/job/create \
+  -H "X-Auth-Token: YOUR_GATEWAY_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"project": "my-project", "task": "Add dark mode toggle", "priority": "P1"}'
 ```
 
 ---
@@ -111,7 +120,7 @@ pytest tests/ -k "agent_routing"
 # With coverage report
 pytest --cov=openclaw tests/
 
-# 199 tests covering agent routing, error recovery, cost gating, LLM fallback, tool execution, and reflexion
+# 592 tests covering agent routing, error recovery, cost gating, LLM fallback, tool execution, and reflexion
 ```
 
 ---
@@ -157,7 +166,7 @@ Costs vary by task complexity and agent selection. All costs include 4-tier LLM 
 **v4.2 Results:**
 - 90%+ success rate across all job types
 - 12 seconds for simple tasks, 3 min for complex refactors
-- Full test suite: 170+ tests in 0.23 seconds
+- Full test suite: 592 tests in 0.72 seconds
 - ~$40/month for typical usage (including fallback chain)
 
 ---
@@ -187,7 +196,7 @@ See `CLAUDE.md` for agent personas and routing rules. See `ARCHITECTURE.md` for 
 | 12 Agents | ✅ Deployed |
 | 75+ Tools | ✅ Integrated |
 | Error Recovery | ✅ 3-tier fallback + reflexion |
-| Testing | ✅ 199 tests |
+| Testing | ✅ 592 tests |
 | Stripe Integration | ⏳ In progress |
 
 ---
@@ -205,4 +214,4 @@ See `CLAUDE.md` for agent personas and routing rules. See `ARCHITECTURE.md` for 
 - [Contributing](CONTRIBUTING.md) — Development guide
 - [Issues](https://github.com/Miles0sage/openclaw-agents/issues) — Feature requests and bug reports
 
-**OpenClaw v4.2** · Last updated 2026-03-07
+**OpenClaw v4.2** · Last updated 2026-03-10
