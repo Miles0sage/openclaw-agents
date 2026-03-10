@@ -74,6 +74,7 @@ from routers.dispatch import router as dispatch_router
 from routers.cursor_tasks import router as cursor_router
 from routers.brick_builder import router as brick_builder_router
 from routers.analytics import router as analytics_router
+from routers.portal import router as portal_router
 
 # Optional: research router
 try:
@@ -476,6 +477,7 @@ app.include_router(dispatch_router)
 app.include_router(cursor_router)
 app.include_router(brick_builder_router)
 app.include_router(analytics_router)
+app.include_router(portal_router)
 app.include_router(extra_router)
 if research_router:
     app.include_router(research_router)
