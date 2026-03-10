@@ -483,7 +483,8 @@ if research_router:
 # Static files
 app.mount("/static", StaticFiles(directory="./static"), name="static")
 app.mount("/dashboard/v2", StaticFiles(directory="./public/dashboard"), name="dashboard_v2")
-app.mount("/dashboard_app", StaticFiles(directory="./dashboard_app"), name="dashboard_app")
+if os.path.isdir("./dashboard_app"):
+    app.mount("/dashboard_app", StaticFiles(directory="./dashboard_app"), name="dashboard_app")
 
 # Analytics dashboard (React app built by Cursor)
 _analytics_dir = "./public/analytics-dashboard"
