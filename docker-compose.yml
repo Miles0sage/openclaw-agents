@@ -7,6 +7,7 @@ services:
       - .env
     environment:
       PORT: 8000
+      GATEWAY_AUTH_TOKEN: ${GATEWAY_AUTH_TOKEN:-dev-token}
     ports:
       - "8000:8000"
     volumes:

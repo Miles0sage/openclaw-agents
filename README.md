@@ -105,16 +105,13 @@ curl http://localhost:8000/api/jobs
 ## Quick Start with Docker
 
 ```bash
-# Clone
 git clone https://github.com/Miles0sage/openclaw-agents.git
 cd openclaw-agents
-
-# Configure
 cp .env.example .env
-# Edit .env — set GATEWAY_AUTH_TOKEN and at least one LLM provider key
-
-# Start gateway + dashboard
-docker compose up --build
+# Edit .env with your API keys
+docker compose up
+# Gateway: http://localhost:8000
+# Dashboard: http://localhost:3000
 ```
 
 The gateway will be available at `http://localhost:8000` and the Next.js dashboard at `http://localhost:3000`.
