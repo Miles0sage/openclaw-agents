@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { getApiBaseUrl, phaseLabel } from "@/lib/format";
+import { useSSE } from "@/hooks/useSSE";
+import { formatPhaseLabel, formatTimestamp, type JobStreamEvent } from "@/lib/monitoring";
 
 interface LogStreamProps {
   jobId: string;
@@ -10,115 +11,92 @@ interface LogStreamProps {
 
 interface LogLine {
   id: string;
-  tone: "default" | "tool" | "error" | "phase";
   timestamp: string;
   message: string;
+  tone: "default" | "tool" | "error" | "phase";
 }
 
-const EVENT_TYPES = [
-  "connected",
-  "phase_change",
-  "tool_call",
-  "tool_result",
-  "progress",
-  "error",
-  "complete",
-] as const;
-
-function toMessage(type: string, payload: Record<string, unknown>): LogLine {
-  const timestamp = String(payload.timestamp || new Date().toISOString());
-  const id = `${timestamp}:${type}:${String(payload.tool_name || "")}:${String(payload.message || "")}`;
-
-  if (type === "phase_change") {
-    return {
-      id,
-      tone: "phase",
-      timestamp,
-      message: `phase ${phaseLabel(String(payload.phase || "research"))}`,
-    };
+function summarizeToolInput(input: Record<string, unknown> | null): string {
+  if (!input) {
+    return "";
   }
 
-  if (type === "tool_call") {
-    return {
-      id,
-      tone: "tool",
-      timestamp,
-      message: `call ${String(payload.tool_name || "tool")} ${JSON.stringify(payload.tool_input || {})}`,
-    };
-  }
+  const serialized = JSON.stringify(input);
+  return serialized.length > 120 ? `${serialized.slice(0, 117)}...` : serialized;
+}
 
-  if (type === "tool_result") {
-    return {
-      id,
-      tone: "default",
-      timestamp,
-      message: `result ${String(payload.tool_name || "tool")} ${String(payload.tool_result || "")}`,
-    };
-  }
+function toLogLine(event: JobStreamEvent): LogLine {
+  const id = [
+    event.timestamp,
+    event.eventType,
+    event.toolName,
+    event.message,
+    event.toolResult.slice(0, 32),
+  ]
+    .filter(Boolean)
+    .join(":");
 
-  if (type === "error") {
-    return {
-      id,
-      tone: "error",
-      timestamp,
-      message: String(payload.message || "Job failed"),
-    };
+  switch (event.eventType) {
+    case "phase_change":
+      return {
+        id,
+        timestamp: event.timestamp,
+        message: `phase ${formatPhaseLabel(event.phase)}`,
+        tone: "phase",
+      };
+    case "tool_call":
+      return {
+        id,
+        timestamp: event.timestamp,
+        message: `call ${event.toolName} ${summarizeToolInput(event.toolInput)}`.trim(),
+        tone: "tool",
+      };
+    case "tool_result":
+      return {
+        id,
+        timestamp: event.timestamp,
+        message: `result ${event.toolName} ${event.toolResult}`.trim(),
+        tone: "default",
+      };
+    case "error":
+      return {
+        id,
+        timestamp: event.timestamp,
+        message: event.message || "job failed",
+        tone: "error",
+      };
+    case "complete":
+      return {
+        id,
+        timestamp: event.timestamp,
+        message: event.message || "job completed",
+        tone: "default",
+      };
+    default:
+      return {
+        id,
+        timestamp: event.timestamp,
+        message: event.message || "stream update received",
+        tone: "default",
+      };
   }
-
-  return {
-    id,
-    tone: "default",
-    timestamp,
-    message: String(payload.message || "Event received"),
-  };
 }
 
 export function LogStream({ jobId }: LogStreamProps) {
+  const { data, isConnected, error } = useSSE(jobId);
   const [lines, setLines] = useState<LogLine[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
-  const streamUrl = `${getApiBaseUrl()}/api/analytics/stream/${jobId}`;
 
   useEffect(() => {
-    const source = new EventSource(streamUrl);
-
-    source.onopen = () => setError(null);
-    source.onerror = () => setError("Log stream unavailable.");
-
-    const handleEvent = (event: Event) => {
-      if (!("data" in event) || typeof event.data !== "string") {
-        return;
-      }
-
-      try {
-        const payload = JSON.parse(event.data) as Record<string, unknown>;
-        setLines((current) => [...current, toMessage(event.type, payload)].slice(-500));
-      } catch {
-        setLines((current) =>
-          [
-            ...current,
-            {
-              id: `${Date.now()}:raw`,
-              tone: "default" as const,
-              timestamp: new Date().toISOString(),
-              message: String(event.data),
-            },
-          ].slice(-500),
-        );
-      }
-    };
-
-    for (const eventType of EVENT_TYPES) {
-      source.addEventListener(eventType, handleEvent);
+    if (!data) {
+      return;
     }
 
-    return () => {
-      for (const eventType of EVENT_TYPES) {
-        source.removeEventListener(eventType, handleEvent);
-      }
-      source.close();
-    };
-  }, [streamUrl]);
+    setLines((current) => {
+      const next = [...current, toLogLine(data)];
+      return next.slice(-500);
+    });
+  }, [data]);
 
   useEffect(() => {
     if (viewportRef.current) {
@@ -127,45 +105,32 @@ export function LogStream({ jobId }: LogStreamProps) {
   }, [lines]);
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-slate-950/90 p-6">
-      <div className="flex items-start justify-between">
+    <section className="panel panel-terminal">
+      <div className="panel-header">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-300">Live Log</p>
-          <h2 className="mt-2 text-2xl font-semibold text-white">SSE stream</h2>
+          <p className="eyebrow">Live Log</p>
+          <h2 className="panel-title">Execution stream</h2>
         </div>
+        <span className="badge">{isConnected ? "Streaming" : "Waiting"}</span>
       </div>
 
-      <div
-        ref={viewportRef}
-        className="mt-6 h-[26rem] overflow-auto rounded-2xl border border-white/8 bg-black/40 p-4 font-mono text-sm"
-      >
+      <div ref={viewportRef} className="log-console" role="log" aria-live="polite">
         {lines.length === 0 ? (
-          <p className="text-slate-500">No data</p>
-        ) : (
-          <div className="space-y-3">
-            {lines.map((line) => (
-              <div key={line.id} className="grid grid-cols-[88px_1fr] gap-3">
-                <span className="text-slate-500">{new Date(line.timestamp).toLocaleTimeString()}</span>
-                <span
-                  className={
-                    line.tone === "tool"
-                      ? "text-cyan-300"
-                      : line.tone === "error"
-                        ? "text-rose-300"
-                        : line.tone === "phase"
-                          ? "text-orange-300"
-                          : "text-slate-100"
-                  }
-                >
-                  {line.message}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+          <p className="log-line">
+            <span className="log-time">--:--:--</span>
+            <span className="log-message">waiting for stream events…</span>
+          </p>
+        ) : null}
+
+        {lines.map((line) => (
+          <p key={line.id} className={`log-line log-line-${line.tone}`}>
+            <span className="log-time">{formatTimestamp(line.timestamp)}</span>
+            <span className="log-message">{line.message}</span>
+          </p>
+        ))}
       </div>
 
-      {error ? <p className="mt-4 text-sm text-rose-300">{error}</p> : null}
+      {error ? <p className="error-copy">{error}</p> : null}
     </section>
   );
 }
