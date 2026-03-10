@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms of Service — Overseer AI Agency</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap");
+
+      :root {
+        --bg: #08090c;
+        --surface: #0f1116;
+        --surface-2: #151820;
+        --surface-3: #1a1e28;
+        --border: #1e2230;
+        --text: #d4d8e8;
+        --text-bright: #eef0f8;
+        --text-muted: #6a7094;
+        --amber: #e8a832;
+        --green: #45c882;
+        --red: #e84545;
+        --blue: #4588e8;
+        --purple: #8b5cf6;
+        --cyan: #22d3ee;
+      }
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Outfit", system-ui, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+
+      /* Noise texture overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        opacity: 0.025;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+        background-repeat: repeat;
+        background-size: 256px 256px;
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      /* Navigation */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: rgba(8, 9, 12, 0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .nav-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        text-decoration: none;
+      }
+
+      .nav-logo {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 0.5rem;
+        background: var(--amber);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        font-size: 0.875rem;
+        color: var(--bg);
+      }
+
+      .nav-brand span {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        color: var(--text-bright);
+      }
+
+      .nav-cta {
+        display: inline-block;
+        background: var(--amber);
+        color: var(--bg);
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 600;
+        font-size: 0.8125rem;
+        padding: 0.5rem 1.25rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .nav-cta:hover {
+        opacity: 0.85;
+      }
+
+      /* Main content */
+      main {
+        flex: 1;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 7rem 1.5rem 4rem;
+        width: 100%;
+      }
+
+      /* Header */
+      .page-header {
+        margin-bottom: 3rem;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--amber);
+        background: rgba(232, 168, 50, 0.08);
+        border: 1px solid rgba(232, 168, 50, 0.15);
+        padding: 0.375rem 1rem;
+        border-radius: 100px;
+        margin-bottom: 1.5rem;
+      }
+
+      h1 {
+        font-family: "JetBrains Mono", monospace;
+        font-size: clamp(2rem, 5vw, 2.75rem);
+        font-weight: 700;
+        color: var(--text-bright);
+        margin-bottom: 1rem;
+        line-height: 1.2;
+      }
+
+      .last-updated {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+
+      .header-intro {
+        font-size: 1.0625rem;
+        color: var(--text-muted);
+        line-height: 1.75;
+      }
+
+      /* Content card */
+      .content-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 2.5rem;
+      }
+
+      .content-card h2 {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-bright);
+        margin-top: 2.5rem;
+        margin-bottom: 0.875rem;
+        padding-bottom: 0.625rem;
+        border-bottom: 1px solid rgba(232, 168, 50, 0.15);
+      }
+
+      .content-card h2::before {
+        content: "";
+        display: inline-block;
+        width: 3px;
+        height: 1em;
+        background: var(--amber);
+        border-radius: 2px;
+        margin-right: 0.625rem;
+        vertical-align: -1px;
+      }
+
+      .content-card h2:first-child {
+        margin-top: 0;
+      }
+
+      .content-card p {
+        font-size: 1rem;
+        line-height: 1.8;
+        color: var(--text);
+        margin-bottom: 0.875rem;
+      }
+
+      .content-card ul {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 1rem;
+      }
+
+      .content-card li {
+        font-size: 1rem;
+        line-height: 1.8;
+        color: var(--text);
+        margin-bottom: 0.625rem;
+        padding-left: 1.375rem;
+        position: relative;
+      }
+
+      .content-card li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.75em;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--amber);
+        opacity: 0.6;
+      }
+
+      .content-card strong {
+        color: var(--text-bright);
+        font-weight: 600;
+      }
+
+      /* Back links */
+      .back-links {
+        margin-top: 2.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .back-links a {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8125rem;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      .back-link-home {
+        color: var(--text-muted);
+      }
+
+      .back-link-home:hover {
+        color: var(--amber);
+      }
+
+      .back-link-portal {
+        color: var(--amber);
+        opacity: 0.7;
+      }
+
+      .back-link-portal:hover {
+        opacity: 1;
+      }
+
+      /* Footer */
+      footer {
+        border-top: 1px solid var(--border);
+        background: var(--surface);
+        padding: 2.5rem 1.5rem;
+        margin-top: 3rem;
+      }
+
+      .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .footer-logo {
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: 0.5rem;
+        background: var(--amber);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        font-size: 0.75rem;
+        color: var(--bg);
+      }
+
+      .footer-brand span {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--text-bright);
+      }
+
+      .footer-links {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .footer-links a {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      .footer-links a:hover {
+        color: var(--text-bright);
+      }
+
+      .footer-links a.active {
+        color: var(--text);
+      }
+
+      .footer-copy {
+        font-size: 0.8125rem;
+        color: rgba(106, 112, 148, 0.5);
+      }
+
+      /* Responsive */
+      @media (max-width: 640px) {
+        .content-card {
+          padding: 1.5rem;
+        }
+
+        .footer-inner {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="nav-inner">
+        <a href="/" class="nav-brand">
+          <div class="nav-logo">O</div>
+          <span>Overseer</span>
+        </a>
+        <a href="/client_portal.html" class="nav-cta">Client Portal</a>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <main>
+      <!-- Header -->
+      <div class="page-header">
+        <div class="badge">Legal</div>
+        <h1>Terms of Service</h1>
+        <p class="last-updated">Last updated: February 2026</p>
+        <p class="header-intro">
+          These Terms of Service govern your use of the Overseer AI Agency platform ("Service"),
+          operated by Overseer AI Agency at <your-domain>. By accessing or using the Service, you
+          agree to be bound by these terms.
+        </p>
+      </div>
+
+      <div class="content-card">
+        <!-- Section 1 -->
+        <h2>1. Service Description</h2>
+        <p>
+          Overseer AI Agency provides an
+          <strong>AI-powered code generation and delivery service</strong>. The Service enables
+          clients to submit software engineering tasks which are executed by a pipeline of
+          autonomous AI agents. Upon completion, deliverables are provided as GitHub pull requests
+          containing generated source code, tests, and documentation.
+        </p>
+        <p>
+          The Service includes: task submission via the client portal, autonomous multi-agent
+          execution, automated quality verification, GitHub pull request delivery, real-time job
+          status monitoring, and usage-based billing.
+        </p>
+
+        <!-- Section 2 -->
+        <h2>2. AI-Generated Code Disclaimer</h2>
+        <p>
+          <strong>All code delivered by the Service is generated by AI agents.</strong> You
+          acknowledge and agree that:
+        </p>
+        <ul>
+          <li>
+            AI-generated code may contain errors, bugs, or security vulnerabilities not detected by
+            automated quality gates.
+          </li>
+          <li>
+            <strong>You are solely responsible</strong> for reviewing all delivered code before
+            deploying it to any production environment.
+          </li>
+          <li>
+            The Service makes no warranty of fitness for any particular purpose. Delivered code is a
+            starting point, not a finished product.
+          </li>
+          <li>
+            Quality gates reduce — but do not eliminate — the possibility of defects in delivered
+            code.
+          </li>
+          <li>
+            Human review by a qualified engineer is strongly recommended before production use.
+          </li>
+        </ul>
+
+        <!-- Section 3 -->
+        <h2>3. Liability Limitations</h2>
+        <p>
+          The Service is provided <strong>"as is" without warranty of any kind</strong>, express or
+          implied, including but not limited to warranties of merchantability, fitness for a
+          particular purpose, or non-infringement.
+        </p>
+        <p>To the maximum extent permitted by applicable law:</p>
+        <ul>
+          <li>
+            <strong>Liability cap:</strong> Overseer AI Agency's total liability to you for any
+            claim arising from use of the Service shall not exceed the fees you paid in the twelve
+            (12) months immediately preceding the event giving rise to the claim.
+          </li>
+          <li>
+            <strong>Excluded damages:</strong> Overseer AI Agency shall not be liable for any
+            indirect, incidental, special, consequential, or punitive damages, including loss of
+            revenue, loss of data, loss of profits, or business interruption, even if advised of the
+            possibility of such damages.
+          </li>
+          <li>
+            You agree to indemnify and hold harmless Overseer AI Agency from any claims arising from
+            your use of delivered code in production environments.
+          </li>
+        </ul>
+
+        <!-- Section 4 -->
+        <h2>4. Refund Policy</h2>
+        <p>Billing is governed by the following rules:</p>
+        <ul>
+          <li>
+            <strong>Failed jobs:</strong> Jobs that do not pass automated quality gates are
+            <strong>not billed</strong>
+            and the job credit is returned to your account.
+          </li>
+          <li>
+            <strong>Completed jobs:</strong> Successfully delivered jobs (quality gates passed, PR
+            created) are <strong>non-refundable</strong>, regardless of whether you merge the pull
+            request.
+          </li>
+          <li>
+            <strong>Subscription fees:</strong> Monthly subscription fees are non-refundable unless
+            the Service experiences a verified outage exceeding 24 continuous hours.
+          </li>
+          <li>
+            <strong>Enterprise plans:</strong> Refund terms for enterprise plans are governed by the
+            applicable Service Level Agreement (SLA) negotiated at contract signing.
+          </li>
+        </ul>
+
+        <!-- Section 5 -->
+        <h2>5. Data Handling</h2>
+        <p>
+          You retain ownership of all code and project data submitted to and delivered by the
+          Service. Regarding data retention:
+        </p>
+        <ul>
+          <li>
+            <strong>Retention period:</strong> Code submissions and delivered outputs are retained
+            for <strong>30 days after delivery</strong> to allow re-download and dispute resolution.
+          </li>
+          <li>
+            <strong>Deletion requests:</strong> You may request immediate deletion of your data by
+            contacting support. Deletion requests are processed within 5 business days.
+          </li>
+          <li>
+            <strong>No third-party sharing:</strong> Your project data, code submissions, and
+            delivered outputs are never shared with third parties, used to train AI models, or
+            disclosed except as required by law.
+          </li>
+          <li>
+            <strong>Agent processing:</strong> Your code and task descriptions are transmitted to AI
+            model providers (Anthropic, DeepSeek) solely for the purpose of task execution. Provider
+            data retention policies apply.
+          </li>
+        </ul>
+
+        <!-- Section 6 -->
+        <h2>6. Usage Limits and Acceptable Use</h2>
+        <p>Per-plan job limits are enforced automatically. You agree not to use the Service to:</p>
+        <ul>
+          <li>
+            Generate malware, ransomware, spyware, or any code designed to harm others' systems.
+          </li>
+          <li>Create cryptocurrency mining software intended for unauthorized deployment.</li>
+          <li>Build systems designed to harass, stalk, or harm individuals.</li>
+          <li>
+            Circumvent security controls on systems you do not own or have permission to test.
+          </li>
+          <li>Generate content that violates applicable laws in your jurisdiction.</li>
+        </ul>
+        <p>
+          <strong>Violation of acceptable use results in immediate account termination</strong>
+          without refund. Overseer AI Agency reserves the right to report illegal activity to
+          appropriate authorities.
+        </p>
+
+        <!-- Section 7 -->
+        <h2>7. Modifications to Terms</h2>
+        <p>
+          Overseer AI Agency may update these Terms of Service at any time. When changes are made:
+        </p>
+        <ul>
+          <li>
+            You will be notified via email (if provided) at least
+            <strong>30 days before changes take effect</strong>.
+          </li>
+          <li>
+            Continued use of the Service after the effective date constitutes acceptance of the
+            revised terms.
+          </li>
+          <li>
+            If you do not agree to the revised terms, you may cancel your account before the
+            effective date.
+          </li>
+          <li>
+            Material changes to pricing or service scope require 30 days notice; minor
+            clarifications may be updated immediately.
+          </li>
+        </ul>
+
+        <!-- Contact -->
+        <h2>8. Contact</h2>
+        <p>Questions about these Terms? Contact us:</p>
+        <ul>
+          <li>Email: <strong>legal@<your-domain></strong></li>
+          <li>Website: <strong><your-domain></strong></li>
+        </ul>
+      </div>
+
+      <!-- Back links -->
+      <div class="back-links">
+        <a href="/" class="back-link-home">&larr; Back to Home</a>
+        <a href="/client_portal.html" class="back-link-portal">Client Portal &rarr;</a>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="footer-logo">O</div>
+          <span>Overseer AI Agency</span>
+        </div>
+        <div class="footer-links">
+          <a href="/terms" class="active">Terms of Service</a>
+          <a href="/client_portal.html">Client Portal</a>
+          <a href="/dashboard.html">Dashboard</a>
+        </div>
+        <div class="footer-copy">&copy; 2026 Overseer AI Agency</div>
+      </div>
+    </footer>
+  </body>
+</html>

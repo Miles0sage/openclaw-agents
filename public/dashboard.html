@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenClaw Admin Dashboard</title>
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --border: #30363d;
+        --text: #c9d1d9;
+        --text-dim: #8b949e;
+        --accent: #58a6ff;
+        --green: #3fb950;
+        --yellow: #d29922;
+        --red: #f85149;
+        --radius: 8px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 24px;
+        min-height: 100vh;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+      header h1 {
+        font-size: 1.4rem;
+        font-weight: 600;
+      }
+      #health-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .badge-healthy {
+        background: var(--green);
+        color: #000;
+      }
+      .badge-degraded {
+        background: var(--yellow);
+        color: #000;
+      }
+      .badge-critical {
+        background: var(--red);
+        color: #fff;
+      }
+      #last-updated {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .grid-3 {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+      .grid-2 {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+      }
+      .card h2 {
+        font-size: 0.85rem;
+        color: var(--text-dim);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .card .value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+      .card .sub {
+        font-size: 0.78rem;
+        color: var(--text-dim);
+        margin-top: 4px;
+      }
+
+      .value-green {
+        color: var(--green);
+      }
+      .value-yellow {
+        color: var(--yellow);
+      }
+      .value-red {
+        color: var(--red);
+      }
+      .value-accent {
+        color: var(--accent);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      th {
+        text-align: left;
+        padding: 8px 12px;
+        border-bottom: 2px solid var(--border);
+        color: var(--text-dim);
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+      td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 6px;
+      }
+      .dot-green {
+        background: var(--green);
+      }
+      .dot-yellow {
+        background: var(--yellow);
+      }
+      .dot-red {
+        background: var(--red);
+      }
+
+      .section-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: var(--text);
+      }
+
+      #error-banner {
+        display: none;
+        background: var(--red);
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: var(--radius);
+        margin-bottom: 16px;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>OpenClaw Admin Dashboard</h1>
+        <div id="last-updated">Loading...</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span id="uptime" style="font-size: 0.8rem; color: var(--text-dim)"></span>
+        <span id="health-badge">--</span>
+      </div>
+    </header>
+
+    <div id="error-banner"></div>
+
+    <!-- Cost cards -->
+    <div class="grid grid-3">
+      <div class="card">
+        <h2>Cost Today</h2>
+        <div class="value value-accent" id="cost-today">$--</div>
+        <div class="sub" id="cost-daily-rate">daily avg: --</div>
+      </div>
+      <div class="card">
+        <h2>Cost This Month</h2>
+        <div class="value" id="cost-month">$--</div>
+        <div class="sub" id="cost-month-sub"></div>
+      </div>
+      <div class="card">
+        <h2>Projected 30-Day</h2>
+        <div class="value" id="cost-projected">$--</div>
+        <div class="sub">based on current burn rate</div>
+      </div>
+    </div>
+
+    <!-- Performance cards -->
+    <div class="grid grid-3">
+      <div class="card">
+        <h2>P95 Latency</h2>
+        <div class="value" id="perf-p95">--s</div>
+        <div class="sub" id="perf-avg">avg: --</div>
+      </div>
+      <div class="card">
+        <h2>Error Rate</h2>
+        <div class="value" id="perf-error">--%</div>
+        <div class="sub" id="perf-counts">0 / 0 requests</div>
+      </div>
+      <div class="card">
+        <h2>Active Alerts</h2>
+        <div class="value value-yellow" id="alerts-count">--</div>
+        <div class="sub">unacknowledged</div>
+      </div>
+    </div>
+
+    <!-- Agent + Channel tables -->
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="section-title">Agent Breakdown</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Agent</th>
+              <th>Calls</th>
+              <th>Avg Latency</th>
+              <th>Success</th>
+            </tr>
+          </thead>
+          <tbody id="agent-table">
+            <tr>
+              <td colspan="4" style="color: var(--text-dim)">No data</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="section-title">Channel Breakdown</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Channel</th>
+              <th>Messages</th>
+              <th>Avg Latency</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody id="channel-table">
+            <tr>
+              <td colspan="4" style="color: var(--text-dim)">No data</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- System info -->
+    <div class="grid grid-3" style="margin-top: 8px">
+      <div class="card">
+        <h2>Memory</h2>
+        <div class="value" id="sys-mem">--%</div>
+        <div class="sub">heap usage</div>
+      </div>
+      <div class="card">
+        <h2>Active Tasks</h2>
+        <div class="value value-green" id="sys-active">--</div>
+        <div class="sub" id="sys-pending">pending: --</div>
+      </div>
+      <div class="card">
+        <h2>Health Reasons</h2>
+        <div
+          id="health-reasons"
+          style="font-size: 0.82rem; color: var(--text-dim); line-height: 1.6"
+        >
+          --
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const REFRESH_MS = 10000;
+      const STATUS_URL = "/admin/status";
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+      function fmt(n, d) {
+        return typeof n === "number" ? n.toFixed(d ?? 2) : "--";
+      }
+
+      function colorForError(rate) {
+        if (rate > 25) return "value-red";
+        if (rate > 10) return "value-yellow";
+        return "value-green";
+      }
+
+      function dotClass(rate) {
+        if (rate > 10) return "dot-red";
+        if (rate > 5) return "dot-yellow";
+        return "dot-green";
+      }
+
+      function renderStatus(d) {
+        // Header
+        const badge = $("health-badge");
+        badge.textContent = d.health.status;
+        badge.className = "badge-" + d.health.status;
+        $("uptime").textContent = "up " + d.uptime_human;
+        $("last-updated").textContent = "Updated: " + new Date(d.timestamp).toLocaleTimeString();
+
+        // Costs
+        $("cost-today").textContent = "$" + fmt(d.costs.today_usd, 4);
+        $("cost-month").textContent = "$" + fmt(d.costs.this_month_usd, 2);
+        $("cost-projected").textContent = "$" + fmt(d.costs.projected_30d_usd, 2);
+        $("cost-daily-rate").textContent = "daily avg: $" + fmt(d.costs.daily_rate_usd, 4);
+
+        // Performance
+        $("perf-p95").textContent = fmt(d.performance.p95_latency_seconds) + "s";
+        $("perf-avg").textContent = "avg: " + fmt(d.performance.avg_latency_seconds) + "s";
+
+        const errEl = $("perf-error");
+        errEl.textContent = fmt(d.performance.error_rate, 1) + "%";
+        errEl.className = "value " + colorForError(d.performance.error_rate);
+
+        $("perf-counts").textContent =
+          d.performance.error_count + " errors / " + d.performance.total_requests + " requests";
+
+        // Alerts
+        $("alerts-count").textContent = d.alerts_active;
+
+        // Agent table
+        const at = $("agent-table");
+        if (d.agents.length === 0) {
+          at.innerHTML =
+            '<tr><td colspan="4" style="color:var(--text-dim)">No agent data</td></tr>';
+        } else {
+          at.innerHTML = d.agents
+            .map(function (a) {
+              var dc = dotClass(100 - a.success_rate);
+              return (
+                "<tr>" +
+                '<td><span class="status-dot ' +
+                dc +
+                '"></span>' +
+                esc(a.agent_id) +
+                "</td>" +
+                "<td>" +
+                a.calls +
+                "</td>" +
+                "<td>" +
+                fmt(a.avg_response_time) +
+                "s</td>" +
+                "<td>" +
+                fmt(a.success_rate, 1) +
+                "%</td>" +
+                "</tr>"
+              );
+            })
+            .join("");
+        }
+
+        // Channel table
+        var ct = $("channel-table");
+        if (d.channels.length === 0) {
+          ct.innerHTML =
+            '<tr><td colspan="4" style="color:var(--text-dim)">No channel data</td></tr>';
+        } else {
+          ct.innerHTML = d.channels
+            .map(function (c) {
+              var dc = dotClass(c.error_rate);
+              return (
+                "<tr>" +
+                '<td><span class="status-dot ' +
+                dc +
+                '"></span>' +
+                esc(c.channel) +
+                "</td>" +
+                "<td>" +
+                c.messages +
+                "</td>" +
+                "<td>" +
+                fmt(c.avg_latency_seconds) +
+                "s</td>" +
+                "<td>" +
+                fmt(c.error_rate, 1) +
+                "%</td>" +
+                "</tr>"
+              );
+            })
+            .join("");
+        }
+
+        // System
+        $("sys-mem").textContent = d.system.memory_usage_percent + "%";
+        $("sys-active").textContent = d.system.active_tasks;
+        $("sys-pending").textContent = "pending: " + d.system.pending_tasks;
+
+        // Health reasons
+        $("health-reasons").innerHTML = d.health.reasons
+          .map(function (r) {
+            return esc(r);
+          })
+          .join("<br>");
+
+        // Hide error banner on success
+        $("error-banner").style.display = "none";
+      }
+
+      function esc(s) {
+        var el = document.createElement("span");
+        el.textContent = s;
+        return el.innerHTML;
+      }
+
+      async function refresh() {
+        try {
+          var res = await fetch(STATUS_URL);
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          var data = await res.json();
+          if (!data.success) throw new Error(data.error || "Unknown error");
+          renderStatus(data);
+        } catch (err) {
+          var banner = $("error-banner");
+          banner.textContent = "Failed to fetch status: " + err.message;
+          banner.style.display = "block";
+        }
+      }
+
+      // Initial load + interval
+      refresh();
+      setInterval(refresh, REFRESH_MS);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+id: add-404-page
+category: feature
+difficulty: easy
+description: |
+  Add a 404 page component at src/pages/NotFound.tsx and wire route fallback.
+agent_key: coder_agent
+max_cost_usd: 0.05
+max_duration_sec: 60
+
+setup:
+  files:
+    - path: src/App.tsx
+      content: |
+        export default function App() {
+          return <div>Home</div>;
+        }
+
+expected:
+  files:
+    - path: src/pages/NotFound.tsx
+      must_exist: true
+      contains: ["404", "Not Found"]
+    - path: src/App.tsx
+      contains: ["NotFound"]

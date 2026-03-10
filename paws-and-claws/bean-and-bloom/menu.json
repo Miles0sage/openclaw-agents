@@ -1,0 +1,117 @@
+{
+  "categories": ["coffee", "tea", "pastries", "specials"],
+  "items": [
+    {
+      "id": 1,
+      "name": "Bloom Latte",
+      "category": "coffee",
+      "description": "Our signature lavender-infused latte with oat milk and a hint of vanilla.",
+      "price": 5.50
+    },
+    {
+      "id": 2,
+      "name": "Garden Espresso",
+      "category": "coffee",
+      "description": "Double-shot espresso with notes of dark chocolate and toasted almond.",
+      "price": 3.75
+    },
+    {
+      "id": 3,
+      "name": "Cold Brew Botanica",
+      "category": "coffee",
+      "description": "24-hour cold brew steeped with rosemary and orange peel.",
+      "price": 5.00
+    },
+    {
+      "id": 4,
+      "name": "Cappuccino Classic",
+      "category": "coffee",
+      "description": "Traditional Italian cappuccino with velvety microfoam.",
+      "price": 4.50
+    },
+    {
+      "id": 5,
+      "name": "Chamomile Garden",
+      "category": "tea",
+      "description": "Organic chamomile blended with dried elderflower and honey.",
+      "price": 4.00
+    },
+    {
+      "id": 6,
+      "name": "Matcha Meadow",
+      "category": "tea",
+      "description": "Ceremonial-grade matcha whisked with your choice of milk.",
+      "price": 5.25
+    },
+    {
+      "id": 7,
+      "name": "Jasmine Blossom",
+      "category": "tea",
+      "description": "Hand-rolled jasmine pearl tea, delicate and fragrant.",
+      "price": 4.25
+    },
+    {
+      "id": 8,
+      "name": "Earl Grey Greenhouse",
+      "category": "tea",
+      "description": "Classic Earl Grey with bergamot and a sprig of fresh thyme.",
+      "price": 3.75
+    },
+    {
+      "id": 9,
+      "name": "Lemon Poppy Scone",
+      "category": "pastries",
+      "description": "Buttery scone studded with poppy seeds and lemon zest glaze.",
+      "price": 3.50
+    },
+    {
+      "id": 10,
+      "name": "Rosemary Focaccia",
+      "category": "pastries",
+      "description": "Freshly baked focaccia with sea salt and garden rosemary.",
+      "price": 4.00
+    },
+    {
+      "id": 11,
+      "name": "Almond Croissant",
+      "category": "pastries",
+      "description": "Flaky croissant filled with almond cream and toasted almonds.",
+      "price": 4.50
+    },
+    {
+      "id": 12,
+      "name": "Pistachio Cardamom Cake",
+      "category": "pastries",
+      "description": "Moist pistachio cake spiced with cardamom and rose water.",
+      "price": 5.00
+    },
+    {
+      "id": 13,
+      "name": "Seasonal Bloom Latte",
+      "category": "specials",
+      "description": "This month: hibiscus and raspberry with white chocolate.",
+      "price": 6.25
+    },
+    {
+      "id": 14,
+      "name": "Garden Plate",
+      "category": "specials",
+      "description": "Chef's selection of pastries, fruit, and artisan cheese.",
+      "price": 12.00
+    },
+    {
+      "id": 15,
+      "name": "Affogato al Giardino",
+      "category": "specials",
+      "description": "Vanilla bean gelato drowned in a shot of our Garden Espresso.",
+      "price": 6.50
+    },
+    {
+      "id": 16,
+      "name": "Honey Lavender Scone",
+      "category": "pastries",
+      "description": "Tender scone infused with culinary lavender and wildflower honey.",
+      "price": 3.75
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+# OpenClaw v4.2 - Complete Dependencies
+# Generated: 2026-03-08
+# Python: 3.10+
+
+# ============================================================================
+# CORE FRAMEWORK DEPENDENCIES
+# ============================================================================
+
+# Web Framework
+fastapi==0.109.0
+uvicorn>=0.35.0
+starlette>=0.35.0
+
+# Data Validation & Serialization
+pydantic==2.12.4
+pydantic-core==2.41.5
+annotated-types==0.7.0
+
+# HTTP Clients
+requests==2.32.3
+httpx==0.28.1
+websockets==15.0.1
+certifi==2026.1.4
+idna==3.11
+
+# Async Support
+anyio==4.12.1
+sniffio==1.3.1
+trio>=0.23.0
+
+# ============================================================================
+# LLM & AI INTEGRATION
+# ============================================================================
+
+# Anthropic Claude
+anthropic==0.78.0
+
+# MCP Protocol & Fast Implementation
+fastmcp==3.1.0
+jiter==0.13.0
+
+# OpenAI (fallback models)
+openai>=1.0.0
+
+# ============================================================================
+# CONFIGURATION & ENVIRONMENT
+# ============================================================================
+
+python-dotenv==1.2.1
+click==8.3.1
+pyyaml==6.0.2
+cryptography==43.0.0
+
+# ============================================================================
+# INTEGRATIONS - EXTERNAL SERVICES
+# ============================================================================
+
+# Stripe for payments
+stripe==14.3.0
+
+# Slack
+slack-sdk>=3.25.0
+
+# Telegram
+python-telegram-bot>=20.0
+
+# ============================================================================
+# DATA PROCESSING & ANALYSIS
+# ============================================================================
+
+pandas==2.3.3
+numpy==2.4.2
+scipy==1.17.0
+scikit-learn==1.8.0
+matplotlib==3.10.8
+networkx==3.6.1
+
+# ============================================================================
+# FILE PROCESSING & DOCUMENT PARSING
+# ============================================================================
+
+# PDF handling
+pypdf==6.7.2
+pdf2image==1.17.0
+python-pptx==0.6.21
+
+# Excel & Office
+openpyxl==3.1.5
+
+# XML & HTML
+lxml==6.0.2
+defusedxml==0.7.1
+
+# Images
+pillow==12.1.0
+
+# Document parsing & conversion
+markitdown>=0.1.0
+
+# ============================================================================
+# UTILITIES & SYSTEM
+# ============================================================================
+
+# Scheduling
+APScheduler==3.11.2
+
+# Output formatting
+rich==14.3.3
+pygments==2.18.0
+
+# Code parsing
+tree-sitter-python==0.25.0
+docstring-parser==0.17.0
+
+# System utilities
+psutil==7.2.2
+distro==1.9.0
+
+# Compatibility
+six==1.17.0
+docutils==0.22.4
+
+# HTTP/2 support
+h11==0.16.0
+h2==4.3.0
+
+# ============================================================================
+# DEVELOPMENT & TESTING
+# ============================================================================
+
+# Testing
+pytest==9.0.2
+hypothesis==6.114.1
+
+# Type checking (optional)
+mypy>=1.0.0
+
+# Code quality (optional)
+sphinx>=7.0.0
+
+# ============================================================================
+# SCIENTIFIC & SPECIALIZED (Optional for specific agents)
+# ============================================================================
+
+# Note: These are optional and may require additional system dependencies
+# Uncomment as needed for specific features
+
+# torch>=2.0.0  # For ML/deep learning features
+# tensorflow>=2.14.0  # Alternative ML framework
+# pymc>=5.0.0  # Bayesian modeling
+# arviz>=0.15.0  # ArviZ plotting
+# scanpy>=1.9.0  # Single-cell analysis
+# scvelo>=0.3.0  # RNA velocity
+# lifelines>=0.27.0  # Survival analysis
+# gym>=0.26.0  # RL environments
+# numba>=0.57.0  # JIT compilation
+# joblib>=1.3.0  # Parallel computing
+# tqdm>=4.65.0  # Progress bars
+# sqlalchemy>=2.0.0  # ORM
+# alembic>=1.12.0  # DB migrations
+
+# ============================================================================
+# AGENT SCAFFOLDING (Internal modules - not from PyPI)
+# ============================================================================
+
+# These are internal to OpenClaw and located in ./
+# They should NOT be installed via pip but imported directly:
+#
+# - agent_router, agent_tools, agent_templates, agent_sessions
+# - autonomous_runner, autonomous_workflows
+# - approval_engine, approval_client
+# - cost_gates, cost_tracker
+# - checkpoint, reflexion
+# - ceo_engine, pa_engine
+# - blackboard, alerts
+# - And 100+ other internal modules

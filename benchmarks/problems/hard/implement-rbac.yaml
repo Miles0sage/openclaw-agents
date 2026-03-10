@@ -1,0 +1,25 @@
+id: implement-rbac
+category: security
+difficulty: hard
+description: |
+  Implement RBAC with roles admin/editor/viewer and enforce on write routes.
+agent_key: security_agent
+max_cost_usd: 0.15
+max_duration_sec: 180
+
+setup:
+  files:
+    - path: src/auth.py
+      content: |
+        ROLES = ["user"]
+    - path: src/routes.py
+      content: |
+        def update_item():
+            return {"ok": True}
+
+expected:
+  files:
+    - path: src/auth.py
+      contains: ["admin", "editor", "viewer"]
+    - path: src/routes.py
+      contains: ["authorize", "forbidden"]

@@ -1,0 +1,1 @@
+    for k in ('id','description','input_files','expected_output','test_command'):

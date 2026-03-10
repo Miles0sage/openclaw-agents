@@ -1,0 +1,20 @@
+id: add-pagination
+category: feature
+difficulty: medium
+description: |
+  Add pagination parameters page and page_size to list_users endpoint.
+agent_key: coder_agent
+max_cost_usd: 0.08
+max_duration_sec: 90
+
+setup:
+  files:
+    - path: src/api.py
+      content: |
+        def list_users():
+            return []
+
+expected:
+  files:
+    - path: src/api.py
+      contains: ["page", "page_size"]

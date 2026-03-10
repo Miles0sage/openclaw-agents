@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bean & Bloom — Coffee & Botanical Garden Cafe</title>
+  <meta name="description" content="Bean & Bloom is a cozy neighborhood cafe where specialty coffee meets a lush botanical garden. Fresh pastries, artisan drinks, and a living green space.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-logo">
+        <span class="logo-icon">&#127793;</span> Bean & Bloom
+      </a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#about">Our Story</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#contact">Visit Us</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-tagline">Where coffee meets the garden</p>
+      <h1>Bean <span class="ampersand">&</span> Bloom</h1>
+      <p class="hero-subtitle">Specialty coffee, fresh pastries, and a living botanical space in the heart of the neighborhood.</p>
+      <div class="hero-cta">
+        <a href="#menu" class="btn btn-primary">Explore the Menu</a>
+        <a href="#contact" class="btn btn-outline">Find Us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Menu Section -->
+  <section class="section menu-section" id="menu">
+    <div class="container">
+      <div class="section-header">
+        <h2>Our Menu</h2>
+        <p>Crafted with care, sourced with intention. Every cup and every bite tells a story.</p>
+      </div>
+      <div class="menu-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="coffee">Coffee</button>
+        <button class="filter-btn" data-filter="tea">Tea</button>
+        <button class="filter-btn" data-filter="pastries">Pastries</button>
+        <button class="filter-btn" data-filter="specials">Specials</button>
+      </div>
+      <div class="menu-grid" id="menu-grid">
+        <!-- Menu items are populated from menu.json via JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="section about-section" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-images">
+          <div class="about-img about-img-1" data-lazy="about-interior.jpg">
+            <div class="img-placeholder">Interior</div>
+          </div>
+          <div class="about-img about-img-2" data-lazy="about-garden.jpg">
+            <div class="img-placeholder">Garden</div>
+          </div>
+        </div>
+        <div class="about-content">
+          <h2>Our Story</h2>
+          <p class="about-lead">Bean & Bloom started with a simple idea: what if your morning coffee came with a breath of fresh air — literally?</p>
+          <p>In 2019, we transformed a neglected corner lot into something unexpected — a cafe wrapped in a living garden. The walls are lined with trailing pothos, the tables sit between citrus trees, and the espresso machine hums beside a wall of ferns.</p>
+          <p>We source our beans from small-batch roasters who care about the farmers as much as the flavor. Our pastries are baked in-house every morning before dawn. And our garden? It grows the herbs for our seasonal specials — from the rosemary in our focaccia to the lavender in our lattes.</p>
+          <p>This isn't just a coffee shop. It's a place to slow down, breathe deep, and remember that good things grow when you give them space.</p>
+          <div class="about-stats">
+            <div class="stat">
+              <span class="stat-number">6</span>
+              <span class="stat-label">Years Growing</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">50+</span>
+              <span class="stat-label">Plant Species</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">3</span>
+              <span class="stat-label">Partner Roasters</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section class="section gallery-section" id="gallery">
+    <div class="container">
+      <div class="section-header">
+        <h2>A Glimpse Inside</h2>
+        <p>Sunlight through the leaves, latte art on the bar, quiet mornings and lively afternoons.</p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item gallery-item-wide" data-lazy="gallery-1.jpg">
+          <div class="img-placeholder">Cafe interior with hanging plants</div>
+        </div>
+        <div class="gallery-item" data-lazy="gallery-2.jpg">
+          <div class="img-placeholder">Latte art closeup</div>
+        </div>
+        <div class="gallery-item" data-lazy="gallery-3.jpg">
+          <div class="img-placeholder">Fresh pastry display</div>
+        </div>
+        <div class="gallery-item" data-lazy="gallery-4.jpg">
+          <div class="img-placeholder">Botanical garden seating</div>
+        </div>
+        <div class="gallery-item gallery-item-wide" data-lazy="gallery-5.jpg">
+          <div class="img-placeholder">Barista preparing espresso</div>
+        </div>
+        <div class="gallery-item" data-lazy="gallery-6.jpg">
+          <div class="img-placeholder">Herb wall detail</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact / Location Section -->
+  <section class="section contact-section" id="contact">
+    <div class="container">
+      <div class="section-header">
+        <h2>Visit Us</h2>
+        <p>We'd love to see you. Drop by for a cup or get in touch below.</p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="info-card">
+            <h3>Location</h3>
+            <p>742 Evergreen Terrace<br>Portland, OR 97205</p>
+          </div>
+          <div class="info-card">
+            <h3>Hours</h3>
+            <p>Mon — Fri: 7:00 AM — 6:00 PM<br>Sat — Sun: 8:00 AM — 7:00 PM</p>
+          </div>
+          <div class="info-card">
+            <h3>Contact</h3>
+            <p>hello@beanandbloom.cafe<br>(503) 555-0142</p>
+          </div>
+          <!-- Map Placeholder -->
+          <div class="map-placeholder">
+            <div class="map-inner">
+              <span class="map-pin">&#128205;</span>
+              <p>Interactive Map</p>
+              <small>742 Evergreen Terrace, Portland, OR</small>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form-wrapper">
+          <h3>Send Us a Message</h3>
+          <form class="contact-form" id="contact-form" novalidate>
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" required placeholder="Your name">
+              <span class="error-msg" id="name-error"></span>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" required placeholder="you@example.com">
+              <span class="error-msg" id="email-error"></span>
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" rows="5" required placeholder="What's on your mind?"></textarea>
+              <span class="error-msg" id="message-error"></span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Send Message</button>
+            <div class="form-success" id="form-success">
+              Thanks for reaching out! We'll get back to you soon.
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span class="logo-icon">&#127793;</span> Bean & Bloom
+        </div>
+        <p class="footer-copy">&copy; 2026 Bean & Bloom. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

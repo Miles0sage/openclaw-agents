@@ -1,0 +1,71 @@
+{
+  "name": "OpenClaw Daily Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerType": "everyNHours",
+        "everyNHours": 24,
+        "timezone": "America/New_York"
+      },
+      "id": "cron-trigger",
+      "name": "Cron - Daily at 9am EST",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:18789/api/digest",
+        "authentication": "none",
+        "method": "GET",
+        "options": {}
+      },
+      "id": "http-get-digest-data",
+      "name": "HTTP GET - Daily Digest Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://172.24.0.1:18789/webhook/slack-test",
+        "authentication": "none",
+        "method": "POST",
+        "contentType": "application/json",
+        "body": "={{ JSON.stringify({text: `📊 Daily Digest - ${new Date().toLocaleDateString()}`, attachments: [{color: '#1976d2', title: 'Daily Summary', fields: [{title: 'Jobs Completed', value: String($json.jobs_completed || 0)}, {title: 'Jobs Failed', value: String($json.jobs_failed || 0)}, {title: 'Total Cost', value: `$${parseFloat($json.total_cost || 0).toFixed(2)}`}, {title: 'Uptime', value: String($json.uptime || 'N/A')}]}]}) }}",
+        "options": {}
+      },
+      "id": "http-post-slack-digest",
+      "name": "HTTP POST - Daily Digest to Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [720, 300]
+    }
+  ],
+  "connections": {
+    "Cron - Daily at 9am EST": {
+      "main": [
+        [
+          {
+            "node": "HTTP GET - Daily Digest Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP GET - Daily Digest Data": {
+      "main": [
+        [
+          {
+            "node": "HTTP POST - Daily Digest to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {}
+}

@@ -1,0 +1,16 @@
+{
+  "name": "coffee-shop-demo",
+  "version": "1.0.0",
+  "description": "A production-ready coffee shop landing page.",
+  "main": "index.js",
+  "scripts": {
+    "start": "live-server",
+    "dev": "live-server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

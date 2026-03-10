@@ -1,0 +1,31 @@
+name = "openclaw-api"
+main = "cloudflare-worker.js"
+compatibility_date = "2024-01-01"
+
+# Set via: wrangler secret put OPENCLAW_TOKEN
+# Set via: wrangler secret put OPENCLAW_GATEWAY
+
+[vars]
+# Public variables (not sensitive)
+WORKER_VERSION = "1.0.0"
+ENABLE_SLACK = "true"
+ENABLE_TELEGRAM = "true"
+ENABLE_OPENAI = "true"
+ENABLE_BRAVE_SEARCH = "true"
+
+# Gateway configuration
+OPENCLAW_GATEWAY = "http://<your-vps-ip>:18789"
+
+# Set secrets via: wrangler secret put SECRET_NAME
+# Required secrets:
+# - OPENCLAW_TOKEN (authentication token for worker)
+# - ANTHROPIC_API_KEY (if needed by gateway)
+# - GITHUB_TOKEN (optional, for GitHub integrations)
+# Existing secrets:
+# - SLACK_BOT_TOKEN
+# - OPENAI_API_KEY
+# - GITHUB_PAT
+# - ELEVENLABS_API_KEY
+# - GOOGLE_API_KEY
+# - OPENROUTER_API_KEY
+# - BRAVE_SEARCH_API_KEY

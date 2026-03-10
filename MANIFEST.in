@@ -1,0 +1,8 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include py.typed
+recursive-include openclaw *.json *.yaml *.txt
+recursive-include cli *.py
+recursive-include pipeline *.py
+recursive-include tests *.py

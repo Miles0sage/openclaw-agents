@@ -1,0 +1,56 @@
+{
+  "workspace": "openclaw-agency-2026",
+  "storage": {
+    "tier": "50GB-free",
+    "retention": "90-days",
+    "provider": "s3-compatible",
+    "endpoint": "https://api.fast.io",
+    "region": "us-east-1"
+  },
+  "pipelines": [
+    {
+      "name": "ui-artifacts",
+      "enabled": true,
+      "source": "/tmp/ui-*.html",
+      "destination": "s3://artifacts/ui/{clientId}/",
+      "pattern": "ui-{timestamp}.html",
+      "compression": "gzip",
+      "metadata": {
+        "type": "artifact",
+        "category": "ui"
+      }
+    },
+    {
+      "name": "deployment-logs",
+      "enabled": true,
+      "source": "/tmp/deploy-*.log",
+      "destination": "s3://artifacts/logs/{projectId}/",
+      "pattern": "deploy-{timestamp}.log",
+      "metadata": {
+        "type": "log",
+        "category": "deployment"
+      }
+    },
+    {
+      "name": "agent-artifacts",
+      "enabled": true,
+      "source": "/tmp/agent-*.json",
+      "destination": "s3://artifacts/agents/{agentId}/",
+      "pattern": "agent-{timestamp}.json",
+      "metadata": {
+        "type": "artifact",
+        "category": "agent"
+      }
+    }
+  ],
+  "ownership": {
+    "transfer_on_completion": true,
+    "audit_log": "/var/log/openclaw/ownership-transfer.log",
+    "notification_webhook": "https://api.fast.io/webhooks/ownership"
+  },
+  "retention_policies": {
+    "default_days": 90,
+    "archive_after_days": 30,
+    "delete_empty_after_days": 7
+  }
+}

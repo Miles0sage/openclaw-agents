@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/data/coffee-shop-demo/index.html" }
+  ]
+}

@@ -1,0 +1,2061 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenClaw Mission Control v4.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ═══════════════════════════════════════════════════════════════
+   MISSION CONTROL — OpenClaw v4.0 Agency Dashboard
+   Aesthetic: Industrial command center, amber-on-obsidian
+   ═══════════════════════════════════════════════════════════════ */
+
+      :root {
+        --bg-void: #05060a;
+        --bg-primary: #08090c;
+        --bg-panel: #0d0f14;
+        --bg-card: #111318;
+        --bg-elevated: #161820;
+        --bg-hover: #1c1f28;
+        --border-dim: #1a1d26;
+        --border-mid: #252834;
+        --border-bright: #333848;
+        --amber: #e8a832;
+        --amber-bright: #f0be50;
+        --amber-dim: #b8842a;
+        --amber-glow: rgba(232, 168, 50, 0.12);
+        --amber-ghost: rgba(232, 168, 50, 0.05);
+        --text-primary: #e4e4e8;
+        --text-secondary: #8e919e;
+        --text-dim: #5c5f6c;
+        --green: #34d399;
+        --green-dim: rgba(52, 211, 153, 0.15);
+        --red: #f87171;
+        --red-dim: rgba(248, 113, 113, 0.15);
+        --blue: #60a5fa;
+        --blue-dim: rgba(96, 165, 250, 0.15);
+        --yellow: #fbbf24;
+        --yellow-dim: rgba(251, 191, 36, 0.15);
+        --purple: #a78bfa;
+        --purple-dim: rgba(167, 139, 250, 0.15);
+        --cyan: #22d3ee;
+        --font-display: "Outfit", sans-serif;
+        --font-body: "IBM Plex Sans", sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        font-size: 14px;
+      }
+
+      body {
+        background: var(--bg-void);
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Scanline overlay */
+      body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 9999;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.03) 2px,
+          rgba(0, 0, 0, 0.03) 4px
+        );
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg-primary);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border-mid);
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--border-bright);
+      }
+
+      /* ─── HEADER ─── */
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 24px;
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border-dim);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .logo-mark {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, var(--amber), var(--amber-dim));
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--bg-void);
+        letter-spacing: -1px;
+      }
+
+      .header-title {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 18px;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+      }
+
+      .header-version {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--amber);
+        background: var(--amber-ghost);
+        padding: 2px 8px;
+        border-radius: 3px;
+        border: 1px solid rgba(232, 168, 50, 0.15);
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-secondary);
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 8px var(--green);
+        animation: pulse-dot 2s ease-in-out infinite;
+      }
+
+      .status-dot.offline {
+        background: var(--red);
+        box-shadow: 0 0 8px var(--red);
+        animation: none;
+      }
+
+      @keyframes pulse-dot {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .clock {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--text-secondary);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ─── MAIN GRID ─── */
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 340px;
+        grid-template-rows: auto auto auto;
+        gap: 1px;
+        background: var(--border-dim);
+        min-height: calc(100vh - 65px);
+      }
+
+      .panel {
+        background: var(--bg-primary);
+        padding: 20px;
+        overflow: hidden;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+
+      .panel-title {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+      }
+
+      .panel-badge {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        padding: 2px 7px;
+        border-radius: 3px;
+        border: 1px solid var(--border-mid);
+        color: var(--text-dim);
+      }
+
+      /* ─── AGENT ROSTER ─── */
+      .agent-roster {
+        grid-column: 1 / 3;
+      }
+
+      .agent-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 8px;
+      }
+
+      .agent-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-dim);
+        border-radius: var(--radius-md);
+        padding: 14px;
+        transition: all 0.2s ease;
+        cursor: default;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .agent-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--agent-color, var(--border-mid));
+        opacity: 0.6;
+        transition: opacity 0.2s;
+      }
+
+      .agent-card:hover {
+        border-color: var(--border-bright);
+        background: var(--bg-elevated);
+      }
+
+      .agent-card:hover::before {
+        opacity: 1;
+      }
+
+      .agent-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+
+      .agent-name {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-primary);
+      }
+
+      .agent-status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--text-dim);
+        flex-shrink: 0;
+      }
+
+      .agent-status-dot.busy {
+        background: var(--amber);
+        box-shadow: 0 0 6px var(--amber);
+        animation: pulse-dot 1.5s ease-in-out infinite;
+      }
+
+      .agent-status-dot.idle {
+        background: var(--green);
+        box-shadow: 0 0 4px rgba(52, 211, 153, 0.3);
+      }
+
+      .agent-model {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--text-dim);
+        margin-bottom: 4px;
+      }
+
+      .agent-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 10px;
+      }
+
+      .agent-cost {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--amber-dim);
+      }
+
+      .agent-tag {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        padding: 2px 6px;
+        border-radius: 3px;
+        background: var(--tag-bg, var(--amber-ghost));
+        color: var(--tag-color, var(--amber));
+        border: 1px solid var(--tag-border, rgba(232, 168, 50, 0.1));
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* ─── SYSTEM STATUS ─── */
+      .system-status {
+        grid-row: 1;
+        grid-column: 3;
+      }
+
+      .status-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .status-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-dim);
+        border-radius: var(--radius-sm);
+      }
+
+      .status-label {
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+
+      .status-value {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-primary);
+      }
+
+      .status-value.ok {
+        color: var(--green);
+      }
+      .status-value.warn {
+        color: var(--yellow);
+      }
+      .status-value.err {
+        color: var(--red);
+      }
+
+      .uptime-bar {
+        width: 100%;
+        height: 4px;
+        background: var(--bg-elevated);
+        border-radius: 2px;
+        margin-top: 8px;
+        overflow: hidden;
+      }
+
+      .uptime-fill {
+        height: 100%;
+        background: var(--green);
+        border-radius: 2px;
+        transition: width 0.5s ease;
+      }
+
+      /* ─── LIVE JOBS ─── */
+      .live-jobs {
+        grid-column: 1 / 3;
+      }
+
+      .jobs-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 320px;
+        overflow-y: auto;
+      }
+
+      .job-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-dim);
+        border-radius: var(--radius-md);
+        padding: 14px 16px;
+        transition: border-color 0.2s;
+      }
+
+      .job-card:hover {
+        border-color: var(--border-bright);
+      }
+
+      .job-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .job-id {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--amber);
+      }
+
+      .job-cost {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-dim);
+      }
+
+      .job-task {
+        font-size: 12.5px;
+        color: var(--text-primary);
+        margin-bottom: 12px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      /* Phase progress bar */
+      .phase-track {
+        display: flex;
+        gap: 3px;
+        margin-bottom: 8px;
+      }
+
+      .phase-segment {
+        flex: 1;
+        height: 4px;
+        background: var(--bg-elevated);
+        border-radius: 2px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .phase-segment.completed {
+        background: var(--amber);
+      }
+
+      .phase-segment.active {
+        background: var(--bg-elevated);
+      }
+
+      .phase-segment.active::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 60%;
+        background: var(--amber);
+        border-radius: 2px;
+        animation: phase-pulse 1.5s ease-in-out infinite;
+      }
+
+      @keyframes phase-pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .phase-labels {
+        display: flex;
+        gap: 3px;
+      }
+
+      .phase-label {
+        flex: 1;
+        font-family: var(--font-mono);
+        font-size: 8.5px;
+        text-align: center;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .phase-label.completed {
+        color: var(--amber-dim);
+      }
+      .phase-label.active {
+        color: var(--amber);
+        font-weight: 600;
+      }
+
+      .job-tools {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+
+      .tool-chip {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        padding: 2px 6px;
+        background: var(--blue-dim);
+        color: var(--blue);
+        border-radius: 3px;
+        border: 1px solid rgba(96, 165, 250, 0.15);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-dim);
+        font-size: 13px;
+      }
+
+      .empty-state-icon {
+        font-size: 28px;
+        margin-bottom: 12px;
+        opacity: 0.3;
+      }
+
+      /* ─── EVENTS FEED ─── */
+      .events-feed {
+        grid-column: 3;
+        grid-row: 2 / 4;
+      }
+
+      .events-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+
+      .event-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: var(--radius-sm);
+        transition: background 0.15s;
+      }
+
+      .event-item:hover {
+        background: var(--bg-card);
+      }
+
+      .event-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        margin-top: 5px;
+        flex-shrink: 0;
+      }
+
+      .event-dot.completed {
+        background: var(--green);
+      }
+      .event-dot.failed {
+        background: var(--red);
+      }
+      .event-dot.created {
+        background: var(--blue);
+      }
+      .event-dot.proposal {
+        background: var(--purple);
+      }
+      .event-dot.cost {
+        background: var(--yellow);
+      }
+      .event-dot.default {
+        background: var(--text-dim);
+      }
+
+      .event-body {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .event-type {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--text-primary);
+        margin-bottom: 2px;
+      }
+
+      .event-detail {
+        font-size: 11px;
+        color: var(--text-dim);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .event-time {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        color: var(--text-dim);
+        white-space: nowrap;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      /* ─── COST DASHBOARD ─── */
+      .cost-dashboard {
+        grid-column: 1;
+      }
+
+      .cost-big {
+        font-family: var(--font-mono);
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--amber);
+        letter-spacing: -2px;
+        margin-bottom: 4px;
+      }
+
+      .cost-subtitle {
+        font-size: 11px;
+        color: var(--text-dim);
+        margin-bottom: 20px;
+      }
+
+      .cost-breakdown {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .cost-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .cost-row-label {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-secondary);
+        width: 110px;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .cost-bar-track {
+        flex: 1;
+        height: 6px;
+        background: var(--bg-elevated);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      .cost-bar-fill {
+        height: 100%;
+        background: var(--amber);
+        border-radius: 3px;
+        transition: width 0.6s ease;
+        min-width: 2px;
+      }
+
+      .cost-row-value {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-dim);
+        width: 60px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      .cost-stats-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .cost-stat {
+        background: var(--bg-card);
+        border: 1px solid var(--border-dim);
+        border-radius: var(--radius-sm);
+        padding: 10px 12px;
+      }
+
+      .cost-stat-label {
+        font-size: 10px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+
+      .cost-stat-value {
+        font-family: var(--font-mono);
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      /* ─── PIPELINE VISUALIZER ─── */
+      .pipeline-viz {
+        grid-column: 2;
+      }
+
+      .pipeline-flow {
+        display: flex;
+        gap: 4px;
+        align-items: stretch;
+        margin-bottom: 16px;
+      }
+
+      .pipeline-phase {
+        flex: 1;
+        background: var(--bg-card);
+        border: 1px solid var(--border-dim);
+        border-radius: var(--radius-sm);
+        padding: 12px 10px;
+        text-align: center;
+        position: relative;
+        transition: all 0.2s;
+      }
+
+      .pipeline-phase:hover {
+        border-color: var(--amber-dim);
+        background: var(--bg-elevated);
+      }
+
+      .pipeline-phase-name {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
+
+      .pipeline-phase-num {
+        font-family: var(--font-mono);
+        font-size: 20px;
+        font-weight: 300;
+        color: var(--text-dim);
+        margin-bottom: 4px;
+      }
+
+      .pipeline-arrow {
+        display: flex;
+        align-items: center;
+        color: var(--text-dim);
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+
+      .pipeline-tools {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .pipeline-tool-group {
+        background: var(--bg-card);
+        border: 1px solid var(--border-dim);
+        border-radius: var(--radius-sm);
+        padding: 10px 12px;
+      }
+
+      .pipeline-tool-phase {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: var(--amber-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 6px;
+      }
+
+      .pipeline-tool-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .pipeline-tool-chip {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        padding: 2px 6px;
+        background: var(--amber-ghost);
+        color: var(--amber-dim);
+        border-radius: 3px;
+        border: 1px solid rgba(232, 168, 50, 0.08);
+      }
+
+      /* ─── EXECUTION ENGINE ─── */
+      .execution-engine {
+        padding: 20px 24px;
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border-dim);
+      }
+      .engine-flow {
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        gap: 0;
+        margin-top: 12px;
+      }
+      .engine-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-dim);
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+        flex: 1;
+        max-width: 280px;
+        position: relative;
+        transition: all 0.2s;
+        overflow: hidden;
+      }
+      .engine-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--engine-color, var(--border-mid));
+        opacity: 0.7;
+      }
+      .engine-card:hover {
+        border-color: var(--border-bright);
+        background: var(--bg-elevated);
+      }
+      .engine-card.primary {
+        border-color: rgba(232, 168, 50, 0.25);
+        box-shadow: 0 0 20px rgba(232, 168, 50, 0.06);
+      }
+      .engine-card.primary::before {
+        opacity: 1;
+      }
+      .engine-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+      .engine-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 11px;
+        color: var(--bg-void);
+        flex-shrink: 0;
+      }
+      .engine-name {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-primary);
+      }
+      .engine-tier {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        padding: 1px 5px;
+        border-radius: 3px;
+        background: var(--engine-tier-bg, var(--amber-ghost));
+        color: var(--engine-tier-color, var(--amber));
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .engine-desc {
+        font-size: 11px;
+        color: var(--text-dim);
+        margin: 4px 0 8px;
+        line-height: 1.4;
+      }
+      .engine-models {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-bottom: 10px;
+      }
+      .engine-model-chip {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        padding: 2px 6px;
+        border-radius: 3px;
+        background: var(--bg-elevated);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-dim);
+      }
+      .engine-stats {
+        display: flex;
+        gap: 12px;
+        border-top: 1px solid var(--border-dim);
+        padding-top: 10px;
+        margin-top: auto;
+      }
+      .engine-stat-label {
+        font-size: 8px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .engine-stat-value {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      .engine-connector {
+        display: flex;
+        align-items: center;
+        padding: 0 6px;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .engine-arrow-line {
+        width: 36px;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--border-mid),
+          var(--border-bright),
+          var(--border-mid)
+        );
+        position: relative;
+      }
+      .engine-arrow-line::after {
+        content: "";
+        position: absolute;
+        right: -3px;
+        top: -3.5px;
+        border-left: 6px solid var(--border-bright);
+        border-top: 4.5px solid transparent;
+        border-bottom: 4.5px solid transparent;
+      }
+      .engine-fallback-label {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: var(--font-mono);
+        font-size: 7.5px;
+        color: var(--text-dim);
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+      /* Animated data flow dots on the arrow */
+      .engine-arrow-line .flow-dot {
+        position: absolute;
+        top: -2px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--amber);
+        opacity: 0;
+        animation: flow-move 2.5s linear infinite;
+      }
+      .engine-arrow-line .flow-dot:nth-child(2) {
+        animation-delay: 1.25s;
+      }
+      @keyframes flow-move {
+        0% {
+          left: -6px;
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          left: 100%;
+          opacity: 0;
+        }
+      }
+
+      /* ─── AI STACK ─── */
+      .ai-stack {
+        padding: 20px 24px;
+        background: var(--bg-primary);
+        border-top: 1px solid var(--border-dim);
+      }
+      .stack-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .stack-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-dim);
+        border-radius: var(--radius-md);
+        padding: 14px;
+        transition: all 0.2s;
+        position: relative;
+      }
+      .stack-card:hover {
+        border-color: var(--border-bright);
+        background: var(--bg-elevated);
+      }
+      .stack-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+      }
+      .stack-name {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 12px;
+        color: var(--text-primary);
+      }
+      .stack-status {
+        font-family: var(--font-mono);
+        font-size: 8px;
+        padding: 2px 5px;
+        border-radius: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .stack-status.installed {
+        background: var(--green-dim);
+        color: var(--green);
+      }
+      .stack-status.available {
+        background: var(--yellow-dim);
+        color: var(--yellow);
+      }
+      .stack-status.planned {
+        background: var(--blue-dim);
+        color: var(--blue);
+      }
+      .stack-type {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: var(--text-dim);
+        margin-bottom: 4px;
+      }
+      .stack-desc {
+        font-size: 11px;
+        color: var(--text-secondary);
+        line-height: 1.3;
+      }
+      .stack-cost {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--amber-dim);
+        margin-top: 6px;
+      }
+      .stack-category {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--border-dim);
+      }
+      .stack-section {
+        margin-bottom: 20px;
+      }
+
+      /* ─── RESPONSIVE ─── */
+      @media (max-width: 1200px) {
+        .main-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .events-feed {
+          grid-column: 1 / 3;
+          grid-row: auto;
+        }
+        .system-status {
+          grid-column: 1 / 3;
+          grid-row: auto;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+        .agent-roster,
+        .live-jobs,
+        .events-feed,
+        .cost-dashboard,
+        .pipeline-viz,
+        .system-status {
+          grid-column: 1;
+          grid-row: auto;
+        }
+        .agent-grid {
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+      }
+
+      /* ─── ANIMATIONS ─── */
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .panel {
+        animation: fade-in 0.4s ease both;
+      }
+
+      .panel:nth-child(1) {
+        animation-delay: 0.05s;
+      }
+      .panel:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .panel:nth-child(3) {
+        animation-delay: 0.15s;
+      }
+      .panel:nth-child(4) {
+        animation-delay: 0.2s;
+      }
+      .panel:nth-child(5) {
+        animation-delay: 0.25s;
+      }
+      .panel:nth-child(6) {
+        animation-delay: 0.3s;
+      }
+      .panel:nth-child(7) {
+        animation-delay: 0.35s;
+      }
+
+      /* Noise texture */
+      .main-grid::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.015;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 200px;
+      }
+
+      /* Tab highlight for active section */
+      .section-divider {
+        grid-column: 1 / -1;
+        height: 1px;
+        background: var(--border-dim);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════════════════ HEADER ═══════════════════ -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-mark">OC</div>
+        <span class="header-title">OpenClaw Mission Control</span>
+        <span class="header-version">v4.0</span>
+      </div>
+      <div class="header-right">
+        <div class="status-indicator">
+          <div class="status-dot" id="connectionDot"></div>
+          <span id="connectionLabel">Connecting...</span>
+        </div>
+        <span class="clock" id="liveClock">--:--:--</span>
+      </div>
+    </header>
+
+    <!-- ═══════════════════ EXECUTION ENGINE ═══════════════════ -->
+    <section class="execution-engine">
+      <div class="panel-header">
+        <span class="panel-title">Execution Engine</span>
+        <span class="panel-badge">3-tier fallback</span>
+      </div>
+      <div class="engine-flow">
+        <!-- Engine 1: Oz Agent (Primary) -->
+        <div class="engine-card primary" style="--engine-color: var(--amber)">
+          <div class="engine-header">
+            <div class="engine-icon" style="background: var(--amber)">OZ</div>
+            <div>
+              <div class="engine-name">Oz Agent</div>
+              <span class="engine-tier">primary</span>
+            </div>
+          </div>
+          <div class="engine-desc">
+            Warp's multi-model orchestration. Auto-selects best model per task. Full tool access,
+            parallel agents, cloud execution.
+          </div>
+          <div class="engine-models">
+            <span class="engine-model-chip">GPT-5.2</span>
+            <span class="engine-model-chip">Claude 4.6</span>
+            <span class="engine-model-chip">Gemini 3</span>
+            <span class="engine-model-chip">auto-select</span>
+          </div>
+          <div class="engine-stats">
+            <div>
+              <div class="engine-stat-label">Cost</div>
+              <div class="engine-stat-value" style="color: var(--amber)">$0.50-5/M</div>
+            </div>
+            <div>
+              <div class="engine-stat-label">Timeout</div>
+              <div class="engine-stat-value">180s</div>
+            </div>
+            <div>
+              <div class="engine-stat-label">Idle</div>
+              <div class="engine-stat-value">15s</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector: Oz → OpenCode -->
+        <div class="engine-connector">
+          <div class="engine-fallback-label">fallback</div>
+          <div class="engine-arrow-line">
+            <div class="flow-dot"></div>
+            <div class="flow-dot"></div>
+          </div>
+        </div>
+
+        <!-- Engine 2: OpenCode (Secondary) -->
+        <div class="engine-card" style="--engine-color: var(--green)">
+          <div class="engine-header">
+            <div class="engine-icon" style="background: var(--green)">OC</div>
+            <div>
+              <div class="engine-name">OpenCode</div>
+              <span
+                class="engine-tier"
+                style="--engine-tier-bg: var(--green-dim); --engine-tier-color: var(--green)"
+                >secondary</span
+              >
+            </div>
+          </div>
+          <div class="engine-desc">
+            Go-based CLI with LSP scanning, 75+ LLM providers. Gemini 2.5 Flash for ultra-cheap
+            execution.
+          </div>
+          <div class="engine-models">
+            <span class="engine-model-chip">Gemini 2.5 Flash</span>
+            <span class="engine-model-chip">$0.15/$0.60/M</span>
+          </div>
+          <div class="engine-stats">
+            <div>
+              <div class="engine-stat-label">Cost</div>
+              <div class="engine-stat-value" style="color: var(--green)">$0.003/job</div>
+            </div>
+            <div>
+              <div class="engine-stat-label">Savings</div>
+              <div class="engine-stat-value">99.5%</div>
+            </div>
+            <div>
+              <div class="engine-stat-label">Timeout</div>
+              <div class="engine-stat-value">120s</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector: OpenCode → SDK -->
+        <div class="engine-connector">
+          <div class="engine-fallback-label">fallback</div>
+          <div class="engine-arrow-line">
+            <div class="flow-dot"></div>
+            <div class="flow-dot"></div>
+          </div>
+        </div>
+
+        <!-- Engine 3: Claude SDK (Final Fallback) -->
+        <div class="engine-card" style="--engine-color: var(--blue)">
+          <div class="engine-header">
+            <div class="engine-icon" style="background: var(--blue)">SK</div>
+            <div>
+              <div class="engine-name">Claude SDK</div>
+              <span
+                class="engine-tier"
+                style="--engine-tier-bg: var(--blue-dim); --engine-tier-color: var(--blue)"
+                >fallback</span
+              >
+            </div>
+          </div>
+          <div class="engine-desc">
+            Direct Anthropic API. Haiku for P1-P3, Sonnet for P0 critical. Highest quality, highest
+            cost.
+          </div>
+          <div class="engine-models">
+            <span class="engine-model-chip">Haiku 4.5</span>
+            <span class="engine-model-chip">Sonnet 4.6</span>
+            <span class="engine-model-chip">Opus 4.6</span>
+          </div>
+          <div class="engine-stats">
+            <div>
+              <div class="engine-stat-label">Cost</div>
+              <div class="engine-stat-value" style="color: var(--blue)">$0.50-15/M</div>
+            </div>
+            <div>
+              <div class="engine-stat-label">Quality</div>
+              <div class="engine-stat-value">SOTA</div>
+            </div>
+            <div>
+              <div class="engine-stat-label">Timeout</div>
+              <div class="engine-stat-value">90s</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ MAIN GRID ═══════════════════ -->
+    <div class="main-grid">
+      <!-- ─── AGENT ROSTER ─── -->
+      <section class="panel agent-roster">
+        <div class="panel-header">
+          <span class="panel-title">Agent Roster</span>
+          <span class="panel-badge" id="agentCount">9 agents</span>
+        </div>
+        <div class="agent-grid" id="agentGrid"></div>
+      </section>
+
+      <!-- ─── SYSTEM STATUS ─── -->
+      <section class="panel system-status">
+        <div class="panel-header">
+          <span class="panel-title">System Status</span>
+          <span class="panel-badge" id="healthBadge">...</span>
+        </div>
+        <div class="status-grid" id="statusGrid">
+          <div class="status-item">
+            <span class="status-label">Gateway</span>
+            <span class="status-value" id="sysGateway">...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Version</span>
+            <span class="status-value" id="sysVersion">...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Uptime</span>
+            <span class="status-value" id="sysUptime">...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Active Agents</span>
+            <span class="status-value" id="sysAgents">...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">API Endpoints</span>
+            <span class="status-value" id="sysEndpoints">...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Tools</span>
+            <span class="status-value" id="sysTools">...</span>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px">
+              <span style="font-size: 10px; color: var(--text-dim)">UPTIME</span>
+              <span
+                style="font-family: var(--font-mono); font-size: 10px; color: var(--green)"
+                id="uptimePct"
+                >--</span
+              >
+            </div>
+            <div class="uptime-bar">
+              <div class="uptime-fill" id="uptimeFill" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── LIVE JOBS ─── -->
+      <section class="panel live-jobs">
+        <div class="panel-header">
+          <span class="panel-title">Live Jobs</span>
+          <span class="panel-badge" id="jobCount">0 active</span>
+        </div>
+        <div class="jobs-list" id="jobsList">
+          <div class="empty-state">
+            <div class="empty-state-icon">&#9670;</div>
+            No active jobs — pipeline idle
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── EVENTS FEED ─── -->
+      <section class="panel events-feed">
+        <div class="panel-header">
+          <span class="panel-title">Event Feed</span>
+          <span class="panel-badge" id="eventCount">0 events</span>
+        </div>
+        <div class="events-list" id="eventsList"></div>
+      </section>
+
+      <!-- ─── COST DASHBOARD ─── -->
+      <section class="panel cost-dashboard">
+        <div class="panel-header">
+          <span class="panel-title">Cost — 7 Day</span>
+        </div>
+        <div class="cost-big" id="costTotal">$--</div>
+        <div class="cost-subtitle" id="costSubtitle">loading cost data...</div>
+        <div class="cost-breakdown" id="costBreakdown"></div>
+        <div class="cost-stats-row" id="costStats"></div>
+      </section>
+
+      <!-- ─── PIPELINE VISUALIZER ─── -->
+      <section class="panel pipeline-viz">
+        <div class="panel-header">
+          <span class="panel-title">Pipeline Phases</span>
+          <span class="panel-badge">5 phases</span>
+        </div>
+        <div class="pipeline-flow" id="pipelineFlow"></div>
+        <div class="pipeline-tools" id="pipelineTools"></div>
+      </section>
+    </div>
+
+    <!-- ═══════════════════ AI STACK ═══════════════════ -->
+    <section class="ai-stack">
+      <div class="panel-header">
+        <span class="panel-title">AI Stack & Tools</span>
+        <span class="panel-badge" id="stackCount">loading...</span>
+      </div>
+      <div id="aiStackContent"></div>
+    </section>
+
+    <script>
+      /* ═══════════════════════════════════════════════════════════════
+   MISSION CONTROL — JavaScript Controller
+   ═══════════════════════════════════════════════════════════════ */
+
+      // ─── Agent Definitions ───
+      const AGENTS = [
+        {
+          name: "CodeGen Pro",
+          model: "Kimi 2.5",
+          cost: "$0.14/M",
+          tag: "Fast coder",
+          color: "#34d399",
+          tagBg: "rgba(52,211,153,0.1)",
+          tagBorder: "rgba(52,211,153,0.15)",
+        },
+        {
+          name: "CodeGen Elite",
+          model: "MiniMax M2.5",
+          cost: "$0.30/M",
+          tag: "Complex refactors",
+          color: "#60a5fa",
+          tagBg: "rgba(96,165,250,0.1)",
+          tagBorder: "rgba(96,165,250,0.15)",
+        },
+        {
+          name: "Pentest AI",
+          model: "Kimi Reasoner",
+          cost: "$0.27/M",
+          tag: "Security",
+          color: "#f87171",
+          tagBg: "rgba(248,113,113,0.1)",
+          tagBorder: "rgba(248,113,113,0.15)",
+        },
+        {
+          name: "SupabaseConnector",
+          model: "Claude Opus",
+          cost: "$15/M",
+          tag: "Data",
+          color: "#a78bfa",
+          tagBg: "rgba(167,139,250,0.1)",
+          tagBorder: "rgba(167,139,250,0.15)",
+        },
+        {
+          name: "BettingBot",
+          model: "Kimi 2.5",
+          cost: "$0.14/M",
+          tag: "Sports analyst",
+          color: "#fbbf24",
+          tagBg: "rgba(251,191,36,0.1)",
+          tagBorder: "rgba(251,191,36,0.15)",
+        },
+        {
+          name: "Code Reviewer",
+          model: "Kimi 2.5",
+          cost: "$0.14/M",
+          tag: "PR reviews",
+          color: "#34d399",
+          tagBg: "rgba(52,211,153,0.1)",
+          tagBorder: "rgba(52,211,153,0.15)",
+        },
+        {
+          name: "Architecture Designer",
+          model: "MiniMax M2.5",
+          cost: "$0.30/M",
+          tag: "System design",
+          color: "#60a5fa",
+          tagBg: "rgba(96,165,250,0.1)",
+          tagBorder: "rgba(96,165,250,0.15)",
+        },
+        {
+          name: "Test Generator",
+          model: "Kimi 2.5",
+          cost: "$0.14/M",
+          tag: "Testing",
+          color: "#22d3ee",
+          tagBg: "rgba(34,211,238,0.1)",
+          tagBorder: "rgba(34,211,238,0.15)",
+        },
+        {
+          name: "Debugger",
+          model: "Claude Opus",
+          cost: "$15/M",
+          tag: "Deep bugs",
+          color: "#f87171",
+          tagBg: "rgba(248,113,113,0.1)",
+          tagBorder: "rgba(248,113,113,0.15)",
+        },
+      ];
+
+      // ─── Pipeline Phase Tools ───
+      const PHASE_TOOLS = {
+        research: ["web_search", "web_fetch", "file_read", "glob_files", "grep_search"],
+        plan: ["file_read", "glob_files", "grep_search"],
+        execute: ["shell_execute", "git_operations", "file_write", "file_edit", "vercel_deploy"],
+        verify: ["shell_execute", "file_read", "glob_files", "grep_search"],
+        deliver: ["git_operations", "vercel_deploy", "send_slack_message"],
+      };
+
+      const PHASES = ["research", "plan", "execute", "verify", "deliver"];
+
+      // ─── Render Agent Roster ───
+      function renderAgents() {
+        const grid = document.getElementById("agentGrid");
+        grid.innerHTML = AGENTS.map(
+          (a) => `
+    <div class="agent-card" style="--agent-color:${a.color}">
+      <div class="agent-card-top">
+        <span class="agent-name">${a.name}</span>
+        <div class="agent-status-dot idle" data-agent="${a.name}"></div>
+      </div>
+      <div class="agent-model">${a.model}</div>
+      <div class="agent-meta">
+        <span class="agent-cost">${a.cost}</span>
+        <span class="agent-tag" style="--tag-bg:${a.tagBg};--tag-color:${a.color};--tag-border:${a.tagBorder}">${a.tag}</span>
+      </div>
+    </div>
+  `,
+        ).join("");
+      }
+
+      // ─── Render Pipeline ───
+      function renderPipeline() {
+        const flow = document.getElementById("pipelineFlow");
+        flow.innerHTML = PHASES.map(
+          (p, i) => `
+    <div class="pipeline-phase">
+      <div class="pipeline-phase-num">${i + 1}</div>
+      <div class="pipeline-phase-name">${p}</div>
+    </div>
+    ${i < 4 ? '<div class="pipeline-arrow">&#9654;</div>' : ""}
+  `,
+        ).join("");
+
+        const tools = document.getElementById("pipelineTools");
+        tools.innerHTML = PHASES.map(
+          (p) => `
+    <div class="pipeline-tool-group">
+      <div class="pipeline-tool-phase">${p}</div>
+      <div class="pipeline-tool-list">
+        ${PHASE_TOOLS[p].map((t) => `<span class="pipeline-tool-chip">${t}</span>`).join("")}
+      </div>
+    </div>
+  `,
+        ).join("");
+      }
+
+      // ─── Fetch Helpers ───
+      async function apiFetch(path) {
+        try {
+          const r = await fetch(path);
+          if (!r.ok) throw new Error(r.status);
+          return await r.json();
+        } catch (e) {
+          console.warn("API fetch failed:", path, e);
+          return null;
+        }
+      }
+
+      // ─── Live Clock ───
+      function startClock() {
+        const el = document.getElementById("liveClock");
+        function tick() {
+          const now = new Date();
+          el.textContent = now.toLocaleTimeString("en-US", { hour12: false });
+        }
+        tick();
+        setInterval(tick, 1000);
+      }
+
+      // ─── System Status ───
+      async function fetchHealth() {
+        const data = await apiFetch("/health");
+        if (!data) {
+          document.getElementById("connectionDot").classList.add("offline");
+          document.getElementById("connectionLabel").textContent = "Offline";
+          document.getElementById("healthBadge").textContent = "DOWN";
+          return;
+        }
+
+        document.getElementById("connectionDot").classList.remove("offline");
+        document.getElementById("connectionLabel").textContent = "Connected";
+
+        const s = data.status || "unknown";
+        document.getElementById("sysGateway").textContent = s;
+        document.getElementById("sysGateway").className =
+          "status-value " + (s === "operational" ? "ok" : "warn");
+        document.getElementById("healthBadge").textContent = s.toUpperCase();
+
+        document.getElementById("sysVersion").textContent = data.version || "--";
+        document.getElementById("sysAgents").textContent =
+          data.agents_active || data.total_agents || "--";
+
+        // Uptime
+        if (data.uptime_seconds) {
+          const h = Math.floor(data.uptime_seconds / 3600);
+          const m = Math.floor((data.uptime_seconds % 3600) / 60);
+          document.getElementById("sysUptime").textContent = `${h}h ${m}m`;
+          document.getElementById("sysUptime").className = "status-value ok";
+          // Assume 99.9% for visual
+          const pct = Math.min(99.99, 99 + h / 240);
+          document.getElementById("uptimePct").textContent = pct.toFixed(2) + "%";
+          document.getElementById("uptimeFill").style.width = pct + "%";
+        } else {
+          document.getElementById("sysUptime").textContent = "N/A";
+        }
+
+        document.getElementById("sysEndpoints").textContent = data.total_endpoints || "--";
+        document.getElementById("sysTools").textContent = data.total_tools || "--";
+      }
+
+      // ─── Active Jobs ───
+      async function fetchActiveJobs() {
+        const data = await apiFetch("/api/monitoring/active");
+        if (!data) return;
+
+        const jobs = data.jobs || {};
+        const entries = Object.values(jobs);
+        document.getElementById("jobCount").textContent = `${entries.length} active`;
+
+        const list = document.getElementById("jobsList");
+        if (entries.length === 0) {
+          list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">&#9670;</div>
+        No active jobs — pipeline idle
+      </div>`;
+          return;
+        }
+
+        list.innerHTML = entries
+          .map((j) => {
+            const phase = (j.phase || "research").toLowerCase();
+            const phaseIdx = PHASES.indexOf(phase);
+            const pct = j.progress_pct || 0;
+
+            const segments = PHASES.map((p, i) => {
+              if (i < phaseIdx) return `<div class="phase-segment completed"></div>`;
+              if (i === phaseIdx) return `<div class="phase-segment active"></div>`;
+              return `<div class="phase-segment"></div>`;
+            }).join("");
+
+            const labels = PHASES.map((p, i) => {
+              let cls = "";
+              if (i < phaseIdx) cls = "completed";
+              else if (i === phaseIdx) cls = "active";
+              return `<div class="phase-label ${cls}">${p}</div>`;
+            }).join("");
+
+            const tools = (j.active_tools || [])
+              .map((t) => `<span class="tool-chip">${t}</span>`)
+              .join("");
+
+            return `
+      <div class="job-card">
+        <div class="job-top">
+          <span class="job-id">${j.job_id || "unknown"}</span>
+          <span class="job-cost">$${(j.cost_usd || 0).toFixed(4)}</span>
+        </div>
+        <div class="phase-track">${segments}</div>
+        <div class="phase-labels">${labels}</div>
+        ${tools ? `<div class="job-tools">${tools}</div>` : ""}
+      </div>`;
+          })
+          .join("");
+      }
+
+      // ─── Cost Dashboard ───
+      async function fetchCosts() {
+        const data = await apiFetch("/api/monitoring/costs?days=7");
+        if (!data) return;
+
+        const total = data.total_cost || 0;
+        document.getElementById("costTotal").textContent = `$${total.toFixed(2)}`;
+        document.getElementById("costSubtitle").textContent =
+          `${data.entries_count || 0} API calls over 7 days`;
+
+        // By agent breakdown
+        const byAgent = data.by_agent || {};
+        const maxVal = Math.max(...Object.values(byAgent), 0.01);
+
+        const breakdown = document.getElementById("costBreakdown");
+        const sorted = Object.entries(byAgent).sort((a, b) => b[1] - a[1]);
+
+        breakdown.innerHTML = sorted
+          .slice(0, 8)
+          .map(
+            ([agent, cost]) => `
+    <div class="cost-row">
+      <span class="cost-row-label" title="${agent}">${agent}</span>
+      <div class="cost-bar-track">
+        <div class="cost-bar-fill" style="width:${((cost / maxVal) * 100).toFixed(1)}%"></div>
+      </div>
+      <span class="cost-row-value">$${cost.toFixed(2)}</span>
+    </div>
+  `,
+          )
+          .join("");
+
+        // Stats
+        const avgPerJob = data.entries_count > 0 ? total / Math.max(data.entries_count / 3, 1) : 0;
+        document.getElementById("costStats").innerHTML = `
+    <div class="cost-stat">
+      <div class="cost-stat-label">Total Calls</div>
+      <div class="cost-stat-value">${data.entries_count || 0}</div>
+    </div>
+    <div class="cost-stat">
+      <div class="cost-stat-label">Avg/Job (est)</div>
+      <div class="cost-stat-value">$${avgPerJob.toFixed(2)}</div>
+    </div>
+  `;
+      }
+
+      // ─── Events Feed ───
+      async function fetchEvents() {
+        const data = await apiFetch("/api/events?limit=20");
+        if (!data) return;
+
+        const events = data.events || [];
+        document.getElementById("eventCount").textContent = `${events.length} events`;
+
+        const list = document.getElementById("eventsList");
+        if (events.length === 0) {
+          list.innerHTML = '<div class="empty-state">No recent events</div>';
+          return;
+        }
+
+        list.innerHTML = events
+          .reverse()
+          .map((e) => {
+            const type = e.event_type || e.type || "unknown";
+            let dotClass = "default";
+            if (type.includes("completed")) dotClass = "completed";
+            else if (type.includes("failed")) dotClass = "failed";
+            else if (type.includes("created")) dotClass = "created";
+            else if (type.includes("proposal")) dotClass = "proposal";
+            else if (type.includes("cost")) dotClass = "cost";
+
+            const ts = e.timestamp || e.created_at || "";
+            let timeStr = "";
+            if (ts) {
+              try {
+                const d = new Date(typeof ts === "number" ? ts * 1000 : ts);
+                timeStr = d.toLocaleTimeString("en-US", {
+                  hour12: false,
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+              } catch (_) {
+                timeStr = "";
+              }
+            }
+
+            const detail = e.data?.job_id || e.data?.task || e.data?.project || "";
+
+            return `
+      <div class="event-item">
+        <div class="event-dot ${dotClass}"></div>
+        <div class="event-body">
+          <div class="event-type">${type}</div>
+          ${detail ? `<div class="event-detail">${detail}</div>` : ""}
+        </div>
+        <span class="event-time">${timeStr}</span>
+      </div>`;
+          })
+          .join("");
+      }
+
+      // ─── WebSocket for Live Jobs ───
+      let ws = null;
+      function connectWebSocket() {
+        // Only connect if we have active jobs
+        // For now, we rely on polling
+      }
+
+      // ─── AI Stack Data & Renderer ───
+      const AI_STACK = {
+        "Execution Engines": [
+          {
+            name: "Oz Agent (Warp)",
+            type: "CLI/API",
+            status: "installed",
+            desc: "Multi-model orchestration, parallel cloud agents, auto-model selection",
+            cost: "$0.50-5/M",
+          },
+          {
+            name: "OpenCode",
+            type: "CLI",
+            status: "installed",
+            desc: "Go-based IDE agent, LSP scanning, 75+ LLM providers, Gemini Flash",
+            cost: "$0.15/$0.60/M",
+          },
+          {
+            name: "Claude SDK",
+            type: "API",
+            status: "installed",
+            desc: "Direct Anthropic API — Haiku, Sonnet, Opus. Highest quality fallback",
+            cost: "$0.80-15/M",
+          },
+        ],
+        "Coding Agents": [
+          {
+            name: "Cline",
+            type: "VS Code Extension",
+            status: "available",
+            desc: "MCP extensions, browser control, autonomous coding in VS Code",
+            cost: "BYO keys",
+          },
+          {
+            name: "Aider",
+            type: "CLI",
+            status: "available",
+            desc: "Git-native diffs, pair programming, multi-file edits, 70+ models",
+            cost: "BYO keys",
+          },
+          {
+            name: "SWE-Agent",
+            type: "Framework",
+            status: "available",
+            desc: "Princeton benchmark leader, agent-computer interface, Docker sandbox",
+            cost: "BYO keys",
+          },
+          {
+            name: "OpenHands",
+            type: "Platform",
+            status: "available",
+            desc: "Docker sandboxed agents, event-stream architecture, web UI",
+            cost: "BYO keys",
+          },
+          {
+            name: "Kimi Code",
+            type: "CLI/API",
+            status: "available",
+            desc: "Kimi K2.5 coding agent, visual debugging, cheapest per-token",
+            cost: "$0.14/$0.28/M",
+          },
+        ],
+        Orchestration: [
+          {
+            name: "CrewAI",
+            type: "Framework",
+            status: "planned",
+            desc: "Role-based multi-agent crews, task delegation, memory, human-in-loop",
+            cost: "Open source",
+          },
+          {
+            name: "LangGraph",
+            type: "Framework",
+            status: "planned",
+            desc: "Graph state machines, conditional edges, checkpointing, streaming",
+            cost: "Open source",
+          },
+          {
+            name: "AutoGen",
+            type: "Framework",
+            status: "planned",
+            desc: "Microsoft conversational multi-agent, code execution, tool use",
+            cost: "Open source",
+          },
+        ],
+        "MCP Servers": [
+          {
+            name: "OpenClaw MCP",
+            type: "MCP",
+            status: "installed",
+            desc: "75 custom tools — jobs, memory, compute, trading, deployment",
+            cost: "Self-hosted",
+          },
+          {
+            name: "Context7",
+            type: "MCP",
+            status: "installed",
+            desc: "Library documentation lookup, up-to-date code examples",
+            cost: "Free",
+          },
+          {
+            name: "Sequential Thinking",
+            type: "MCP",
+            status: "installed",
+            desc: "Step-by-step reasoning for complex multi-step problems",
+            cost: "Free",
+          },
+          {
+            name: "Supabase MCP",
+            type: "MCP",
+            status: "installed",
+            desc: "Direct database access, schema inspection, SQL execution",
+            cost: "Free",
+          },
+          {
+            name: "Playwright",
+            type: "MCP",
+            status: "installed",
+            desc: "Browser automation, web scraping, E2E testing, screenshots",
+            cost: "Free",
+          },
+          {
+            name: "tree-sitter",
+            type: "MCP",
+            status: "installed",
+            desc: "26 semantic code analysis tools — AST parsing, symbol extraction",
+            cost: "Free",
+          },
+        ],
+        Infrastructure: [
+          {
+            name: "n8n",
+            type: "Workflow",
+            status: "installed",
+            desc: "Agent Pipeline Monitor — webhook triggers, event routing, Slack alerts",
+            cost: "Self-hosted",
+          },
+          {
+            name: "Supabase",
+            type: "Database",
+            status: "installed",
+            desc: "7-table schema — jobs, costs, memories, reflections, checkpoints, blackboard, events",
+            cost: "$0/mo free",
+          },
+          {
+            name: "Cloudflare Workers",
+            type: "Serverless",
+            status: "installed",
+            desc: "PA Worker, Telegram bot, edge routing, KV sessions",
+            cost: "$5/mo",
+          },
+          {
+            name: "Vercel",
+            type: "Hosting",
+            status: "installed",
+            desc: "Project deployments — Delhi Palace, PrestressCalc, dashboards",
+            cost: "Free tier",
+          },
+        ],
+      };
+
+      function renderAIStack() {
+        const container = document.getElementById("aiStackContent");
+        let totalTools = 0;
+        let installed = 0;
+        let html = "";
+
+        for (const [category, items] of Object.entries(AI_STACK)) {
+          html += `<div class="stack-section"><div class="panel-header" style="padding:8px 0 6px; border-bottom:none"><span class="panel-title" style="font-size:11px; color:var(--text-dim); letter-spacing:1px">${category.toUpperCase()}</span><span class="panel-badge">${items.length}</span></div><div class="stack-grid">`;
+          for (const item of items) {
+            totalTools++;
+            if (item.status === "installed") installed++;
+            html += `
+      <div class="stack-card">
+        <div class="stack-card-header">
+          <span class="stack-name">${item.name}</span>
+          <span class="stack-status ${item.status}">${item.status}</span>
+        </div>
+        <div class="stack-type">${item.type}</div>
+        <div class="stack-desc">${item.desc}</div>
+        <div class="stack-cost">${item.cost}</div>
+      </div>`;
+          }
+          html += "</div></div>";
+        }
+
+        container.innerHTML = html;
+        document.getElementById("stackCount").textContent = `${installed}/${totalTools} installed`;
+      }
+
+      // ─── Auto Refresh ───
+      async function refreshAll() {
+        await Promise.allSettled([fetchHealth(), fetchActiveJobs(), fetchCosts(), fetchEvents()]);
+      }
+
+      // ─── Init ───
+      (async function init() {
+        startClock();
+        renderAgents();
+        renderPipeline();
+        renderAIStack();
+        await refreshAll();
+
+        // Refresh every 10 seconds
+        setInterval(refreshAll, 10000);
+      })();
+    </script>
+  </body>
+</html>

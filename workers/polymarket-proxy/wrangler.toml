@@ -1,0 +1,11 @@
+name = "polymarket-proxy"
+main = "src/index.ts"
+compatibility_date = "2024-09-25"
+workers_dev = true
+
+[env.production]
+name = "polymarket-proxy"
+workers_dev = true
+
+[vars]
+ENVIRONMENT = "production"

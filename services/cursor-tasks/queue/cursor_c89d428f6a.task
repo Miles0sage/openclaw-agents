@@ -1,0 +1,8 @@
+{
+  "id": "cursor_c89d428f6a",
+  "prompt": "Enhance the Brick Builder frontend at C:\\Users\\Miles\\brick-builder with the following improvements:\n\n1. Add an AI Suggest button in the Sidebar that calls POST http://<your-vps-ip>:8001/api/ai/suggest with the current bricks array and adds returned suggestions to the scene\n2. Add an AI Complete button that calls POST http://<your-vps-ip>:8001/api/ai/complete to auto-finish partial structures\n3. Add a Describe button that calls POST http://<your-vps-ip>:8001/api/ai/describe to show what the AI thinks the build looks like\n4. Add Save/Load functionality using POST http://<your-vps-ip>:8001/api/builds/save and POST http://<your-vps-ip>:8001/api/builds/load\n5. Add a toast notification system for feedback\n6. Update vite.config.ts to proxy /api calls to http://<your-vps-ip>:8001\n7. Polish the CSS - make the sidebar glassmorphism style with dark theme\n\nThe backend API is already running. Test by running npm run dev after changes.",
+  "project_path": "C:\\Users\\Miles\\brick-builder",
+  "priority": "high",
+  "status": "pending",
+  "created_at": "2026-03-07T23:35:12.732241+00:00"
+}

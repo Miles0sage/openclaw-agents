@@ -1,0 +1,1 @@
+The latest Python version in 2026 is expected to be Python 3.15.

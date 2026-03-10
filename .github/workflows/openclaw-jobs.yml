@@ -1,0 +1,76 @@
+name: OpenClaw Job Runner
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  run-job:
+    if: github.event.label.name == 'openclaw-job'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            You are an autonomous agent. Execute the task described in the issue body.
+            Use tools (Bash, Read, Write, Edit, Glob, Grep) to complete the work.
+            After completion, summarize what was done.
+
+            TASK:
+            ${{ github.event.issue.body }}
+          label_trigger: "openclaw-job"
+
+      - name: Post result as comment
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '## OpenClaw Job Result\n\n';
+
+            // Try to read the execution output
+            const outputFile = '/home/runner/work/_temp/claude-execution-output.json';
+            try {
+              const raw = fs.readFileSync(outputFile, 'utf8');
+              const data = JSON.parse(raw);
+
+              // Extract the assistant's text response
+              const results = data.filter(e => e.type === 'result');
+              const assistantMsgs = data.filter(e => e.type === 'assistant');
+
+              if (assistantMsgs.length > 0) {
+                const lastMsg = assistantMsgs[assistantMsgs.length - 1];
+                if (lastMsg.message && lastMsg.message.content) {
+                  for (const block of lastMsg.message.content) {
+                    if (block.type === 'text') {
+                      body += block.text + '\n\n';
+                    }
+                  }
+                }
+              }
+
+              if (results.length > 0) {
+                const r = results[results.length - 1];
+                body += `---\n**Status:** ${r.subtype} | **Duration:** ${r.duration_ms}ms | **Turns:** ${r.num_turns}`;
+              }
+            } catch (err) {
+              body += `Could not read output: ${err.message}\n\nCheck workflow run logs for details.`;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });

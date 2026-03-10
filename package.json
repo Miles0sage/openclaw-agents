@@ -1,0 +1,14 @@
+{
+  "name": "@openclaw/monorepo",
+  "version": "4.2.0",
+  "description": "OpenClaw: Multi-agent AI job pipeline with 75+ MCP tools and intelligent routing.",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r --parallel build",
+    "test": "python -m pytest tests/ -q"
+  },
+  "keywords": ["ai-agents", "mcp", "automation", "pipeline"],
+  "author": "OpenClaw Contributors",
+  "license": "MIT"
+}

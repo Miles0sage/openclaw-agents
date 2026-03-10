@@ -1,0 +1,11 @@
+{
+  "id": "test",
+  "description": "Smoke test — verifies benchmark runner can load and execute a minimal problem",
+  "setup_files": {
+    "a.txt": "hello world"
+  },
+  "verification": {
+    "type": "grep",
+    "command": "cat a.txt | grep -q 'hello' && echo PASS || echo FAIL"
+  }
+}

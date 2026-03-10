@@ -1,0 +1,133 @@
+{
+  "categories": ["coffee", "tea", "pastries", "specials"],
+  "items": [
+    {
+      "id": 1,
+      "name": "House Blend",
+      "category": "coffee",
+      "description": "Our signature medium roast with notes of chocolate and toasted almond.",
+      "price": 4.50,
+      "image": "house-blend.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Lavender Latte",
+      "category": "coffee",
+      "description": "Espresso with steamed oat milk and house-made lavender syrup.",
+      "price": 5.75,
+      "image": "lavender-latte.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Cold Brew",
+      "category": "coffee",
+      "description": "Slow-steeped for 18 hours. Smooth, bold, and refreshing over ice.",
+      "price": 5.00,
+      "image": "cold-brew.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Cappuccino",
+      "category": "coffee",
+      "description": "Double shot of espresso topped with velvety microfoam.",
+      "price": 5.25,
+      "image": "cappuccino.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Jasmine Green",
+      "category": "tea",
+      "description": "Delicate Chinese green tea scented with jasmine blossoms.",
+      "price": 4.00,
+      "image": "jasmine-green.jpg"
+    },
+    {
+      "id": 6,
+      "name": "Chamomile Garden",
+      "category": "tea",
+      "description": "Organic chamomile flowers with a hint of honey and lemon verbena.",
+      "price": 4.25,
+      "image": "chamomile.jpg"
+    },
+    {
+      "id": 7,
+      "name": "Matcha Latte",
+      "category": "tea",
+      "description": "Ceremonial-grade matcha whisked with your choice of milk.",
+      "price": 5.50,
+      "image": "matcha-latte.jpg"
+    },
+    {
+      "id": 8,
+      "name": "Earl Grey Bloom",
+      "category": "tea",
+      "description": "Classic bergamot-infused black tea with dried cornflower petals.",
+      "price": 4.00,
+      "image": "earl-grey.jpg"
+    },
+    {
+      "id": 9,
+      "name": "Almond Croissant",
+      "category": "pastries",
+      "description": "Buttery, flaky croissant filled with almond cream and topped with sliced almonds.",
+      "price": 4.75,
+      "image": "almond-croissant.jpg"
+    },
+    {
+      "id": 10,
+      "name": "Lemon Poppy Seed Muffin",
+      "category": "pastries",
+      "description": "Bright citrus flavor with a tender crumb and crunchy sugar top.",
+      "price": 3.95,
+      "image": "lemon-muffin.jpg"
+    },
+    {
+      "id": 11,
+      "name": "Cinnamon Roll",
+      "category": "pastries",
+      "description": "Warm, gooey cinnamon swirl topped with cream cheese glaze.",
+      "price": 5.25,
+      "image": "cinnamon-roll.jpg"
+    },
+    {
+      "id": 12,
+      "name": "Banana Walnut Bread",
+      "category": "pastries",
+      "description": "Moist banana bread studded with toasted walnuts. Served warm.",
+      "price": 4.50,
+      "image": "banana-bread.jpg"
+    },
+    {
+      "id": 13,
+      "name": "Rose Cardamom Latte",
+      "category": "specials",
+      "description": "Espresso with rose water, cardamom, and steamed milk. A garden in a cup.",
+      "price": 6.25,
+      "image": "rose-latte.jpg"
+    },
+    {
+      "id": 14,
+      "name": "Seasonal Bloom Bowl",
+      "category": "specials",
+      "description": "Acai smoothie bowl topped with edible flowers, granola, and fresh berries.",
+      "price": 9.50,
+      "image": "bloom-bowl.jpg"
+    },
+    {
+      "id": 15,
+      "name": "Honeycomb Affogato",
+      "category": "specials",
+      "description": "Vanilla bean gelato drowned in a shot of espresso with honeycomb crumble.",
+      "price": 7.00,
+      "image": "affogato.jpg"
+    },
+    {
+      "id": 16,
+      "name": "Garden Herb Focaccia",
+      "category": "specials",
+      "description": "Fresh-baked focaccia with rosemary, thyme, and sea salt from our rooftop garden.",
+      "price": 5.50,
+      "image": "focaccia.jpg"
+    }
+  ]
+}

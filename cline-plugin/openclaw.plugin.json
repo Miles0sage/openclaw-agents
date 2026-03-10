@@ -1,0 +1,39 @@
+{
+  "id": "cline",
+  "name": "Cline Integration",
+  "version": "1.0.0",
+  "description": "Integrates Cline (VS Code AI assistant) with OpenClaw agents for collaborative coding",
+  "author": "OpenClaw Team",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "default": true,
+        "description": "Enable Cline integration"
+      },
+      "pollInterval": {
+        "type": "number",
+        "default": 5000,
+        "minimum": 1000,
+        "description": "How often Cline should poll for messages (milliseconds)"
+      },
+      "maxQueueSize": {
+        "type": "number",
+        "default": 100,
+        "minimum": 10,
+        "description": "Maximum number of messages to keep in queue"
+      },
+      "autoCleanup": {
+        "type": "boolean",
+        "default": true,
+        "description": "Automatically cleanup old messages (>1 hour)"
+      }
+    }
+  },
+  "uiHints": {
+    "icon": "💻",
+    "color": "#0066FF",
+    "category": "Development Tools"
+  }
+}

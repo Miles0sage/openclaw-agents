@@ -1,0 +1,227 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openclaw-gateway
+  namespace: openclaw
+  labels:
+    app: openclaw-gateway
+    version: v1
+spec:
+  replicas: 2 # High availability setup
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0 # Zero-downtime deployments
+
+  selector:
+    matchLabels:
+      app: openclaw-gateway
+
+  template:
+    metadata:
+      labels:
+        app: openclaw-gateway
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+
+    spec:
+      # Pod disruption budget for safe deployments
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - openclaw-gateway
+                topologyKey: kubernetes.io/hostname
+
+      # Containers
+      containers:
+        - name: gateway
+          image: openclaw-gateway:latest # Change to your registry
+          imagePullPolicy: Always
+
+          # Port configuration
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+
+          # Environment variables from ConfigMap and Secrets
+          env:
+            # API Keys from Secrets
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw-secrets
+                  key: anthropic-api-key
+            - name: SLACK_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw-secrets
+                  key: slack-bot-token
+            - name: SLACK_SIGNING_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw-secrets
+                  key: slack-signing-secret
+            - name: SLACK_APP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw-secrets
+                  key: slack-app-token
+            - name: DISCORD_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw-secrets
+                  key: discord-bot-token
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw-secrets
+                  key: telegram-bot-token
+            - name: DEEPSEEK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw-secrets
+                  key: deepseek-api-key
+            - name: BARBER_CRM_SUPABASE_ANON_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw-secrets
+                  key: barber-crm-supabase-anon-key
+            - name: BARBER_CRM_SUPABASE_SERVICE_ROLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw-secrets
+                  key: barber-crm-supabase-service-role-key
+            - name: DELHI_PALACE_SUPABASE_ANON_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw-secrets
+                  key: delhi-palace-supabase-anon-key
+            - name: DELHI_PALACE_SUPABASE_SERVICE_ROLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw-secrets
+                  key: delhi-palace-supabase-service-role-key
+
+            # Configuration from ConfigMap
+            - name: OPENCLAW_SESSIONS_DIR
+              value: /app/sessions
+            - name: OPENCLAW_LOGS_DIR
+              value: /app/logs
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: openclaw-config
+                  key: log-level
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: PYTHONDONTWRITEBYTECODE
+              value: "1"
+
+          # Resource requests and limits
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 1Gi
+
+          # Liveness probe (restart if unhealthy)
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+
+          # Readiness probe (remove from load balancer if unhealthy)
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 2
+
+          # Startup probe (allow time for app initialization)
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 30
+
+          # Volume mounts
+          volumeMounts:
+            - name: sessions
+              mountPath: /app/sessions
+            - name: logs
+              mountPath: /app/logs
+            - name: config
+              mountPath: /app/config.json
+              subPath: config.json
+              readOnly: true
+
+          # Security context
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+
+      # Volumes
+      volumes:
+        - name: sessions
+          emptyDir: {}
+        - name: logs
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: openclaw-config
+            items:
+              - key: config.json
+                path: config.json
+
+      # Pod-level security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+      # Termination grace period for graceful shutdown
+      terminationGracePeriodSeconds: 30
+
+      # Service account
+      serviceAccountName: openclaw
+
+---
+# PodDisruptionBudget for cluster upgrades
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: openclaw-gateway-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: openclaw-gateway

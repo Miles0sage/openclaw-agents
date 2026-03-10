@@ -1,0 +1,21 @@
+id: optimize-n-plus-one
+category: performance
+difficulty: hard
+description: |
+  Remove N+1 query from order listing by eager loading relations.
+agent_key: elite_coder_agent
+max_cost_usd: 0.15
+max_duration_sec: 180
+
+setup:
+  files:
+    - path: src/orders.py
+      content: |
+        def list_orders(session):
+            orders = session.query(Order).all()
+            return [o.customer.name for o in orders]
+
+expected:
+  files:
+    - path: src/orders.py
+      contains: ["joinedload", "selectinload"]

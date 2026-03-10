@@ -1,0 +1,27 @@
+id: fix-button-color
+category: bug_fix
+difficulty: easy
+description: |
+  The login button should be red (#ff0000) but it's currently blue (#0000ff).
+  Fix the button color in src/components/LoginButton.tsx.
+  Do not change any other files.
+agent_key: coder_agent
+department: engineering
+max_cost_usd: 0.05
+max_duration_sec: 60
+min_quality_score: 0.7
+tags: [css, react, ui]
+
+setup:
+  files:
+    - path: src/components/LoginButton.tsx
+      content: |
+        export function LoginButton() {
+          return <button style={{ backgroundColor: "#0000ff" }}>Log In</button>;
+        }
+
+expected:
+  files:
+    - path: src/components/LoginButton.tsx
+      contains: ["#ff0000"]
+      not_contains: ["#0000ff"]

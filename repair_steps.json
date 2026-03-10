@@ -1,0 +1,11 @@
+
+{
+  "repair_steps": [
+    {
+      "step": 1,
+      "description": "Check if directory ./data/coffee-shop-demo/ exists and contains files",
+      "completed": true,
+      "verification": "Directory exists and contains files: index.html, node_modules/, package.json, package-lock.json, script.js, style.css, vercel.json"
+    }
+  ]
+}

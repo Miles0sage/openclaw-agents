@@ -1,0 +1,26 @@
+{
+  "general": {
+    "environment": "development",
+    "log_level": "info",
+    "port": 3000
+  },
+  "database": {
+    "type": "supabase",
+    "url": "YOUR_SUPABASE_URL",
+    "anon_key": "YOUR_SUPABASE_ANON_KEY"
+  },
+  "agents": {
+    "default_model": "MiniMax-M2.5",
+    "max_cost_per_job": 0.5,
+    "enabled_agents": ["CodeGen Elite", "Overseer", "CodeGen Pro"]
+  },
+  "api_keys": {
+    "openai": "YOUR_OPENAI_API_KEY",
+    "anthropic": "YOUR_ANTHROPIC_API_KEY",
+    "google": "YOUR_GOOGLE_API_KEY"
+  },
+  "docker": {
+    "image_prefix": "openclaw/",
+    "network_name": "openclaw_network"
+  }
+}

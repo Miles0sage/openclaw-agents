@@ -1,0 +1,76 @@
+{
+  "name": "openclaw-restaurant",
+  "display_name": "OpenClaw Restaurant Tools",
+  "description": "AI-powered restaurant management tools — menu management, order tracking, reservations, review responses, customer messaging, analytics, and social media content generation.",
+  "version": "1.0.0",
+  "author": {
+    "name": "OpenClaw",
+    "url": "https://openclaw.dev"
+  },
+  "repository": "https://github.com/openclaw-ai/mcp-restaurant",
+  "license": "MIT",
+  "categories": ["restaurant", "food-service", "business", "ai-tools"],
+  "tags": [
+    "restaurant",
+    "menu",
+    "orders",
+    "reservations",
+    "reviews",
+    "analytics",
+    "social-media",
+    "sms"
+  ],
+  "tools": [
+    {
+      "name": "manage_menu",
+      "description": "Add, update, remove menu items. Toggle availability, bulk price updates."
+    },
+    {
+      "name": "manage_orders",
+      "description": "View orders, update status, search by customer, get statistics."
+    },
+    {
+      "name": "manage_reservations",
+      "description": "Create, update, cancel reservations. Check time slot availability."
+    },
+    {
+      "name": "respond_to_reviews",
+      "description": "Draft professional responses to customer reviews. Sentiment analysis."
+    },
+    {
+      "name": "customer_messaging",
+      "description": "Send SMS/email to customers — order updates, promos, templates."
+    },
+    {
+      "name": "restaurant_analytics",
+      "description": "Revenue reports, popular items, peak hours, business summary."
+    },
+    {
+      "name": "social_media_post",
+      "description": "Generate social media content — daily specials, events, engagement posts."
+    }
+  ],
+  "pricing": {
+    "free": {
+      "calls_per_day": 100,
+      "price": 0
+    },
+    "pro": {
+      "calls_per_day": 10000,
+      "price_monthly": 29
+    },
+    "business": {
+      "calls_per_day": 100000,
+      "price_monthly": 149
+    }
+  },
+  "requirements": {
+    "python": ">=3.11",
+    "packages": ["fastmcp>=3.0.0"],
+    "optional": ["supabase", "stripe", "twilio"]
+  },
+  "transport": {
+    "stdio": "python -m mcp_servers.restaurant.server",
+    "http": "python -m mcp_servers.restaurant.server --http"
+  }
+}

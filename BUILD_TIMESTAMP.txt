@@ -1,0 +1,4 @@
+# Force Northflank rebuild - $(date +%s)
+# This file is generated to invalidate cache
+Rebuild triggered: 2026-02-18 16:46:00 UTC
+Webhook auth exemptions should be active now.

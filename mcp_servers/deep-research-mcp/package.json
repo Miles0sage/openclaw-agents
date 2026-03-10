@@ -1,0 +1,47 @@
+{
+  "name": "deep-research-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for multi-step autonomous deep research using Perplexity Sonar. Decomposes questions into sub-queries, researches in parallel, synthesizes structured reports with citations.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "research",
+    "perplexity",
+    "ai-agent",
+    "deep-research",
+    "claude",
+    "claude-code"
+  ],
+  "author": "Cybershield Agency <miles@<your-domain>>",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "deep-research-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cybershield-agency/deep-research-mcp"
+  }
+}

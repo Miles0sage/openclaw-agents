@@ -1,0 +1,140 @@
+{
+  "categories": [
+    {
+      "id": "coffee",
+      "name": "Coffee",
+      "items": [
+        {
+          "id": 1,
+          "name": "House Bloom Latte",
+          "description": "Our signature espresso with steamed oat milk and a hint of lavender honey.",
+          "price": 5.50,
+          "image": "images/house-bloom-latte.jpg"
+        },
+        {
+          "id": 2,
+          "name": "Garden Espresso",
+          "description": "Double shot of single-origin Ethiopian espresso with bright citrus notes.",
+          "price": 3.75,
+          "image": "images/garden-espresso.jpg"
+        },
+        {
+          "id": 3,
+          "name": "Mocha Fern",
+          "description": "Rich dark chocolate blended with espresso and topped with cocoa dust.",
+          "price": 6.00,
+          "image": "images/mocha-fern.jpg"
+        },
+        {
+          "id": 4,
+          "name": "Cold Brew Botanica",
+          "description": "Slow-steeped 18-hour cold brew served over ice with a sprig of fresh mint.",
+          "price": 5.25,
+          "image": "images/cold-brew-botanica.jpg"
+        },
+        {
+          "id": 5,
+          "name": "Cappuccino Classic",
+          "description": "Perfectly balanced espresso, steamed milk, and velvety foam.",
+          "price": 4.75,
+          "image": "images/cappuccino-classic.jpg"
+        }
+      ]
+    },
+    {
+      "id": "tea",
+      "name": "Tea",
+      "items": [
+        {
+          "id": 6,
+          "name": "Greenhouse Matcha",
+          "description": "Ceremonial-grade matcha whisked with your choice of milk and vanilla.",
+          "price": 5.75,
+          "image": "images/greenhouse-matcha.jpg"
+        },
+        {
+          "id": 7,
+          "name": "Chamomile Garden",
+          "description": "Whole chamomile flowers steeped with dried apple and a touch of honey.",
+          "price": 4.25,
+          "image": "images/chamomile-garden.jpg"
+        },
+        {
+          "id": 8,
+          "name": "Earl Grey Bloom",
+          "description": "Bergamot-infused black tea with dried cornflower petals and cream.",
+          "price": 4.50,
+          "image": "images/earl-grey-bloom.jpg"
+        },
+        {
+          "id": 9,
+          "name": "Hibiscus Iced Tea",
+          "description": "Tart and refreshing hibiscus tea served chilled with fresh lemon.",
+          "price": 4.00,
+          "image": "images/hibiscus-iced-tea.jpg"
+        }
+      ]
+    },
+    {
+      "id": "pastries",
+      "name": "Pastries",
+      "items": [
+        {
+          "id": 10,
+          "name": "Rosemary Focaccia Toast",
+          "description": "Warm house-baked focaccia with rosemary butter and flaky sea salt.",
+          "price": 4.50,
+          "image": "images/rosemary-focaccia.jpg"
+        },
+        {
+          "id": 11,
+          "name": "Lemon Poppyseed Muffin",
+          "description": "Bright and tender muffin with fresh lemon zest and a crumble topping.",
+          "price": 3.75,
+          "image": "images/lemon-poppyseed.jpg"
+        },
+        {
+          "id": 12,
+          "name": "Almond Croissant",
+          "description": "Flaky butter croissant filled with frangipane and topped with sliced almonds.",
+          "price": 4.95,
+          "image": "images/almond-croissant.jpg"
+        },
+        {
+          "id": 13,
+          "name": "Banana Walnut Bread",
+          "description": "Moist banana bread loaded with toasted walnuts, served warm.",
+          "price": 3.50,
+          "image": "images/banana-walnut.jpg"
+        }
+      ]
+    },
+    {
+      "id": "specials",
+      "name": "Specials",
+      "items": [
+        {
+          "id": 14,
+          "name": "Turmeric Golden Latte",
+          "description": "Anti-inflammatory turmeric, ginger, and cinnamon in warm oat milk.",
+          "price": 5.95,
+          "image": "images/turmeric-golden.jpg"
+        },
+        {
+          "id": 15,
+          "name": "Lavender Honey Affogato",
+          "description": "Vanilla bean gelato drowned in a shot of espresso with lavender honey drizzle.",
+          "price": 7.25,
+          "image": "images/lavender-affogato.jpg"
+        },
+        {
+          "id": 16,
+          "name": "Rose Cardamom Chai",
+          "description": "Spiced chai brewed with crushed cardamom pods and rosewater finish.",
+          "price": 5.50,
+          "image": "images/rose-cardamom-chai.jpg"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+{
+  "test_metadata": {
+    "timestamp": "2026-02-18T23:10:45.198050+00:00",
+    "gateway_url": "http://localhost:8000",
+    "test_type": "monitoring_system_verification",
+    "test_version": "1.0.0"
+  },
+  "gateway_status": {
+    "health": {
+      "status": "operational",
+      "gateway": "OpenClaw-FIXED-2026-02-18",
+      "version": "2.0.2-DEBUG-LOGGING",
+      "agents_active": 4,
+      "timestamp": "2026-02-18T23:10:45.088705"
+    },
+    "dashboard": {
+      "endpoint": "/dashboard.html",
+      "status_code": 200,
+      "accessible": true
+    }
+  },
+  "audit_system": {
+    "logs": {
+      "endpoint": "/api/audit/logs",
+      "total_records": 100,
+      "accessible": true,
+      "sample_log": {
+        "id": 360,
+        "trace_id": "62426098-cb99-40e1-99c2-348dc4a346a4",
+        "timestamp": "2026-02-18T20:51:08.607074Z",
+        "channel": "discord",
+        "user_id": "user_4",
+        "session_key": "session_4",
+        "message": "How do I debug this error?",
+        "message_length": 26,
+        "agent_selected": "security_agent",
+        "routing_confidence": 0.99,
+        "model": "claude-3-opus-20250219",
+        "response_text": "Response to query 119",
+        "output_tokens": 219,
+        "input_tokens": 169,
+        "cost": 0.01896,
+        "cost_breakdown_input": 0.002535,
+        "cost_breakdown_output": 0.016425,
+        "status": "success",
+        "http_code": 200,
+        "error_message": null,
+        "latency_ms": 619,
+        "metadata": null,
+        "created_at": "2026-02-18 20:51:08"
+      }
+    },
+    "cost_breakdown": {
+      "endpoint": "/api/audit/costs",
+      "accessible": true,
+      "data": {
+        "period_days": 30,
+        "daily": [
+          {
+            "date": "2026-02-18",
+            "cost": 1.958952,
+            "requests": 342,
+            "avg_confidence": 0.9210526315789473
+          }
+        ],
+        "by_agent": {
+          "security_agent": {
+            "cost": 1.5669,
+            "requests": 114
+          },
+          "codegen_agent": {
+            "cost": 0.30906,
+            "requests": 114
+          },
+          "pm_agent": {
+            "cost": 0.082992,
+            "requests": 114
+          }
+        },
+        "by_model": {
+          "claude-3-opus-20250219": {
+            "cost": 1.5669,
+            "requests": 114
+          },
+          "claude-3-5-sonnet-20241022": {
+            "cost": 0.30906,
+            "requests": 114
+          },
+          "claude-3-5-haiku-20241022": {
+            "cost": 0.082992,
+            "requests": 114
+          }
+        }
+      }
+    },
+    "error_analysis": {
+      "endpoint": "/api/audit/errors",
+      "accessible": true,
+      "summary": {
+        "period_days": 30,
+        "errors_by_type": [],
+        "errors_by_agent": {},
+        "http_errors": {
+          "500": 18
+        }
+      }
+    },
+    "agent_statistics": {
+      "endpoint": "/api/audit/agents",
+      "accessible": true,
+      "data": {}
+    }
+  },
+  "metrics_system": {
+    "prometheus_metrics": {
+      "endpoint": "/metrics",
+      "format": "Prometheus text-based exposition format",
+      "accessible": true
+    },
+    "api_metrics_summary": {
+      "endpoint": "/api/metrics/summary",
+      "status": "not_found_or_unauthorized",
+      "note": "This endpoint is not implemented in current gateway.py"
+    }
+  },
+  "performance_metrics": {
+    "latency_analysis": {
+      "count": 100,
+      "min_ms": 520,
+      "max_ms": 619,
+      "avg_ms": 569.5,
+      "p50_ms": 570,
+      "p95_ms": 615,
+      "p99_ms": 619
+    },
+    "request_distribution": {
+      "total_logs_analyzed": 100,
+      "by_agent": {
+        "security_agent": {
+          "cost": 1.5669,
+          "requests": 114
+        },
+        "codegen_agent": {
+          "cost": 0.30906,
+          "requests": 114
+        },
+        "pm_agent": {
+          "cost": 0.082992,
+          "requests": 114
+        }
+      },
+      "by_model": {
+        "claude-3-opus-20250219": {
+          "cost": 1.5669,
+          "requests": 114
+        },
+        "claude-3-5-sonnet-20241022": {
+          "cost": 0.30906,
+          "requests": 114
+        },
+        "claude-3-5-haiku-20241022": {
+          "cost": 0.082992,
+          "requests": 114
+        }
+      },
+      "by_channel": {}
+    }
+  },
+  "cost_analysis": {
+    "period_days": 30,
+    "daily_totals": [
+      {
+        "date": "2026-02-18",
+        "cost": 1.958952,
+        "requests": 342,
+        "avg_confidence": 0.9210526315789473
+      }
+    ],
+    "agent_costs": {
+      "security_agent": {
+        "cost": 1.5669,
+        "requests": 114
+      },
+      "codegen_agent": {
+        "cost": 0.30906,
+        "requests": 114
+      },
+      "pm_agent": {
+        "cost": 0.082992,
+        "requests": 114
+      }
+    },
+    "model_costs": {
+      "claude-3-opus-20250219": {
+        "cost": 1.5669,
+        "requests": 114
+      },
+      "claude-3-5-sonnet-20241022": {
+        "cost": 0.30906,
+        "requests": 114
+      },
+      "claude-3-5-haiku-20241022": {
+        "cost": 0.082992,
+        "requests": 114
+      }
+    },
+    "total_cost_period": 1.958952
+  },
+  "error_summary": {
+    "http_errors": {
+      "500": 18
+    },
+    "error_types": [],
+    "affected_agents": {}
+  },
+  "verification_results": {
+    "\u2713_dashboard_html_loads": true,
+    "\u2713_audit_logs_working": true,
+    "\u2713_cost_breakdown_accessible": true,
+    "\u2713_error_analysis_accessible": true,
+    "\u2713_agent_statistics_accessible": true,
+    "\u2713_prometheus_metrics_available": true,
+    "\u2713_latency_percentiles_available": true,
+    "\u26a0_metrics_summary_api_available": false
+  },
+  "summary": {
+    "monitoring_operational": true,
+    "endpoints_tested": 7,
+    "endpoints_working": 6,
+    "gateway_uptime": "2026-02-18T23:10:45.088705",
+    "agents_active": 4,
+    "total_requests_logged": 100,
+    "period_cost": 1.958952
+  }
+}

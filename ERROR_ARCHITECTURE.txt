@@ -1,0 +1,489 @@
+================================================================================
+OpenClaw Error Handling Architecture
+================================================================================
+
+SYSTEM OVERVIEW
+================================================================================
+
+     ┌─────────────────────────────────────────────────────────────────────┐
+     │                    OpenClaw Gateway (FastAPI)                       │
+     │  Port 18789 - Receives /api/chat, /api/code-gen requests            │
+     └──────────────────────┬──────────────────────────────────────────────┘
+                            │
+              ┌─────────────┴─────────────┐
+              │                           │
+        ┌─────▼─────┐              ┌─────▼──────────┐
+        │ Detect    │              │ Detect Non-Code│
+        │ Code Gen  │              │ Requests       │
+        │ Request   │              │                │
+        └─────┬─────┘              └─────┬──────────┘
+              │                          │
+        ┌─────▼─────────────────┐  ┌─────▼──────────────────┐
+        │ CodeGenerationFallback│  │ Agent Router + Health  │
+        │                       │  │ Tracking              │
+        │ Fallback Chain:       │  └─────┬──────────────────┘
+        │ 1. Kimi 2.5           │        │
+        │ 2. Kimi Reasoner      │        │
+        │ 3. Claude Opus        │        │
+        │ 4. Claude Sonnet      │  ┌─────▼──────────────────┐
+        │                       │  │ Call Selected Agent    │
+        └─────┬─────────────────┘  │                        │
+              │                    │ ┌──────────────────┐   │
+              │                    ├─▶ Timeout (30s)   │   │
+              │                    │ └──────────────────┘   │
+              │                    │ ┌──────────────────┐   │
+              │                    ├─▶ Retry Logic     │   │
+              │                    │ │ (exp backoff)   │   │
+              │                    │ └──────────────────┘   │
+              │                    │ ┌──────────────────┐   │
+              │                    └─▶ Error Handler   │   │
+              │                      │ (tracking)      │   │
+              │                      └──────────────────┘   │
+              │                           │
+        ┌─────▼─────────────┐       ┌─────▼──────────────┐
+        │ For Each Model:   │       │ Agent Health       │
+        │ ┌───────────────┐ │       │ Tracker            │
+        │ │ Timeout (30s) │ │       │                    │
+        │ └───────────────┘ │       │ ┌────────────────┐ │
+        │ ┌───────────────┐ │       │ │ Track Success/ │ │
+        │ │ Retry (exp)   │ │       │ │ Failure        │ │
+        │ │ Max 3         │ │       │ │ per agent      │ │
+        │ └───────────────┘ │       │ └────────────────┘ │
+        │                   │       │ ┌────────────────┐ │
+        └───┬───────────────┘       │ │ Calculate      │ │
+            │                       │ │ success rate   │ │
+        ┌───▼───────────┐          │ └────────────────┘ │
+        │ If Success    │          │ ┌────────────────┐ │
+        │ Return Code   │          │ │ Classify       │ │
+        │ Model Used    │          │ │ error type     │ │
+        │               │          │ └────────────────┘ │
+        │ If Failure    │          └─────┬──────────────┘
+        │ Try Next Model│                │
+        │               │                │
+        │ If All Fail   │          ┌─────▼──────────┐
+        │ Return Error  │          │ Auto-Failover  │
+        │ Message       │          │ to Healthy     │
+        └───────────────┘          │ Agents         │
+                                   └────────────────┘
+
+================================================================================
+ERROR FLOW DIAGRAM
+================================================================================
+
+User Request
+     │
+     ▼
+┌─────────────────────┐
+│ API Request Arrives │
+│ /api/chat, /api/code-gen
+└────────┬────────────┘
+         │
+         ▼
+    ┌────────────────┐
+    │ Classify Type? │
+    └────┬───────┬───┘
+         │       │
+    Code │       │ Other
+    Gen  │       │ Request
+         │       │
+    ┌────▼──┐  ┌─▼────────┐
+    │Fallback   Router+   │
+    │Chain  │   Health    │
+    └────┬──┘  └──┬───────┘
+         │        │
+         ▼        ▼
+    ┌──────────────────────┐
+    │ Try Model/Agent      │
+    │ with Timeout (30s)   │
+    └─────┬────────────────┘
+          │
+    ┌─────▼────────┐
+    │ Success?     │
+    └─────┬──┬─────┘
+          │ │
+       Yes│ │No
+          │ │
+      ┌───▼─┴────────────┐
+      │ Classification  │
+      │ Timeout?        │ ─▶ Retry same model (max 3)
+      │ RateLimit?      │ ─▶ Exponential backoff, then fallback
+      │ Network?        │ ─▶ Retry (usually temporary)
+      │ Auth?           │ ─▶ Check credentials, don't retry
+      │ Model Error?    │ ─▶ Try different model
+      │ Internal?       │ ─▶ Retry or fallback
+      │ Unknown?        │ ─▶ Log & escalate
+      └────┬───────────┘
+           │
+    ┌──────▼────────────┐
+    │ Fallback Needed?  │
+    └──────┬────────┬───┘
+           │        │
+        Yes│        │No
+           │        │
+      ┌────▼─┐  ┌───▼──────┐
+      │ Try  │  │ Return   │
+      │ Next │  │ Error    │
+      │Model │  │Message   │
+      └────┬─┘  └──────────┘
+           │
+    ┌──────▼──────────────┐
+    │ Attempt Counter     │
+    │ Model 1 Failed ──┐  │
+    │ Model 2 Failed ──┼─▶ All Failed?
+    │ Model 3 Failed ──┤  │ Return Error Message
+    │ Model 4 Failed ──┘  │
+    └────────┬────────────┘
+             │
+    ┌────────▼────────────┐
+    │ Track Health Stats  │
+    │ Update Agent Status │
+    │ (success/failures)  │
+    │ Consecutive Failures│
+    └────────┬────────────┘
+             │
+    ┌────────▼──────────────┐
+    │ Return Response       │
+    │ (code or error) to    │
+    │ Client                │
+    └───────────────────────┘
+
+================================================================================
+FALLBACK CHAIN PRIORITY
+================================================================================
+
+Request: "Write a React component for a button"
+     │
+     ▼
+┌──────────────────────────────────────────────┐
+│ Try Model 1: Kimi 2.5 (deepseek-chat)        │
+│ Speed: Fast ⚡⚡                              │
+│ Quality: Good ✓                              │
+│ Cost: $2/M ✓✓                                │
+└─────────────┬────────────────────────────────┘
+              │
+         ┌────▼─────┐
+         │ Success? │
+         └────┬──┬──┘
+              │ │
+           No │ │Yes ─→ Return Code (Done!)
+              │
+         ┌────▼──────────────────────────────────┐
+         │ Try Model 2: Kimi Reasoner            │
+         │ Speed: Slow ⚡                         │
+         │ Quality: Excellent ✓✓                │
+         │ Cost: $3/M ✓                          │
+         │ (Better at complex reasoning)         │
+         └─────────┬──────────────────────────────┘
+                   │
+              ┌────▼─────┐
+              │ Success? │
+              └────┬──┬──┘
+                   │ │
+                No │ │Yes ─→ Return Code (Done!)
+                   │
+              ┌────▼──────────────────────────────┐
+              │ Try Model 3: Claude Opus          │
+              │ Speed: Medium ⚡⚡                 │
+              │ Quality: Best ✓✓✓                │
+              │ Cost: $15/M                       │
+              │ (Most capable, fallback)          │
+              └─────────┬──────────────────────────┘
+                        │
+                   ┌────▼─────┐
+                   │ Success? │
+                   └────┬──┬──┘
+                        │ │
+                     No │ │Yes ─→ Return Code (Done!)
+                        │
+                   ┌────▼──────────────────────────┐
+                   │ Try Model 4: Claude Sonnet    │
+                   │ Speed: Medium ⚡⚡             │
+                   │ Quality: Good ✓              │
+                   │ Cost: $3/M ✓                  │
+                   │ (Balanced)                    │
+                   └─────────┬──────────────────────┘
+                             │
+                        ┌────▼─────┐
+                        │ Success? │
+                        └────┬──┬──┘
+                             │ │
+                          No │ │Yes ─→ Return Code (Done!)
+                             │
+                        ┌────▼────────────────────────┐
+                        │ All 4 Models Failed ❌       │
+                        │ Return Error Message:       │
+                        │ ┌──────────────────────────┐│
+                        │ │ ERROR: Code generation   ││
+                        │ │ failed after all models  ││
+                        │ │ Tried: 4 models         ││
+                        │ │ - deepseek-chat: timeout ││
+                        │ │ - deepseek-reasoner: 429││
+                        │ │ - claude-opus: network  ││
+                        │ │ - claude-sonnet: 401    ││
+                        │ │ Action: Check API keys  ││
+                        │ │         Try again later ││
+                        │ └──────────────────────────┘│
+                        └─────────────────────────────┘
+
+================================================================================
+RETRY LOGIC WITH EXPONENTIAL BACKOFF
+================================================================================
+
+Attempt 1: Immediate (try now)
+    │
+    ├─ If Fails → Wait 1s ──┐
+    │                        │
+    Attempt 2: After 1s     │
+        │                    │
+        ├─ If Fails → Wait 2s ──┐
+        │                        │
+        Attempt 3: After 2s     │
+            │                    │
+            ├─ If Fails → Wait 4s ──┐
+            │                        │
+            Attempt 4: After 4s     │
+                │                    │
+                ├─ If Fails → Wait 8s ──┐
+                │                        │
+                Attempt 5: After 8s     │
+                    │                    │
+                    ├─ If Fails → MAX RETRIES EXCEEDED
+                    │
+                    └─ If Succeeds ──→ Return Result ✓
+
+Timeline for Failed Request (All 3 retries exhausted):
+└─ 0s: Attempt 1 (fails)
+   └─ 1s: Attempt 2 (fails) + Wait
+   └─ 3s: Attempt 3 (fails) + Wait
+   └─ 7s: Attempt 4 (fails)
+   └─ 7s+: Return Error
+
+================================================================================
+AGENT HEALTH TRACKING
+================================================================================
+
+Agent: deepseek-chat
+
+Metrics Tracked:
+┌────────────────────────────────────────────┐
+│ Status: healthy / degraded / unhealthy     │
+│ Success Rate: 95.6%                        │
+│ Total Requests: 500                        │
+│ Total Failures: 22                         │
+│ Consecutive Failures: 0                    │
+│ Last Success: 2026-02-18 15:35:12          │
+│ Last Failure: 2026-02-18 15:34:56          │
+│ Error History (last 10):                   │
+│  - timeout                                 │
+│  - rate_limit                              │
+│  - network                                 │
+│  - timeout                                 │
+│  - (... 6 more)                            │
+└────────────────────────────────────────────┘
+
+Health Status Decision Tree:
+                    Initial (Healthy)
+                           │
+                ┌──────────┴──────────┐
+                │                     │
+            Success              Failure
+                │                     │
+                │              consecutive = 1
+                │                     │
+                │         ┌───────────▼──────┐
+                │         │ Status: degraded │
+                │         └───────────┬──────┘
+                │                     │
+                │                  Success
+                │                     │
+                │             consecutive = 0
+                │                     │
+                │         ┌───────────▼──────┐
+                │         │ Status: healthy  │
+                │         └──────────────────┘
+                │
+                ├─ 3 consecutive failures
+                │  OR <50% success rate
+                │
+                └──→ Status: unhealthy
+                     ├─ Don't route here
+                     └─ Try backup agent
+
+================================================================================
+VPS TO CLOUDFLARE FAILOVER
+================================================================================
+
+Request to VPS Agent
+     │
+     ▼
+┌────────────────────────────┐
+│ VPS Health Good?           │
+│ Last check: < 1 min ago    │
+└────┬───────────────────┬───┘
+     │                   │
+    Yes                  No (check now)
+     │                   │
+     │              ┌────▼──────────────┐
+     │              │ Check VPS Health  │
+     │              │ GET /health       │
+     │              │ Timeout: 5s       │
+     │              └────┬──────────┬───┘
+     │                   │          │
+     │              Success        Failure
+     │                   │          │
+     │              ┌────▼──┐  ┌───▼─────────┐
+     │              │Healthy│  │Unreachable  │
+     │              └────┬──┘  └───┬─────────┘
+     │                   │         │
+     │          ┌────────▼─────────▼───┐
+     │          │ VPS Endpoint Set    │
+     │          │ to Unreachable      │
+     │          └────────┬────────────┘
+     │                   │
+     ▼                   ▼
+┌──────────────┐  ┌─────────────────────┐
+│ Use VPS      │  │ Use Cloudflare      │
+│ http://vps:  │  │ http://cf:          │
+│ 8000         │  │ 18789               │
+│ (Primary)    │  │ (Fallback)          │
+└────┬─────────┘  └─────────┬───────────┘
+     │                      │
+     ▼                      ▼
+┌──────────────┐  ┌─────────────────────┐
+│ Send Request │  │ Send Request        │
+│ to VPS       │  │ to Cloudflare       │
+│ Timeout: 30s │  │ Timeout: 30s        │
+└────┬─────────┘  └─────────┬───────────┘
+     │                      │
+┌────▼──────┐          ┌────▼────────┐
+│ Success   │          │ Success     │
+│ ↓         │          │ ↓           │
+│ Return    │          │ Return      │
+│ Result ✓  │          │ Result ✓    │
+└───────────┘          └─────────────┘
+
+     │                      │
+     └──────────┬───────────┘
+                │
+            ┌───▼───────┐
+            │ If Both   │
+            │ Fail:     │
+            │ Error 503 │
+            │ (Service  │
+            │ Unavail.) │
+            └───────────┘
+
+================================================================================
+ERROR CLASSIFICATION & HANDLING
+================================================================================
+
+Exception Caught
+     │
+     ▼
+Classify Error
+     │
+┌────┴─────┬──────┬──────────┬──────────┬──────┐
+│           │      │          │          │      │
+▼           ▼      ▼          ▼          ▼      ▼
+Timeout  RateLimit Network  Auth      Model   Internal
+(408)    (429)     (refused) (401/403) Error   (500)
+│        │         │         │         │       │
+│        │         │         │         │       │
+▼        ▼         ▼         ▼         ▼       ▼
+Retry   Backoff   Retry     Check     Try     Retry
+with    then      (usually  Creds     Diff    or
+longer  fallback  temp)     Don't     Model   Fallback
+timeout          Retry     Retry
+
+Health Tracking:
+├─ Record failure with error type
+├─ Update consecutive failures counter
+├─ Update status if thresholds crossed
+├─ Add to error history (last 10)
+└─ Classify for monitoring/alerting
+
+Logging:
+├─ Error type
+├─ Agent/Model involved
+├─ Retry attempt count (if retried)
+├─ Duration/latency
+└─ Suggested action
+
+================================================================================
+MONITORING DASHBOARD ENDPOINTS
+================================================================================
+
+GET /api/health/agents
+┌─────────────────────────────────────┐
+│ Summary of all agents:              │
+│ {                                   │
+│   "health_summary": {               │
+│     "total_agents": 5,              │
+│     "healthy_agents": 3,            │
+│     "degraded_agents": 1,           │
+│     "unhealthy_agents": 1,          │
+│     "unreachable_agents": 0,        │
+│     "total_requests": 1234,         │
+│     "total_failures": 22,           │
+│     "error_metrics": {              │
+│       "timeout": 10,                │
+│       "rate_limit": 8,              │
+│       "network": 3,                 │
+│       "auth": 1                     │
+│     }                               │
+│   },                                │
+│   "agent_statuses": {               │
+│     "deepseek-chat": { ... },       │
+│     "claude-opus-4-6": { ... },     │
+│     ...                             │
+│   },                                │
+│   "error_metrics": {                │
+│     "timeout": { "count": 10 },     │
+│     ...                             │
+│   },                                │
+│   "timestamp": "2026-02-18T15:..."  │
+│ }                                   │
+└─────────────────────────────────────┘
+
+Real-time Status:
+├─ Agent 1: healthy (98.5% success, 0 consecutive failures)
+├─ Agent 2: degraded (89.2% success, 1 consecutive failure)
+├─ Agent 3: unhealthy (42.1% success, 5 consecutive failures)
+├─ Agent 4: healthy (97.8% success, 0 consecutive failures)
+└─ Agent 5: unhealthy (0.0% success, 10 consecutive failures)
+
+================================================================================
+DEPLOYMENT ARCHITECTURE
+================================================================================
+
+Development → Testing → Staging → Production
+                │
+                ▼
+        Run pytest locally
+        All 47 tests pass
+                │
+                ▼
+        Review code patterns
+        from ERROR_PATTERNS.md
+                │
+                ▼
+        Integrate with gateway.py
+        Phase 1: Import + timeout
+        Phase 2: Code fallback
+        Phase 3: Agent health
+        Phase 4: Testing
+        Phase 5: Deploy
+                │
+                ▼
+        Monitor /api/health/agents
+        (Every agent tracked)
+                │
+                ▼
+        Check error logs
+        (All errors classified)
+                │
+                ▼
+        Adjust settings based on metrics
+        (Backoff, retry, timeout)
+
+================================================================================

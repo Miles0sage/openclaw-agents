@@ -1,0 +1,20 @@
+--- a/autonomous_runner.py
++++ b/autonomous_runner.py
+@@ -142,7 +142,7 @@
+ from job_manager import get_job, update_job_status, list_jobs, get_pending_jobs, validate_job, JobValidationError
+ from reflexion import save_reflection, search_reflections, format_reflections_for_prompt
+ from departments import DEPARTMENTS, AGENT_TO_DEPARTMENT, load_department_knowledge
+-from memory_policies import inject_context, auto_extract_learnings, save_learnings
++from memory_policies import inject_context, auto_extract_learnings, save_learnings, search_memory
+ 
+ # ── Global State & Configuration ──────────────────────────────────────────────
+ 
+@@ -300,7 +300,7 @@
+         job_task = job.get("task", "")
+         reflexion_context = ""
+         try:
+-            past = search_reflections(job_task or error_text[:100], limit=2)
++            past = search_memory(job_task or error_text[:100], limit=2)
+             if past:
+                 lessons = []
+                 for r in past[:2]:

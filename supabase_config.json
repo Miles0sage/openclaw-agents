@@ -1,0 +1,274 @@
+{
+  "supabase": {
+    "barber_crm": {
+      "name": "Barber CRM Database",
+      "description": "Production Supabase instance for Barber CRM",
+      "url": "https://djdilkhedpnlercxggby.supabase.co",
+      "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGlsa2hlZHBubGVyY3hnZ2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MzMxNjcsImV4cCI6MjA4NjUwOTE2N30.ylyNIv3PMZvI_B0u9pdQi-ICOWwF3qcK4_zggFe8_JA",
+      "serviceRoleKey": "${SUPABASE_SERVICE_ROLE_KEY}",
+      "tables": {
+        "appointments": {
+          "description": "Barber appointments and bookings",
+          "columns": [
+            "id",
+            "client_id",
+            "staff_id",
+            "service_id",
+            "start_time",
+            "end_time",
+            "status",
+            "notes",
+            "created_at",
+            "updated_at"
+          ],
+          "permissions": ["SELECT", "INSERT", "UPDATE"],
+          "rowLevelSecurity": true
+        },
+        "clients": {
+          "description": "Barber shop clients",
+          "columns": [
+            "id",
+            "name",
+            "email",
+            "phone",
+            "notes",
+            "first_visit",
+            "total_visits",
+            "total_spent",
+            "created_at",
+            "updated_at"
+          ],
+          "permissions": ["SELECT", "INSERT", "UPDATE"],
+          "rowLevelSecurity": true
+        },
+        "services": {
+          "description": "Barbershop services (haircuts, styling, etc)",
+          "columns": [
+            "id",
+            "name",
+            "duration_minutes",
+            "price",
+            "description",
+            "active",
+            "created_at",
+            "updated_at"
+          ],
+          "permissions": ["SELECT"],
+          "rowLevelSecurity": true
+        },
+        "staff": {
+          "description": "Barber staff members",
+          "columns": [
+            "id",
+            "name",
+            "email",
+            "phone",
+            "specialty",
+            "available_hours",
+            "active",
+            "created_at",
+            "updated_at"
+          ],
+          "permissions": ["SELECT"],
+          "rowLevelSecurity": true
+        },
+        "call_logs": {
+          "description": "Vapi phone call history",
+          "columns": [
+            "id",
+            "call_id",
+            "phone_number",
+            "duration_seconds",
+            "transcript",
+            "status",
+            "created_at",
+            "updated_at"
+          ],
+          "permissions": ["SELECT", "INSERT"],
+          "rowLevelSecurity": true
+        },
+        "transactions": {
+          "description": "Stripe payment transactions",
+          "columns": [
+            "id",
+            "appointment_id",
+            "client_id",
+            "amount",
+            "currency",
+            "status",
+            "stripe_id",
+            "created_at",
+            "updated_at"
+          ],
+          "permissions": ["SELECT", "INSERT", "UPDATE"],
+          "rowLevelSecurity": true
+        }
+      },
+      "envVars": {
+        "SUPABASE_URL": "https://djdilkhedpnlercxggby.supabase.co",
+        "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGlsa2hlZHBubGVyY3hnZ2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MzMxNjcsImV4cCI6MjA4NjUwOTE2N30.ylyNIv3PMZvI_B0u9pdQi-ICOWwF3qcK4_zggFe8_JA",
+        "SUPABASE_SERVICE_ROLE_KEY": "Set via secrets manager (not in config)"
+      }
+    },
+    "delhi_palace": {
+      "name": "Delhi Palace Restaurant",
+      "description": "Supabase instance for restaurant orders and management",
+      "url": "https://banxtacevgopeczuzycz.supabase.co",
+      "anonKey": "${DELHI_PALACE_SUPABASE_ANON_KEY}",
+      "serviceRoleKey": "${DELHI_PALACE_SUPABASE_SERVICE_ROLE_KEY}",
+      "tables": {
+        "orders": {
+          "description": "Restaurant orders",
+          "columns": [
+            "id",
+            "customer_name",
+            "phone",
+            "items",
+            "total_price",
+            "status",
+            "table_number",
+            "notes",
+            "created_at",
+            "updated_at"
+          ],
+          "permissions": ["SELECT", "INSERT", "UPDATE"],
+          "rowLevelSecurity": true
+        },
+        "menu_items": {
+          "description": "Menu items and pricing",
+          "columns": [
+            "id",
+            "name",
+            "description",
+            "price",
+            "category",
+            "vegetarian",
+            "spicy_level",
+            "active",
+            "created_at",
+            "updated_at"
+          ],
+          "permissions": ["SELECT"],
+          "rowLevelSecurity": false
+        },
+        "customers": {
+          "description": "Customer information",
+          "columns": [
+            "id",
+            "name",
+            "email",
+            "phone",
+            "loyalty_points",
+            "total_spent",
+            "created_at",
+            "updated_at"
+          ],
+          "permissions": ["SELECT", "INSERT", "UPDATE"],
+          "rowLevelSecurity": true
+        }
+      },
+      "envVars": {
+        "SUPABASE_URL": "https://banxtacevgopeczuzycz.supabase.co"
+      }
+    }
+  },
+  "agent_capabilities": {
+    "coder_agent": {
+      "name": "CodeGen Pro",
+      "supabaseSkills": [
+        "query_database",
+        "fetch_appointments",
+        "fetch_clients",
+        "fetch_services",
+        "fetch_staff",
+        "list_database_tables",
+        "analyze_schema",
+        "generate_sql",
+        "test_rls_policies"
+      ],
+      "dbQueries": {
+        "appointments": {
+          "description": "Query available appointment slots",
+          "method": "SELECT * FROM appointments WHERE status = 'available' AND start_time > now()",
+          "skillId": "fetch_appointments"
+        },
+        "clients": {
+          "description": "Query customer database",
+          "method": "SELECT * FROM clients WHERE active = true",
+          "skillId": "fetch_clients"
+        },
+        "services": {
+          "description": "List all services",
+          "method": "SELECT * FROM services WHERE active = true",
+          "skillId": "fetch_services"
+        }
+      }
+    },
+    "project_manager": {
+      "name": "Cybershield PM",
+      "supabaseSkills": [
+        "query_database",
+        "analyze_data",
+        "generate_reports",
+        "coordinate_database_queries"
+      ]
+    },
+    "hacker_agent": {
+      "name": "Pentest AI",
+      "supabaseSkills": [
+        "test_rls_policies",
+        "audit_permissions",
+        "check_sql_injection",
+        "verify_authentication",
+        "analyze_security_policies"
+      ]
+    }
+  },
+  "routing_keywords": {
+    "database": [
+      "query",
+      "database",
+      "fetch",
+      "data",
+      "table",
+      "supabase",
+      "select",
+      "sql",
+      "appointments",
+      "clients",
+      "services",
+      "schema",
+      "columns",
+      "rows"
+    ]
+  },
+  "integration_points": {
+    "gateway_chat": {
+      "description": "When user sends /query_supabase or mentions database, CodeGen agent can execute queries",
+      "flow": [
+        "User message detected as database-related by agent router",
+        "Route to coder_agent (has 'query_database' skill)",
+        "Agent authenticates with Supabase using SUPABASE_ANON_KEY",
+        "Agent constructs and executes safe SQL query",
+        "Results returned in chat response with proper formatting"
+      ]
+    },
+    "agent_to_agent": {
+      "description": "Agents can query Supabase to gather context for coordination",
+      "pm_to_coder": "PM asks CodeGen to fetch client data for appointment analysis",
+      "pm_to_pentest": "PM asks Pentest to audit database security before deployment",
+      "coder_to_pentest": "CodeGen asks Pentest to verify RLS policies are secure"
+    },
+    "webhook_triggers": {
+      "description": "Barber CRM webhooks can trigger OpenClaw agents",
+      "appointment_created": {
+        "trigger": "New appointment in database",
+        "action": "Notify client via PM agent (draft message) or CodeGen (send email)"
+      },
+      "payment_received": {
+        "trigger": "New transaction record",
+        "action": "Update order status via CodeGen"
+      }
+    }
+  }
+}

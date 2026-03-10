@@ -1,0 +1,185 @@
+# Northflank MicroVM Deployment Configuration
+# OpenClaw Gateway - Production Brief Section 2: Hardware-Level Isolation
+# Generated: 2026-02-16
+
+project:
+  name: openclaw-agency-2026
+  description: Multi-channel AI agent platform with hardware-level isolation
+
+runtime:
+  container:
+    image: python:3.13-slim
+    registry: docker.io
+    cmd: ["python3", "gateway.py"]
+
+    environment:
+      GATEWAY_TOKEN: ${GATEWAY_TOKEN}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://localhost:11434}
+      OPENCLAW_CONFIG: /etc/openclaw/config.json
+      OPENCLAW_DATA_DIR: /app/data
+      OPENCLAW_SESSIONS_DIR: /app/data/sessions
+      NODE_ENV: production
+      PORT: "18789"
+      LOG_LEVEL: info
+
+  isolation:
+    type: microvms
+    mode: adaptive
+
+    securityPolicies:
+      syscallFilter: enforce
+      privileged: false
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "1"
+    limits:
+      memory: "4Gi"
+      cpu: "2"
+    disk: "10Gi"
+
+  scaling:
+    minInstances: 1
+    maxInstances: 5
+    targetCpuUtilization: 70
+    targetMemoryUtilization: 80
+    scaleUpThreshold: 75
+    scaleDownThreshold: 40
+    cooldownSeconds: 60
+
+volumes:
+  config:
+    type: configMap
+    mountPath: /etc/openclaw
+    readOnly: true
+
+  data:
+    type: persistentVolume
+    mountPath: /app/data
+    sizeLimit: "10Gi"
+
+networking:
+  ports:
+    - name: api
+      port: 18789
+      protocol: HTTP
+      visibility: public
+
+  healthCheck:
+    path: /health
+    port: 18789
+    intervalSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+
+environment:
+  ANTHROPIC_API_KEY:
+    type: secret
+    source: anthropic_api_key
+
+  GATEWAY_TOKEN:
+    type: secret
+    source: gateway_token
+
+  OLLAMA_HOST:
+    type: config
+    default: "http://localhost:11434"
+
+security:
+  acl:
+    - path: /etc/openclaw
+      mode: read-only
+      owner: 1000:1000
+
+    - path: /app/data
+      mode: read-write
+      owner: 1000:1000
+
+  networkPolicy:
+    ingress:
+      - from: any
+        ports:
+          - port: 18789
+            protocol: TCP
+
+    egress:
+      - to: 8.8.8.8
+        ports:
+          - port: 53
+            protocol: UDP
+
+      - to: api.anthropic.com
+        ports:
+          - port: 443
+            protocol: TCP
+
+      - to: localhost
+        ports:
+          - port: 11434
+            protocol: TCP
+
+  podSecurity:
+    fsGroup: 1000
+    supplementalGroups: []
+
+observability:
+  logging:
+    format: json
+    level: info
+    destinations:
+      - type: northflank-observability
+        retentionDays: 30
+
+  metrics:
+    enabled: true
+    interval: 60
+
+  tracing:
+    enabled: false
+
+deployment:
+  strategy: rolling
+  maxSurge: 1
+  maxUnavailable: 0
+  terminationGracePeriodSeconds: 30
+
+build:
+  buildpack: python
+  pythonVersion: "3.13"
+  cachePip: true
+
+validation:
+  configMap:
+    path: /etc/openclaw/config.json
+    format: json
+
+  readinessProbe:
+    path: /health
+    port: 18789
+    initialDelaySeconds: 10
+    periodSeconds: 5
+
+costOptimization:
+  spotInstances: true
+  autoScaling: true
+
+backup:
+  enabled: true
+  schedule: "0 2 * * *"
+  retention: 7
+  target: northflank-backup
+
+labels:
+  environment: production
+  project: openclaw
+  component: gateway
+  isolation: microvms
+  team: ai-agency

@@ -1,0 +1,1 @@
+# OpenClaw Barbershop MCP Server

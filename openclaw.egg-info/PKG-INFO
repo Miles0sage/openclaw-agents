@@ -1,0 +1,356 @@
+Metadata-Version: 2.4
+Name: openclaw
+Version: 4.2.0
+Summary: Multi-agent AI job pipeline with 12 specialist agents, 75+ MCP tools, and 4-tier LLM fallback
+Author-email: Miles <miles@cybershield.agency>
+License: MIT
+Project-URL: Homepage, https://github.com/cybershield-agency/openclaw
+Project-URL: Documentation, https://github.com/cybershield-agency/openclaw#readme
+Project-URL: Repository, https://github.com/cybershield-agency/openclaw.git
+Project-URL: Bug Tracker, https://github.com/cybershield-agency/openclaw/issues
+Project-URL: Changelog, https://github.com/cybershield-agency/openclaw/releases
+Keywords: agent,autonomous,ai,pipeline,mcp,fastapi,multi-agent,llm,task-decomposition
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: HTTP Servers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fastapi==0.109.0
+Requires-Dist: uvicorn>=0.35.0
+Requires-Dist: starlette>=0.35.0
+Requires-Dist: pydantic==2.12.4
+Requires-Dist: pydantic-core==2.41.5
+Requires-Dist: requests==2.32.3
+Requires-Dist: httpx==0.28.1
+Requires-Dist: websockets==15.0.1
+Requires-Dist: anthropic==0.78.0
+Requires-Dist: fastmcp==3.1.0
+Requires-Dist: openai>=1.0.0
+Requires-Dist: python-dotenv==1.2.1
+Requires-Dist: click==8.3.1
+Requires-Dist: pyyaml==6.0.2
+Requires-Dist: cryptography==43.0.0
+Requires-Dist: stripe==14.3.0
+Requires-Dist: slack-sdk>=3.25.0
+Requires-Dist: python-telegram-bot>=20.0
+Requires-Dist: pandas==2.3.3
+Requires-Dist: numpy==2.4.2
+Requires-Dist: scikit-learn==1.8.0
+Requires-Dist: networkx==3.6.1
+Requires-Dist: pypdf==6.7.2
+Requires-Dist: openpyxl==3.1.5
+Requires-Dist: lxml==6.0.2
+Requires-Dist: pillow==12.1.0
+Requires-Dist: markitdown>=0.1.0
+Requires-Dist: APScheduler==3.11.2
+Requires-Dist: rich==14.3.3
+Requires-Dist: docstring-parser==0.17.0
+Requires-Dist: psutil==7.2.2
+Provides-Extra: dev
+Requires-Dist: pytest==9.0.2; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: sphinx>=7.0.0; extra == "dev"
+Requires-Dist: sphinx-rtd-theme>=1.3.0; extra == "dev"
+Provides-Extra: science
+Requires-Dist: torch>=2.0.0; extra == "science"
+Requires-Dist: scipy==1.17.0; extra == "science"
+Requires-Dist: matplotlib==3.10.8; extra == "science"
+Requires-Dist: pymc>=5.0.0; extra == "science"
+Requires-Dist: arviz>=0.15.0; extra == "science"
+Provides-Extra: docs
+Requires-Dist: sphinx>=7.0.0; extra == "docs"
+Requires-Dist: sphinx-rtd-theme>=1.3.0; extra == "docs"
+Requires-Dist: sphinx-autodoc-typehints>=1.20.0; extra == "docs"
+Dynamic: license-file
+
+# OpenClaw
+
+[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+
+**Multi-agent AI job pipeline with 12 agent souls, 75+ MCP tools, and 4-tier LLM fallback.**
+
+OpenClaw is a production-grade autonomous agent framework built on FastAPI, Cloudflare Workers, and Supabase. It decomposes complex tasks, routes them to specialist agents, executes with 75+ integrated tools, and verifies results before reporting.
+
+---
+
+## What It Does
+
+**Workflow:**
+```
+Task → FastAPI Gateway → Overseer (PM) → Specialist Agents → Verification → Response
+```
+
+1. **Receive**: API, Telegram, Slack, or direct Python calls
+2. **Decompose**: Overseer analyzes task complexity and scope
+3. **Route**: Send to the optimal specialist (CodeGen Pro, Pentest AI, Researcher, etc.)
+4. **Execute**: Agent uses 75+ MCP tools (code, database, browser, security, trading, sports, etc.)
+5. **Verify**: Results validated, costs tracked, learning saved
+6. **Respond**: Final output delivered with execution cost and duration
+
+---
+
+## Architecture
+
+**Multi-Agent System (v4.2)**
+
+| Agent | Model | Cost | Use Case |
+|-------|-------|------|----------|
+| **Overseer** | Claude Opus 4.6 | $15/1M | Task decomposition, routing, verification |
+| **CodeGen Pro** | Kimi 2.5 | $0.14/1M | Frontend, backend, API, testing, bug fixes |
+| **CodeGen Elite** | MiniMax M2.5 | $0.30/1M | Complex refactors, system redesign, algorithms |
+| **Pentest AI** | Kimi Reasoner | $0.27/1M | Security audits, RLS, vulnerability assessment |
+| **SupabaseConnector** | Claude Opus 4.6 | $15/1M | Database queries, schema, migrations |
+| **BettingBot** | Kimi 2.5 | $0.14/1M | Sports odds, arbitrage, +EV picks, Kelly sizing |
+| **Code Reviewer** | Kimi 2.5 | $0.14/1M | PR reviews, code audits, tech debt assessment |
+| **Architecture Designer** | MiniMax M2.5 | $0.30/1M | System design, API contracts, scalability |
+| **Test Generator** | Kimi 2.5 | $0.14/1M | Unit/integration/E2E tests, coverage analysis |
+| **Debugger** | Claude Opus 4.6 | $15/1M | Race conditions, memory leaks, root cause analysis |
+| **Researcher** | Kimi 2.5 | $0.14/1M | Market research, tech deep dives, lit reviews |
+| **Content Creator** | Kimi 2.5 | $0.14/1M | Blog posts, documentation, proposals, emails |
+| **Financial Analyst** | Kimi 2.5 | $0.14/1M | Revenue tracking, cost analysis, pricing research |
+
+**Infrastructure**
+
+- **Gateway**: FastAPI on VPS <your-vps-ip>:18789 (systemd service)
+- **Workers**: Cloudflare Workers (PA + AI CEO agents)
+- **Data**: Supabase (separate databases per agent)
+- **MCP Servers**: 9 integrations (shared tools across agents)
+- **LLM Fallback**: 4-tier routing
+  1. Bailian (Alibaba DashScope) — $0.00003/call
+  2. Kimi/DeepSeek — $0.14/1M tokens
+  3. MiniMax — $0.30/1M tokens
+  4. Claude Opus — $15/1M tokens (quality fallback)
+
+**Tools & Integrations (75+)**
+
+Code: file_read, file_edit, file_write, shell_execute
+Database: query_data_sources, update_data_source, run_sql
+Browser: navigate, screenshot, click, type, evaluate JavaScript
+Security: vulnerability_scan, RLS_audit, pentest_runner
+Sports: sportsbook_odds, sportsbook_arb, xgboost_predict, kelly_sizing
+Research: perplexity_sonar, deep_research, web_scrape, web_fetch
+Trading: polymarket_prices, kalshi_trade, arb_scanner
+Finance: revenue_tracking, cost_analysis, invoice_generator
+Content: blog_writer, social_posts, proposal_generator
+Monitoring: cost_tracker, job_viewer, mission_control_dashboard
+
+---
+
+## Quick Start
+
+**Requirements:**
+- Python ≥3.11
+- Supabase account + API key
+- At least one LLM API key (Claude, Bailian, or other)
+- (Optional) Telegram/Slack tokens for integrations
+
+**Installation:**
+
+```bash
+git clone https://github.com/cybershield-agency/openclaw
+cd openclaw
+pip install -e '.[dev]'
+
+# Copy and configure environment
+cp .env.example .env
+# Fill in: ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_KEY, etc.
+
+# Start gateway (systemd handles auto-restart)
+systemctl start openclaw-gateway
+systemctl status openclaw-gateway
+
+# Verify gateway is running
+curl http://localhost:18789/health
+```
+
+**Send a Task (Python):**
+
+```python
+import httpx
+
+task = {
+    "description": "Analyze DBNull.Value handling in C# DataFrame operations",
+    "priority": "high",
+    "tags": ["csharp", "dataframe"]
+}
+
+response = httpx.post(
+    "http://localhost:18789/job",
+    json=task,
+    headers={"Authorization": "Bearer YOUR_API_KEY"}
+)
+
+print(response.json())  # Job ID, status, result when complete
+```
+
+**Telegram Integration:**
+
+```bash
+openclaw telegram --token YOUR_BOT_TOKEN --webhook-url https://<your-domain>/telegram
+```
+
+---
+
+## Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run specific test category
+pytest tests/ -k "agent_routing"
+
+# With coverage
+pytest --cov=openclaw tests/
+
+# 199 tests covering:
+# - Agent routing and specialization
+# - Error recovery (3-tier cascade)
+# - Cost gating (per-agent limits)
+# - LLM fallback chain
+# - Tool execution and mocking
+# - Job pipeline phases (decompose → execute → verify)
+# - Reflexion (error → diagnosis → retry)
+# - Data validation and RLS policies
+```
+
+---
+
+## Development
+
+**Add a New Tool:**
+
+1. Implement tool in `tools/` folder
+2. Register in agent's `allowed_tools` (CLAUDE.md)
+3. Add MCP server integration if external
+4. Write tests in `tests/test_tools/`
+5. Deploy via systemd: `systemctl restart openclaw-gateway`
+
+**Add a New Agent Soul:**
+
+1. Define identity and constraints in `CLAUDE.md`
+2. Register routing rules in `agent_router.py`
+3. Configure allowed tools per agent
+4. Test with `test_agent_routing.py`
+5. Restart gateway
+
+**Environment Variables:**
+
+```bash
+# Required
+ANTHROPIC_API_KEY=sk-ant-...
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_KEY=eyJ0eXA...
+
+# Optional (fallback chains)
+BAILIAN_API_KEY=sk-sp-...
+KIMI_API_KEY=xxx
+MINIMAX_API_KEY=xxx
+GROK_API_KEY=xxx
+
+# Integrations
+TELEGRAM_BOT_TOKEN=xxx
+SLACK_BOT_TOKEN=xxx
+STRIPE_API_KEY=sk_live_...
+```
+
+---
+
+## Performance & Costs
+
+**Typical Task Costs:**
+
+- Simple code fix → CodeGen Pro → $0.02
+- Complex refactor → CodeGen Elite → $0.15
+- Security audit → Pentest AI → $0.10
+- Database query → SupabaseConnector → $0.30
+- Market research → Researcher → $0.05
+
+**Fallback Strategy:**
+
+Tasks automatically cascade down cost tiers on failure:
+1. Try cheap model (Bailian)
+2. If latency timeout → Kimi 2.5
+3. If reasoning fails → MiniMax
+4. If still failing → Opus (quality guarantee)
+
+**Recent Results (v4.2):**
+
+- **Success Rate**: 90%+ across all job types
+- **Avg Job Duration**: 12s (short tasks) to 3min (complex refactors)
+- **Monthly Cost**: ~$40 (including fallback chain + testing)
+- **Test Coverage**: 170+ tests (0.23s full suite)
+
+---
+
+## Deployments
+
+**Running Instances:**
+
+- **Gateway**: <your-domain> (FastAPI)
+- **AI CEO Worker**: <your-domain> (DeepSeek V3)
+- **Personal Assistant Worker**: <your-domain> (DeepSeek V3)
+- **Dashboard**: <your-domain> (Job viewer + cost analytics)
+
+**Systemd Service:**
+
+```bash
+# View logs
+journalctl -u openclaw-gateway -f
+
+# Restart (auto-loads .env)
+systemctl restart openclaw-gateway
+
+# Check status
+systemctl status openclaw-gateway
+```
+
+---
+
+## Project Status
+
+| Aspect | Status |
+|--------|--------|
+| Core Pipeline | ✅ Production (v4.2) |
+| 12 Agent Souls | ✅ Deployed |
+| 75+ MCP Tools | ✅ Integrated |
+| Cost Gating | ✅ Per-agent limits enforced |
+| Error Recovery | ✅ 3-tier fallback + reflexion |
+| Testing | ✅ 199 tests (0.23s) |
+| Documentation | ✅ CLAUDE.md, ARCHITECTURE.md |
+| Stripe Integration | ⏳ In progress (commercialization) |
+| Self-Improvement | ⏳ Reflexion + learning logs |
+
+---
+
+## License
+
+[MIT](LICENSE) — Built and maintained by Miles (Cybershield Agency)
+
+---
+
+## Resources
+
+- [CLAUDE.md](CLAUDE.md) — Agent identities, routing rules, protocols
+- [ARCHITECTURE.md](ARCHITECTURE.md) — System design, pipeline phases, tool ecosystem
+- [Error Patterns](https://github.com/cybershield-agency/openclaw/wiki/Error-Patterns) — Hard-won debugging lessons
+- [v4.2 Roadmap](https://github.com/cybershield-agency/openclaw/wiki/v4.2-Roadmap) — Current features + next steps
+
+---
+
+**OpenClaw v4.2** • Last updated: 2026-03-07

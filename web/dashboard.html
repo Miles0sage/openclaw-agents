@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenClaw Monitoring Dashboard</title>
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --success-color: #16a34a;
+        --warning-color: #ea580c;
+        --error-color: #dc2626;
+        --bg-color: #0f172a;
+        --card-bg: #1e293b;
+        --text-color: #e2e8f0;
+        --border-color: #334155;
+        --spacing: 1rem;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+          sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: var(--spacing);
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: var(--spacing);
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      h1 {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: var(--spacing);
+      }
+
+      button {
+        padding: 0.5rem 1rem;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+
+      button:hover {
+        background-color: #1d4ed8;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+
+      .status-online {
+        background-color: var(--success-color);
+        color: white;
+      }
+
+      .status-offline {
+        background-color: #6b7280;
+        color: white;
+      }
+
+      .status-processing {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .status-idle {
+        background-color: var(--warning-color);
+        color: white;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--spacing);
+        margin-bottom: 2rem;
+      }
+
+      .card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: var(--spacing);
+      }
+
+      .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.5rem;
+      }
+
+      .card h3 {
+        font-size: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+      }
+
+      .metric {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .metric:last-child {
+        border-bottom: none;
+      }
+
+      .metric-label {
+        font-weight: 500;
+      }
+
+      .metric-value {
+        color: var(--primary-color);
+        font-weight: 600;
+      }
+
+      .alert-item {
+        background-color: #1e293b;
+        border-left: 4px solid var(--warning-color);
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        border-radius: 0.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+      }
+
+      .alert-item.error {
+        border-left-color: var(--error-color);
+      }
+
+      .alert-item.success {
+        border-left-color: var(--success-color);
+      }
+
+      .alert-item.info {
+        border-left-color: var(--primary-color);
+      }
+
+      .alert-content {
+        flex: 1;
+      }
+
+      .alert-type {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .alert-message {
+        font-size: 0.95rem;
+      }
+
+      .alert-time {
+        color: #94a3b8;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+      }
+
+      .alert-actions {
+        margin-left: 1rem;
+        white-space: nowrap;
+      }
+
+      .ack-btn {
+        padding: 0.25rem 0.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+      }
+
+      .ack-btn:hover {
+        background-color: #1d4ed8;
+      }
+
+      .chart-container {
+        margin-top: 1rem;
+        height: 300px;
+        display: flex;
+        align-items: flex-end;
+        gap: 0.5rem;
+      }
+
+      .chart-bar {
+        flex: 1;
+        background-color: var(--primary-color);
+        border-radius: 0.25rem 0.25rem 0 0;
+        min-height: 1rem;
+        position: relative;
+      }
+
+      .chart-bar-label {
+        position: absolute;
+        bottom: -1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.75rem;
+        white-space: nowrap;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 2rem;
+        color: #94a3b8;
+      }
+
+      .spinner {
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .health-bar {
+        width: 100%;
+        height: 8px;
+        background-color: var(--border-color);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+      }
+
+      .health-fill {
+        height: 100%;
+        background-color: var(--success-color);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      .health-fill.warning {
+        background-color: var(--warning-color);
+      }
+
+      .health-fill.error {
+        background-color: var(--error-color);
+      }
+
+      .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing);
+      }
+
+      @media (max-width: 768px) {
+        .two-column {
+          grid-template-columns: 1fr;
+        }
+
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+
+        .header-actions {
+          width: 100%;
+        }
+
+        button {
+          width: 100%;
+        }
+      }
+
+      .timestamp {
+        font-size: 0.875rem;
+        color: #94a3b8;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+      }
+
+      .no-data {
+        text-align: center;
+        color: #94a3b8;
+        padding: 2rem;
+      }
+
+      .agent-card {
+        border: 1px solid var(--border-color);
+        padding: 1rem;
+        border-radius: 0.375rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .agent-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .agent-name {
+        font-weight: 600;
+      }
+
+      .agent-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .stat {
+        padding: 0.25rem;
+      }
+
+      .stat-label {
+        color: #94a3b8;
+      }
+
+      .stat-value {
+        color: var(--primary-color);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🔍 OpenClaw Monitoring Dashboard</h1>
+        <div class="header-actions">
+          <button onclick="refreshDashboard()">⟳ Refresh Now</button>
+        </div>
+      </header>
+
+      <!-- System Health -->
+      <div class="card">
+        <h2>System Health</h2>
+        <div class="metric">
+          <span class="metric-label">Status</span>
+          <span class="metric-value" id="system-status">●</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Memory Usage</span>
+          <span class="metric-value" id="memory-usage">-</span>
+        </div>
+        <div class="health-bar">
+          <div class="health-fill" id="memory-bar"></div>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Uptime</span>
+          <span class="metric-value" id="uptime">-</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Active Tasks</span>
+          <span class="metric-value" id="active-tasks">0</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Pending Tasks</span>
+          <span class="metric-value" id="pending-tasks">0</span>
+        </div>
+      </div>
+
+      <!-- Agent Status -->
+      <div class="card">
+        <h2>Agent Status</h2>
+        <div id="agents-container" class="loading">
+          <div class="spinner"></div>
+          <p>Loading agents...</p>
+        </div>
+      </div>
+
+      <!-- Cost Summary -->
+      <div class="card">
+        <h2>💰 Cost Summary</h2>
+        <div class="metric">
+          <span class="metric-label">Today</span>
+          <span class="metric-value" id="cost-today">$0.00</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">This Week</span>
+          <span class="metric-value" id="cost-week">$0.00</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">This Month</span>
+          <span class="metric-value" id="cost-month">$0.00</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Projected Monthly</span>
+          <span class="metric-value" id="cost-projected">$0.00</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Daily Rate</span>
+          <span class="metric-value" id="cost-rate">$0.00/day</span>
+        </div>
+      </div>
+
+      <!-- Metrics -->
+      <div class="two-column">
+        <div class="card">
+          <h2>📊 Today's Metrics</h2>
+          <div class="metric">
+            <span class="metric-label">Tasks Completed</span>
+            <span class="metric-value" id="metric-today-tasks">0</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Avg Response Time</span>
+            <span class="metric-value" id="metric-today-response">0s</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Success Rate</span>
+            <span class="metric-value" id="metric-today-success">0%</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Avg Accuracy</span>
+            <span class="metric-value" id="metric-today-accuracy">0%</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>📈 This Week's Metrics</h2>
+          <div class="metric">
+            <span class="metric-label">Tasks Completed</span>
+            <span class="metric-value" id="metric-week-tasks">0</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Avg Response Time</span>
+            <span class="metric-value" id="metric-week-response">0s</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Success Rate</span>
+            <span class="metric-value" id="metric-week-success">0%</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Total Cost</span>
+            <span class="metric-value" id="metric-week-cost">$0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Alerts -->
+      <div class="card">
+        <h2>🔔 Active Alerts</h2>
+        <div id="alerts-container" class="no-data">
+          <p>No active alerts</p>
+        </div>
+      </div>
+
+      <!-- Recent Events -->
+      <div class="card">
+        <h2>📋 Recent Events</h2>
+        <div id="events-container" class="no-data">
+          <p>No recent events</p>
+        </div>
+      </div>
+
+      <div class="timestamp">Last updated: <span id="last-update">-</span></div>
+    </div>
+
+    <script>
+      const API_BASE = window.location.origin;
+      const REFRESH_INTERVAL = 2000; // 2 seconds
+
+      async function fetchDashboard() {
+        try {
+          const response = await fetch(`${API_BASE}/api/monitoring/state`);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const json = await response.json();
+          if (json.success) {
+            updateDashboard(json.data);
+          }
+        } catch (err) {
+          console.error("Failed to fetch dashboard:", err);
+        }
+      }
+
+      function updateDashboard(state) {
+        updateSystemHealth(state.system_health);
+        updateAgents(state.agents);
+        updateCosts(state.costs);
+        updateMetrics(state.metrics);
+        updateAlerts(state.alerts);
+        updateEvents(state.recent_events);
+        document.getElementById("last-update").textContent = new Date(
+          state.timestamp,
+        ).toLocaleTimeString();
+      }
+
+      function updateSystemHealth(health) {
+        const memory = health.memory_usage_percent;
+        document.getElementById("memory-usage").textContent = `${memory}%`;
+        document.getElementById("uptime").textContent = `${Math.floor(health.uptime_hours)}h`;
+        document.getElementById("active-tasks").textContent = health.active_tasks;
+        document.getElementById("pending-tasks").textContent = health.pending_tasks;
+
+        const memoryBar = document.getElementById("memory-bar");
+        memoryBar.style.width = `${Math.min(100, memory)}%`;
+
+        if (memory > 80) {
+          memoryBar.classList.add("error");
+          memoryBar.classList.remove("warning");
+        } else if (memory > 60) {
+          memoryBar.classList.add("warning");
+          memoryBar.classList.remove("error");
+        } else {
+          memoryBar.classList.remove("warning", "error");
+        }
+
+        // System status
+        const status =
+          memory < 90 && health.active_tasks < 50
+            ? "🟢 Healthy"
+            : memory > 90
+              ? "🔴 Critical"
+              : "🟡 Busy";
+        document.getElementById("system-status").textContent = status;
+      }
+
+      function updateAgents(agents) {
+        const container = document.getElementById("agents-container");
+
+        if (agents.length === 0) {
+          container.innerHTML = '<p class="no-data">No agents connected</p>';
+          return;
+        }
+
+        container.innerHTML = agents
+          .map(
+            (agent) => `
+        <div class="agent-card">
+          <div class="agent-header">
+            <span class="agent-name">${agent.name}</span>
+            <span class="status-badge status-${agent.status}">${agent.status.toUpperCase()}</span>
+          </div>
+          <div class="agent-stats">
+            <div class="stat">
+              <div class="stat-label">Tasks</div>
+              <div class="stat-value">${agent.task_count}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Success</div>
+              <div class="stat-value">${agent.success_count}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Errors</div>
+              <div class="stat-value">${agent.error_count}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Uptime</div>
+              <div class="stat-value">${Math.floor(agent.uptime_seconds / 60)}m</div>
+            </div>
+          </div>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      function updateCosts(costs) {
+        document.getElementById("cost-today").textContent = `$${costs.today.toFixed(2)}`;
+        document.getElementById("cost-week").textContent = `$${costs.this_week.toFixed(2)}`;
+        document.getElementById("cost-month").textContent = `$${costs.this_month.toFixed(2)}`;
+        document.getElementById("cost-projected").textContent =
+          `$${costs.projected_monthly.toFixed(2)}`;
+        document.getElementById("cost-rate").textContent = `$${costs.daily_rate.toFixed(2)}/day`;
+      }
+
+      function updateMetrics(metrics) {
+        const today = metrics.today;
+        document.getElementById("metric-today-tasks").textContent = today.total_tasks;
+        document.getElementById("metric-today-response").textContent =
+          `${today.avg_response_time_seconds.toFixed(2)}s`;
+        document.getElementById("metric-today-success").textContent =
+          `${today.success_rate.toFixed(1)}%`;
+        document.getElementById("metric-today-accuracy").textContent =
+          `${today.avg_accuracy_score.toFixed(1)}%`;
+
+        const week = metrics.this_week;
+        document.getElementById("metric-week-tasks").textContent = week.total_tasks;
+        document.getElementById("metric-week-response").textContent =
+          `${week.avg_response_time_seconds.toFixed(2)}s`;
+        document.getElementById("metric-week-success").textContent =
+          `${week.success_rate.toFixed(1)}%`;
+        document.getElementById("metric-week-cost").textContent =
+          `$${week.total_cost_usd.toFixed(2)}`;
+      }
+
+      function updateAlerts(alerts) {
+        const container = document.getElementById("alerts-container");
+
+        if (alerts.length === 0) {
+          container.innerHTML = '<p class="no-data">No active alerts</p>';
+          return;
+        }
+
+        container.innerHTML = alerts
+          .slice(0, 10)
+          .map(
+            (alert) => `
+        <div class="alert-item ${alert.type}">
+          <div class="alert-content">
+            <div class="alert-type">${alert.type}</div>
+            <div class="alert-message">${alert.message}</div>
+            <div class="alert-time">${new Date(alert.timestamp).toLocaleString()}</div>
+          </div>
+          <div class="alert-actions">
+            <button class="ack-btn" onclick="acknowledgeAlert('${alert.id}')">✓ ACK</button>
+          </div>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      function updateEvents(events) {
+        const container = document.getElementById("events-container");
+
+        if (events.length === 0) {
+          container.innerHTML = '<p class="no-data">No recent events</p>';
+          return;
+        }
+
+        container.innerHTML = events
+          .slice(0, 20)
+          .map(
+            (event) => `
+        <div style="padding: 0.5rem 0; border-bottom: 1px solid var(--border-color); font-size: 0.9rem;">
+          <div style="font-weight: 500; color: var(--primary-color);">${event.type}</div>
+          <div>${event.message}</div>
+          <div style="color: #94a3b8; font-size: 0.8rem; margin-top: 0.25rem;">
+            ${new Date(event.timestamp).toLocaleTimeString()}
+          </div>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      async function acknowledgeAlert(alertId) {
+        try {
+          await fetch(`${API_BASE}/api/monitoring/alerts/${alertId}/acknowledge`, {
+            method: "POST",
+          });
+          fetchDashboard();
+        } catch (err) {
+          console.error("Failed to acknowledge alert:", err);
+        }
+      }
+
+      async function refreshDashboard() {
+        await fetchDashboard();
+      }
+
+      // Initial load and set up polling
+      fetchDashboard();
+      setInterval(fetchDashboard, REFRESH_INTERVAL);
+    </script>
+  </body>
+</html>

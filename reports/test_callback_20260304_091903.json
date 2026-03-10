@@ -1,0 +1,14 @@
+{
+  "task_name": "test_callback",
+  "task_id": "test-123",
+  "status": "completed",
+  "output": "Test callback successful",
+  "findings": [
+    {
+      "severity": "low",
+      "description": "Test finding",
+      "project": "openclaw"
+    }
+  ],
+  "timestamp": "20260304_091903"
+}

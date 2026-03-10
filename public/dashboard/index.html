@@ -1,0 +1,2120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Dev Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%);
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .glass-card.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .glass-card.danger {
+            border-left: 4px solid var(--danger);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-badge.healthy {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-badge.degraded {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-badge.unhealthy {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .pulse {
+            animation: pulse-animation 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-animation {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        .job-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .job-row:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        .job-row:last-child {
+            border-bottom: none;
+        }
+
+        .job-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .job-status.pending {
+            background-color: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+
+        .job-status.running {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .job-status.done {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .job-status.failed {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .refresh-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .refresh-dot {
+            display: inline-block;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background-color: #10b981;
+            animation: pulse-animation 2s infinite;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            gap: 4px;
+            margin-top: 1rem;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .cost-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            margin-bottom: 0.75rem;
+        }
+
+        .cost-bar-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            min-width: 100px;
+        }
+
+        .cost-bar-fill {
+            flex: 1;
+            height: 24px;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .cost-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .cost-bar-value {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #6366f1;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .loading-skeleton {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1));
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(99, 102, 241, 0.2);
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fade-in 0.3s ease-in;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-button {
+            border: 1px solid transparent;
+            border-radius: 10px;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.85rem 1.1rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-button:hover {
+            background: rgba(99, 102, 241, 0.08);
+            color: #f8fafc;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.18));
+            border-color: rgba(99, 102, 241, 0.45);
+            color: #ffffff;
+            box-shadow: inset 0 0 0 1px rgba(129, 140, 248, 0.15);
+        }
+
+        .form-label {
+            color: #cbd5e1;
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.625rem;
+        }
+
+        .form-control {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(100, 116, 139, 0.55);
+            border-radius: 10px;
+            color: #e2e8f0;
+            padding: 0.85rem 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: rgba(99, 102, 241, 0.95);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: #64748b;
+        }
+
+        .form-feedback {
+            border-radius: 10px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            padding: 0.9rem 1rem;
+        }
+
+        .form-feedback.success {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.28);
+            color: #6ee7b7;
+        }
+
+        .form-feedback.error {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.28);
+            color: #fca5a5;
+        }
+
+        .agent-showcase-card {
+            background: linear-gradient(160deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(99, 102, 241, 0.18);
+            border-radius: 16px;
+            overflow: hidden;
+            padding: 1.25rem;
+            position: relative;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .agent-showcase-card:hover {
+            border-color: rgba(129, 140, 248, 0.4);
+            box-shadow: 0 14px 34px rgba(15, 23, 42, 0.28);
+            transform: translateY(-2px);
+        }
+
+        .agent-chip {
+            background: rgba(51, 65, 85, 0.8);
+            border: 1px solid rgba(100, 116, 139, 0.35);
+            border-radius: 999px;
+            color: #cbd5e1;
+            display: inline-flex;
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1;
+            padding: 0.4rem 0.7rem;
+        }
+
+        .tool-browser-list {
+            max-height: 32rem;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        .tool-browser-item {
+            background: rgba(15, 23, 42, 0.72);
+            border: 1px solid rgba(71, 85, 105, 0.45);
+            border-radius: 14px;
+            cursor: pointer;
+            padding: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .tool-browser-item:hover {
+            border-color: rgba(99, 102, 241, 0.42);
+            transform: translateY(-1px);
+        }
+
+        .tool-browser-item.active {
+            background: linear-gradient(145deg, rgba(99, 102, 241, 0.17), rgba(15, 23, 42, 0.88));
+            border-color: rgba(129, 140, 248, 0.62);
+            box-shadow: inset 0 0 0 1px rgba(129, 140, 248, 0.12);
+        }
+
+        .tool-badge {
+            align-items: center;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.24);
+            border-radius: 999px;
+            color: #c7d2fe;
+            display: inline-flex;
+            font-size: 0.75rem;
+            font-weight: 700;
+            gap: 0.35rem;
+            padding: 0.35rem 0.65rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen py-6 px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="max-w-7xl mx-auto mb-8">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2">OpenClaw Dev Dashboard</h1>
+                    <p class="text-slate-400">Real-time system metrics, job pipeline monitoring, and intake controls</p>
+                </div>
+                <div id="dashboardHeaderControls" class="text-right">
+                    <div class="refresh-indicator">
+                        <div class="refresh-dot"></div>
+                        <span>Live • <span id="lastUpdate">updating...</span></span>
+                    </div>
+                    <button id="refreshBtn" class="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors">
+                        Refresh Now
+                    </button>
+                </div>
+            </div>
+            <div class="glass-card p-2">
+                <div class="flex flex-wrap gap-2" role="tablist" aria-label="Dashboard navigation">
+                    <button type="button" class="tab-button active" data-tab-target="dashboard" aria-selected="true">
+                        Dashboard
+                    </button>
+                    <button type="button" class="tab-button" data-tab-target="submit" aria-selected="false">
+                        Submit Job
+                    </button>
+                    <button type="button" class="tab-button" data-tab-target="agents-tools" aria-selected="false">
+                        Agents &amp; Tools
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <section id="dashboardTabPanel" data-tab-panel="dashboard">
+            <div class="max-w-7xl mx-auto mb-8">
+            <!-- System Status Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <!-- Gateway Status -->
+                <div class="glass-card success p-6">
+                    <div class="metric-label mb-2">Gateway Status</div>
+                    <div class="metric-value mb-3">●</div>
+                    <div id="gatewayStatus" class="status-badge healthy">
+                        <span>✓ Healthy</span>
+                    </div>
+                </div>
+
+                <!-- API Latency -->
+                <div class="glass-card p-6">
+                    <div class="metric-label mb-2">API Latency</div>
+                    <div id="apiLatency" class="metric-value">--</div>
+                    <div class="text-xs text-slate-400 mt-1">ms</div>
+                </div>
+
+                <!-- Active Jobs -->
+                <div class="glass-card p-6">
+                    <div class="metric-label mb-2">Active Jobs</div>
+                    <div id="activeJobsCount" class="metric-value">0</div>
+                    <div class="text-xs text-slate-400 mt-1">running</div>
+                </div>
+
+                <!-- Daily Cost -->
+                <div class="glass-card p-6">
+                    <div class="metric-label mb-2">Daily Cost</div>
+                    <div id="dailyCost" class="metric-value">$--</div>
+                    <div class="text-xs text-slate-400 mt-1">24h burn</div>
+                </div>
+            </div>
+
+            <!-- Health Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <!-- Uptime -->
+                <div class="glass-card p-6">
+                    <div class="metric-label mb-3">Uptime</div>
+                    <div id="uptimeValue" class="text-2xl font-bold">--h</div>
+                    <div class="mt-4 space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Memory</span>
+                            <span id="memoryUsage">--</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div id="memoryBar" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CPU Usage -->
+                <div class="glass-card p-6">
+                    <div class="metric-label mb-3">CPU Usage</div>
+                    <div id="cpuValue" class="text-2xl font-bold">--</div>
+                    <div class="mt-4 space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">1h errors</span>
+                            <span id="errorCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agents -->
+                <div class="glass-card p-6">
+                    <div class="metric-label mb-3">Active Agents</div>
+                    <div id="agentCount" class="text-2xl font-bold">--</div>
+                    <div class="mt-4 space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Total tools</span>
+                            <span>81+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+            <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Live Job Queue (Left Column - 2/3) -->
+                <div class="lg:col-span-2">
+                    <!-- Analytics: Agent Performance Cards -->
+                    <div class="glass-card p-6 mb-6">
+                        <h2 class="text-xl font-bold mb-4 flex items-center">
+                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
+                            Agent Performance Analytics
+                        </h2>
+                        <div id="analyticsAgentCards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="loading-skeleton h-24 rounded"></div>
+                            <div class="loading-skeleton h-24 rounded"></div>
+                            <div class="loading-skeleton h-24 rounded"></div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics: Cost Breakdown Chart -->
+                    <div class="glass-card p-6 mb-6">
+                        <h2 class="text-xl font-bold mb-4">Daily/Weekly Cost Analytics</h2>
+                        <div class="chart-container">
+                            <canvas id="costAnalyticsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6">
+                        <h2 class="text-xl font-bold mb-4 flex items-center">
+                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3 pulse"></span>
+                            Live Job Queue
+                        </h2>
+
+                        <div id="jobsContainer" class="space-y-2 max-h-96 overflow-y-auto">
+                            <div class="job-row">
+                                <div class="loading-skeleton h-4 rounded w-3/4"></div>
+                                <div class="loading-skeleton h-4 rounded w-1/2"></div>
+                                <div class="loading-skeleton h-4 rounded w-1/3"></div>
+                                <div class="loading-skeleton h-4 rounded w-1/4"></div>
+                                <div class="loading-skeleton h-4 rounded w-1/4"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agent Performance -->
+                    <div class="glass-card p-6 mt-6">
+                        <h2 class="text-xl font-bold mb-4">Agent Performance</h2>
+                        <div id="agentPerformance" class="space-y-4">
+                            <div class="loading-skeleton h-20 rounded"></div>
+                            <div class="loading-skeleton h-20 rounded"></div>
+                            <div class="loading-skeleton h-20 rounded"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar -->
+                <div class="space-y-6">
+                    <!-- Cost Breakdown -->
+                    <div class="glass-card p-6">
+                        <h2 class="text-lg font-bold mb-4">Cost Breakdown</h2>
+                        <div id="costBreakdown" class="space-y-3">
+                            <div class="cost-bar">
+                                <div class="cost-bar-label">Daily</div>
+                                <div class="cost-bar-fill"><div class="cost-bar-inner" style="width: 0%"></div></div>
+                                <div class="cost-bar-value">$--</div>
+                            </div>
+                            <div class="cost-bar">
+                                <div class="cost-bar-label">Weekly</div>
+                                <div class="cost-bar-fill"><div class="cost-bar-inner" style="width: 0%"></div></div>
+                                <div class="cost-bar-value">$--</div>
+                            </div>
+                            <div class="cost-bar">
+                                <div class="cost-bar-label">Monthly</div>
+                                <div class="cost-bar-fill"><div class="cost-bar-inner" style="width: 0%"></div></div>
+                                <div class="cost-bar-value">$--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Usage -->
+                    <div class="glass-card p-6">
+                        <h2 class="text-lg font-bold mb-4">Model Distribution</h2>
+                        <div class="chart-container">
+                            <canvas id="modelChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Job Status Distribution -->
+                    <div class="glass-card p-6">
+                        <h2 class="text-lg font-bold mb-4">Job Status</h2>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-400">Completed</span>
+                                <span id="jobDone" class="font-semibold text-green-400">0</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-400">Running</span>
+                                <span id="jobRunning" class="font-semibold text-blue-400">0</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-400">Pending</span>
+                                <span id="jobPending" class="font-semibold text-amber-400">0</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-slate-400">Failed</span>
+                                <span id="jobFailed" class="font-semibold text-red-400">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics: Job History Table -->
+            <div class="glass-card p-6 mt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold">Job History Analytics</h2>
+                    <div class="flex gap-2">
+                        <select id="jobHistoryFilter" class="px-3 py-2 bg-slate-700 rounded-lg text-sm font-medium text-slate-200 border border-slate-600">
+                            <option value="">All Statuses</option>
+                            <option value="done">Completed</option>
+                            <option value="failed">Failed</option>
+                            <option value="running">Running</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                        <button id="jobHistoryRefresh" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors">
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                <div id="jobHistoryContainer" class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="border-b border-slate-600">
+                            <tr class="text-slate-400 text-xs uppercase">
+                                <th class="text-left py-3 px-4">Job ID</th>
+                                <th class="text-left py-3 px-4">Agent</th>
+                                <th class="text-left py-3 px-4">Status</th>
+                                <th class="text-right py-3 px-4">Duration (s)</th>
+                                <th class="text-right py-3 px-4">Cost</th>
+                                <th class="text-left py-3 px-4">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobHistoryRows" class="divide-y divide-slate-700">
+                            <tr class="text-slate-400">
+                                <td class="py-4 px-4" colspan="6">Loading job history...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tool Usage Heatmap -->
+            <div class="glass-card p-6 mt-6">
+                <h2 class="text-lg font-bold mb-4">Tool Usage Heatmap (24h)</h2>
+                <div id="toolHeatmap" class="heatmap">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+
+            <!-- Recent Job Results -->
+            <div class="glass-card p-6 mt-6">
+                <h2 class="text-lg font-bold mb-4">Recent Job Results</h2>
+                <div id="recentResults" class="space-y-3">
+                    <div class="text-sm text-slate-400 py-8 text-center">Loading...</div>
+                </div>
+            </div>
+        </div>
+        </section>
+
+        <section id="submitTabPanel" data-tab-panel="submit" class="hidden">
+            <div class="max-w-5xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="space-y-6">
+                        <div class="glass-card p-6">
+                            <div class="metric-label mb-3">Intake</div>
+                            <h2 class="text-2xl font-bold mb-3">Submit a New Job</h2>
+                            <p class="text-sm text-slate-300 leading-6">
+                                Queue work directly through <code>/api/intake</code> from the legacy dashboard. The requested
+                                job fields map to the backend payload without changing the existing monitoring views.
+                            </p>
+                        </div>
+
+                        <div class="glass-card p-6">
+                            <label for="clientKeyInput" class="form-label">Client API Key</label>
+                            <input
+                                type="password"
+                                id="clientKeyInput"
+                                class="form-control"
+                                placeholder="oc_live_..."
+                                autocomplete="off"
+                                spellcheck="false"
+                            >
+                            <p class="text-xs text-slate-400 mt-3">
+                                Required by the intake API. Stored for this browser session and sent as the
+                                <code>X-Client-Key</code> header.
+                            </p>
+                        </div>
+
+                        <div class="glass-card p-6">
+                            <div class="metric-label mb-3">Supported Task Types</div>
+                            <div class="flex flex-wrap gap-2 text-xs">
+                                <span class="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-200">feature_build</span>
+                                <span class="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-200">bug_fix</span>
+                                <span class="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-200">security_audit</span>
+                                <span class="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-200">code_review</span>
+                                <span class="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-200">deployment</span>
+                                <span class="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-200">full_project</span>
+                                <span class="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-200">other</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <form id="jobSubmissionForm" class="glass-card p-6 md:p-8 space-y-6">
+                            <div>
+                                <div class="metric-label mb-2">Phase 1</div>
+                                <h2 class="text-2xl font-bold">Submit Job</h2>
+                                <p class="text-sm text-slate-400 mt-2">
+                                    Fill in the intake fields below to create a queued job and receive the returned
+                                    <code>job_id</code>, status, and estimated start time.
+                                </p>
+                            </div>
+
+                            <div id="jobSubmissionFeedback" class="form-feedback hidden" role="status" aria-live="polite"></div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <label for="projectNameInput" class="form-label">Project Name</label>
+                                    <input
+                                        type="text"
+                                        id="projectNameInput"
+                                        name="project_name"
+                                        class="form-control"
+                                        maxlength="200"
+                                        placeholder="Customer portal redesign"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="md:col-span-2">
+                                    <label for="descriptionInput" class="form-label">Description</label>
+                                    <textarea
+                                        id="descriptionInput"
+                                        name="description"
+                                        class="form-control min-h-[160px] resize-y"
+                                        minlength="10"
+                                        maxlength="10000"
+                                        placeholder="Describe the requested work, deliverables, constraints, and success criteria."
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <div>
+                                    <label for="taskTypeInput" class="form-label">Task Type</label>
+                                    <select id="taskTypeInput" name="task_type" class="form-control" required>
+                                        <option value="feature_build">feature_build</option>
+                                        <option value="bug_fix">bug_fix</option>
+                                        <option value="security_audit">security_audit</option>
+                                        <option value="code_review">code_review</option>
+                                        <option value="deployment">deployment</option>
+                                        <option value="full_project">full_project</option>
+                                        <option value="other">other</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="priorityInput" class="form-label">Priority</label>
+                                    <select id="priorityInput" name="priority" class="form-control" required>
+                                        <option value="P2" selected>P2</option>
+                                        <option value="P0">P0</option>
+                                        <option value="P1">P1</option>
+                                        <option value="P3">P3</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="budgetLimitInput" class="form-label">Budget Limit</label>
+                                    <input
+                                        type="number"
+                                        id="budgetLimitInput"
+                                        name="budget_limit"
+                                        class="form-control"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="500.00"
+                                    >
+                                </div>
+
+                                <div>
+                                    <label for="contactEmailInput" class="form-label">Contact Email</label>
+                                    <input
+                                        type="email"
+                                        id="contactEmailInput"
+                                        name="contact_email"
+                                        class="form-control"
+                                        maxlength="200"
+                                        placeholder="you@example.com"
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+                                <p class="text-xs text-slate-400">
+                                    Submissions are sent to the current origin and queued immediately if the client key is valid.
+                                </p>
+                                <div class="flex gap-3">
+                                    <button
+                                        type="button"
+                                        id="clearJobFormBtn"
+                                        class="px-4 py-2 rounded-lg border border-slate-600 text-sm font-medium text-slate-200 hover:bg-slate-800 transition-colors"
+                                    >
+                                        Clear
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        id="submitJobBtn"
+                                        class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors"
+                                    >
+                                        Submit Job
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div id="jobSubmissionResult" class="glass-card p-6 mt-6 hidden">
+                            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                <div>
+                                    <div class="metric-label mb-2">Latest Submission</div>
+                                    <h3 class="text-xl font-bold">Job queued</h3>
+                                    <p id="jobSubmissionMessage" class="text-sm text-slate-300 mt-2">
+                                        Submission details will appear here after a successful intake request.
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    id="viewDashboardBtn"
+                                    class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm font-medium transition-colors"
+                                >
+                                    View Dashboard
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                                <div class="rounded-xl border border-slate-700 bg-slate-900/70 p-4">
+                                    <div class="metric-label mb-2">Job ID</div>
+                                    <div id="jobSubmissionJobId" class="font-mono text-sm text-slate-200 break-all">--</div>
+                                </div>
+                                <div class="rounded-xl border border-slate-700 bg-slate-900/70 p-4">
+                                    <div class="metric-label mb-2">Status</div>
+                                    <div id="jobSubmissionStatus" class="text-sm font-semibold text-slate-200">--</div>
+                                </div>
+                                <div class="rounded-xl border border-slate-700 bg-slate-900/70 p-4">
+                                    <div class="metric-label mb-2">Estimated Start</div>
+                                    <div id="jobSubmissionEstimate" class="text-sm font-semibold text-slate-200">--</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="agentToolsTabPanel" data-tab-panel="agents-tools" class="hidden">
+            <div class="max-w-7xl mx-auto space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <div class="glass-card p-6">
+                        <div class="metric-label mb-2">Agent Directory</div>
+                        <div id="showcaseAgentTotal" class="metric-value">--</div>
+                        <div class="text-xs text-slate-400 mt-2">Configured agents currently indexed</div>
+                    </div>
+                    <div class="glass-card p-6">
+                        <div class="metric-label mb-2">Busy Agents</div>
+                        <div id="showcaseBusyAgents" class="metric-value">--</div>
+                        <div class="text-xs text-slate-400 mt-2">Live workload snapshot</div>
+                    </div>
+                    <div class="glass-card p-6">
+                        <div class="metric-label mb-2">Models</div>
+                        <div id="showcaseModelTotal" class="metric-value">--</div>
+                        <div class="text-xs text-slate-400 mt-2">Distinct runtime configurations</div>
+                    </div>
+                    <div class="glass-card p-6">
+                        <div class="metric-label mb-2">Tools Indexed</div>
+                        <div id="showcaseToolTotal" class="metric-value">--</div>
+                        <div class="text-xs text-slate-400 mt-2">Pipeline, observed, and MCP tools</div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6">
+                    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+                        <div>
+                            <div class="metric-label mb-2">Phase 2</div>
+                            <h2 class="text-2xl font-bold">Agent Showcase</h2>
+                            <p class="text-sm text-slate-400 mt-2">
+                                Live agent directory powered by <code>/api/agents/status</code>, with provider, model,
+                                role, and status surfaced as a quick operator view.
+                            </p>
+                        </div>
+                        <div class="text-xs text-slate-400">
+                            Status colors reflect each agent’s current runtime state.
+                        </div>
+                    </div>
+
+                    <div id="agentShowcaseGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <div class="loading-skeleton h-44 rounded-2xl"></div>
+                        <div class="loading-skeleton h-44 rounded-2xl"></div>
+                        <div class="loading-skeleton h-44 rounded-2xl"></div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6">
+                    <div class="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-4 mb-6">
+                        <div>
+                            <div class="metric-label mb-2">Catalog</div>
+                            <h2 class="text-2xl font-bold">Tool Browser</h2>
+                            <p class="text-sm text-slate-400 mt-2">
+                                Search the pipeline tool catalog, observed KG usage, and bundled MCP server tools in one place.
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full xl:w-auto">
+                            <input
+                                type="search"
+                                id="toolSearchInput"
+                                class="form-control"
+                                placeholder="Search tools, tags, phases..."
+                            >
+                            <select id="toolSourceFilter" class="form-control">
+                                <option value="all">All Sources</option>
+                                <option value="pipeline">Pipeline</option>
+                                <option value="knowledge">Observed</option>
+                                <option value="mcp">MCP</option>
+                            </select>
+                            <select id="toolPhaseFilter" class="form-control">
+                                <option value="all">All Phases</option>
+                                <option value="research">Research</option>
+                                <option value="plan">Plan</option>
+                                <option value="execute">Execute</option>
+                                <option value="code_review">Code Review</option>
+                                <option value="verify">Verify</option>
+                                <option value="deliver">Deliver</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 xl:grid-cols-[minmax(320px,0.85fr)_minmax(0,1.15fr)] gap-6">
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-slate-400 mb-3">
+                                <span id="toolBrowserCount">Loading tools...</span>
+                                <span id="toolBrowserUpdated">Waiting for catalog</span>
+                            </div>
+                            <div id="toolBrowserList" class="tool-browser-list space-y-3">
+                                <div class="loading-skeleton h-24 rounded-2xl"></div>
+                                <div class="loading-skeleton h-24 rounded-2xl"></div>
+                            </div>
+                        </div>
+
+                        <div class="rounded-2xl border border-slate-700 bg-slate-950/55 p-6">
+                            <div class="metric-label mb-2">Selected Tool</div>
+                            <h3 id="toolDetailName" class="text-2xl font-bold">Choose a tool</h3>
+                            <p id="toolDetailDescription" class="text-sm text-slate-400 mt-3 leading-6">
+                                Pick a tool from the catalog to inspect its source, phases, usage, and related tags.
+                            </p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                                <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
+                                    <div class="metric-label mb-2">Source</div>
+                                    <div id="toolDetailSource" class="text-sm font-semibold text-slate-200">--</div>
+                                </div>
+                                <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
+                                    <div class="metric-label mb-2">Usage</div>
+                                    <div id="toolDetailUsage" class="text-sm font-semibold text-slate-200">--</div>
+                                </div>
+                                <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
+                                    <div class="metric-label mb-2">Success Rate</div>
+                                    <div id="toolDetailSuccess" class="text-sm font-semibold text-slate-200">--</div>
+                                </div>
+                                <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
+                                    <div class="metric-label mb-2">Last Seen</div>
+                                    <div id="toolDetailLastUsed" class="text-sm font-semibold text-slate-200">--</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <div class="metric-label mb-3">Phases &amp; Tags</div>
+                                <div id="toolDetailTags" class="flex flex-wrap gap-2">
+                                    <span class="agent-chip">Nothing selected yet</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Charts JS -->
+    <script>
+        let modelChart = null;
+        const chartColors = {
+            'claude-opus-4': '#6366f1',
+            'claude-sonnet': '#8b5cf6',
+            'kimi-2.5': '#ec4899',
+            'deepseek-v3': '#f59e0b',
+            'gemini-2.5': '#10b981',
+            'grok-3': '#06b6d4'
+        };
+        const CLIENT_KEY_STORAGE_KEY = 'openclaw.dashboard.clientKey';
+        const TOOL_PHASE_ORDER = ['research', 'plan', 'execute', 'code_review', 'verify', 'deliver'];
+        const AGENT_TOOL_REFRESH_INTERVAL = 60000;
+
+        // API URL detection
+        const getApiUrl = (endpoint) => {
+            const proto = window.location.protocol;
+            const host = window.location.hostname;
+            const port = window.location.port ? `:${window.location.port}` : '';
+            return `${proto}//${host}${port}${endpoint}`;
+        };
+
+        const tabButtons = Array.from(document.querySelectorAll('[data-tab-target]'));
+        const tabPanels = Array.from(document.querySelectorAll('[data-tab-panel]'));
+        const dashboardHeaderControls = document.getElementById('dashboardHeaderControls');
+        const clientKeyInput = document.getElementById('clientKeyInput');
+        const jobSubmissionForm = document.getElementById('jobSubmissionForm');
+        const submitJobBtn = document.getElementById('submitJobBtn');
+        const clearJobFormBtn = document.getElementById('clearJobFormBtn');
+        const jobSubmissionFeedback = document.getElementById('jobSubmissionFeedback');
+        const jobSubmissionResult = document.getElementById('jobSubmissionResult');
+        const jobSubmissionMessage = document.getElementById('jobSubmissionMessage');
+        const jobSubmissionJobId = document.getElementById('jobSubmissionJobId');
+        const jobSubmissionStatus = document.getElementById('jobSubmissionStatus');
+        const jobSubmissionEstimate = document.getElementById('jobSubmissionEstimate');
+        const viewDashboardBtn = document.getElementById('viewDashboardBtn');
+        const showcaseAgentTotal = document.getElementById('showcaseAgentTotal');
+        const showcaseBusyAgents = document.getElementById('showcaseBusyAgents');
+        const showcaseModelTotal = document.getElementById('showcaseModelTotal');
+        const showcaseToolTotal = document.getElementById('showcaseToolTotal');
+        const agentShowcaseGrid = document.getElementById('agentShowcaseGrid');
+        const toolSearchInput = document.getElementById('toolSearchInput');
+        const toolSourceFilter = document.getElementById('toolSourceFilter');
+        const toolPhaseFilter = document.getElementById('toolPhaseFilter');
+        const toolBrowserCount = document.getElementById('toolBrowserCount');
+        const toolBrowserUpdated = document.getElementById('toolBrowserUpdated');
+        const toolBrowserList = document.getElementById('toolBrowserList');
+        const toolDetailName = document.getElementById('toolDetailName');
+        const toolDetailDescription = document.getElementById('toolDetailDescription');
+        const toolDetailSource = document.getElementById('toolDetailSource');
+        const toolDetailUsage = document.getElementById('toolDetailUsage');
+        const toolDetailSuccess = document.getElementById('toolDetailSuccess');
+        const toolDetailLastUsed = document.getElementById('toolDetailLastUsed');
+        const toolDetailTags = document.getElementById('toolDetailTags');
+        const agentToolDirectoryState = {
+            agents: [],
+            tools: [],
+            selectedToolId: '',
+            lastFetchedAt: 0,
+        };
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+            }[char]));
+        }
+
+        function formatLabel(value) {
+            return String(value || 'unknown')
+                .replace(/[_-]+/g, ' ')
+                .replace(/\b\w/g, (char) => char.toUpperCase());
+        }
+
+        function formatRelativeTimestamp(value) {
+            if (!value) {
+                return 'No recent usage';
+            }
+
+            const parsed = new Date(value);
+            if (Number.isNaN(parsed.getTime())) {
+                return value;
+            }
+
+            const elapsedMinutes = Math.round((Date.now() - parsed.getTime()) / 60000);
+            if (elapsedMinutes <= 0) {
+                return 'Just now';
+            }
+
+            if (elapsedMinutes < 60) {
+                return `${elapsedMinutes}m ago`;
+            }
+
+            const elapsedHours = Math.round(elapsedMinutes / 60);
+            if (elapsedHours < 24) {
+                return `${elapsedHours}h ago`;
+            }
+
+            const elapsedDays = Math.round(elapsedHours / 24);
+            return `${elapsedDays}d ago`;
+        }
+
+        function statusTone(status) {
+            if (status === 'busy') {
+                return 'bg-amber-500/10 text-amber-300 border border-amber-500/20';
+            }
+
+            if (status === 'active') {
+                return 'bg-indigo-500/10 text-indigo-300 border border-indigo-500/20';
+            }
+
+            return 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20';
+        }
+
+        function sourceMatches(tool, source) {
+            return source === 'all' || tool.sources.includes(source);
+        }
+
+        function resolveToolSourceLabel(tool) {
+            if (tool.sources.includes('pipeline') && tool.sources.includes('knowledge')) {
+                return 'Pipeline + Observed';
+            }
+
+            if (tool.sources.includes('pipeline')) {
+                return 'Pipeline';
+            }
+
+            if (tool.sources.includes('knowledge')) {
+                return 'Observed';
+            }
+
+            if (tool.sources.includes('mcp')) {
+                return 'MCP';
+            }
+
+            return 'Catalog';
+        }
+
+        function normalizeAgents(payload) {
+            const rawAgents = Array.isArray(payload)
+                ? payload.map((agent) => [agent.id || agent.name, agent])
+                : Object.entries(payload || {});
+
+            return rawAgents.map(([agentKey, agent]) => ({
+                id: agent.id || agentKey,
+                name: agent.name || formatLabel(agentKey),
+                emoji: agent.emoji || '',
+                provider: agent.provider || 'unknown',
+                model: agent.model || 'unknown',
+                role: agent.role || agent.type || 'agent',
+                skills: Array.isArray(agent.skills) ? agent.skills : [],
+                signature: agent.signature || '',
+                costSavings: agent.costSavings || '',
+                status: agent.status || 'idle',
+            })).sort((left, right) => {
+                const statusWeight = { busy: 0, active: 1, idle: 2 };
+                return (statusWeight[left.status] ?? 3) - (statusWeight[right.status] ?? 3)
+                    || left.name.localeCompare(right.name);
+            });
+        }
+
+        function buildToolDirectory(phases, kgTools, mcpServers) {
+            const toolsByName = new Map();
+
+            const upsertTool = (name, updates) => {
+                const key = String(name || '').trim();
+                if (!key) {
+                    return;
+                }
+
+                if (!toolsByName.has(key)) {
+                    toolsByName.set(key, {
+                        id: key.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                        name: key,
+                        description: '',
+                        sources: [],
+                        phases: [],
+                        tags: [],
+                        server: '',
+                        usageCount: 0,
+                        successRate: null,
+                        lastUsed: '',
+                    });
+                }
+
+                const tool = toolsByName.get(key);
+
+                if (updates.description && (!tool.description || tool.description.startsWith('Available in'))) {
+                    tool.description = updates.description;
+                }
+
+                if (updates.server && !tool.server) {
+                    tool.server = updates.server;
+                }
+
+                if (Array.isArray(updates.sources)) {
+                    updates.sources.forEach((source) => {
+                        if (source && !tool.sources.includes(source)) {
+                            tool.sources.push(source);
+                        }
+                    });
+                }
+
+                if (Array.isArray(updates.phases)) {
+                    updates.phases.forEach((phase) => {
+                        if (phase && !tool.phases.includes(phase)) {
+                            tool.phases.push(phase);
+                        }
+                    });
+                }
+
+                if (Array.isArray(updates.tags)) {
+                    updates.tags.forEach((tag) => {
+                        if (tag && !tool.tags.includes(tag)) {
+                            tool.tags.push(tag);
+                        }
+                    });
+                }
+
+                if (typeof updates.usageCount === 'number') {
+                    tool.usageCount = updates.usageCount;
+                }
+
+                if (typeof updates.successRate === 'number') {
+                    tool.successRate = updates.successRate;
+                }
+
+                if (updates.lastUsed) {
+                    tool.lastUsed = updates.lastUsed;
+                }
+            };
+
+            (phases || []).forEach((phase) => {
+                (phase.tools || []).forEach((toolName) => {
+                    upsertTool(toolName, {
+                        description: `Available in ${formatLabel(phase.name)}. ${phase.description || ''}`.trim(),
+                        phases: [phase.name],
+                        sources: ['pipeline'],
+                    });
+                });
+            });
+
+            (kgTools || []).forEach((tool) => {
+                upsertTool(tool.tool_name, {
+                    description: 'Observed in the knowledge graph from completed jobs.',
+                    sources: ['knowledge'],
+                    usageCount: Number(tool.total_uses) || 0,
+                    successRate: tool.success_rate === null || tool.success_rate === undefined
+                        ? null
+                        : Math.round(Number(tool.success_rate) * 100),
+                    lastUsed: tool.last_used || '',
+                });
+            });
+
+            (mcpServers || []).forEach((server) => {
+                const serverName = server.display_name || server.name || 'MCP Server';
+                const serverTags = Array.isArray(server.tags) ? server.tags.slice(0, 4) : [];
+                (server.tools || []).forEach((tool) => {
+                    upsertTool(tool.name, {
+                        description: tool.description || `Bundled by ${serverName}.`,
+                        sources: ['mcp'],
+                        server: serverName,
+                        tags: serverTags,
+                    });
+                });
+            });
+
+            return Array.from(toolsByName.values()).map((tool) => ({
+                ...tool,
+                phases: tool.phases.sort((left, right) => TOOL_PHASE_ORDER.indexOf(left) - TOOL_PHASE_ORDER.indexOf(right)),
+                searchableText: [
+                    tool.name,
+                    tool.description,
+                    tool.server,
+                    tool.tags.join(' '),
+                    tool.phases.join(' '),
+                ].join(' ').toLowerCase(),
+            })).sort((left, right) => right.usageCount - left.usageCount || left.name.localeCompare(right.name));
+        }
+
+        function renderAgentShowcase(agents) {
+            showcaseAgentTotal.textContent = String(agents.length);
+            showcaseBusyAgents.textContent = String(agents.filter((agent) => agent.status === 'busy').length);
+            showcaseModelTotal.textContent = String(new Set(agents.map((agent) => agent.model).filter(Boolean)).size);
+            showcaseToolTotal.textContent = String(agentToolDirectoryState.tools.length);
+
+            if (!agents.length) {
+                agentShowcaseGrid.innerHTML = '<div class="text-slate-400 col-span-full text-center py-10">Agent directory unavailable</div>';
+                return;
+            }
+
+            agentShowcaseGrid.innerHTML = agents.map((agent) => {
+                const skills = agent.skills.slice(0, 4);
+                const skillsHtml = skills.length
+                    ? skills.map((skill) => `<span class="agent-chip">${escapeHtml(skill)}</span>`).join('')
+                    : '<span class="agent-chip">No skills listed</span>';
+
+                return `
+                    <article class="agent-showcase-card">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-3">
+                                    <div class="text-2xl">${escapeHtml(agent.emoji || '◇')}</div>
+                                    <div class="min-w-0">
+                                        <h3 class="text-lg font-bold truncate">${escapeHtml(agent.name)}</h3>
+                                        <p class="text-xs text-slate-400 uppercase tracking-[0.22em] mt-1">${escapeHtml(formatLabel(agent.role))}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusTone(agent.status)}">
+                                ${escapeHtml(agent.status.toUpperCase())}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mt-6 text-sm">
+                            <div class="rounded-xl border border-slate-800 bg-slate-950/55 p-3">
+                                <div class="metric-label mb-2">Provider</div>
+                                <div class="text-slate-200 font-semibold">${escapeHtml(agent.provider)}</div>
+                            </div>
+                            <div class="rounded-xl border border-slate-800 bg-slate-950/55 p-3">
+                                <div class="metric-label mb-2">Model</div>
+                                <div class="text-slate-200 font-semibold break-words">${escapeHtml(agent.model)}</div>
+                            </div>
+                        </div>
+
+                        <p class="text-sm text-slate-300 mt-5 leading-6">
+                            ${escapeHtml(agent.signature || agent.costSavings || 'Ready for delegated work across the OpenClaw pipeline.')}
+                        </p>
+
+                        <div class="flex flex-wrap gap-2 mt-5">
+                            ${skillsHtml}
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function getFilteredTools() {
+            const searchQuery = toolSearchInput.value.trim().toLowerCase();
+            const sourceFilter = toolSourceFilter.value;
+            const phaseFilter = toolPhaseFilter.value;
+
+            return agentToolDirectoryState.tools.filter((tool) => {
+                const matchesSearch = !searchQuery || tool.searchableText.includes(searchQuery);
+                const matchesSource = sourceMatches(tool, sourceFilter);
+                const matchesPhase = phaseFilter === 'all' || tool.phases.includes(phaseFilter);
+                return matchesSearch && matchesSource && matchesPhase;
+            });
+        }
+
+        function renderSelectedTool(tool) {
+            if (!tool) {
+                toolDetailName.textContent = 'Choose a tool';
+                toolDetailDescription.textContent = 'Pick a tool from the catalog to inspect its source, phases, usage, and related tags.';
+                toolDetailSource.textContent = '--';
+                toolDetailUsage.textContent = '--';
+                toolDetailSuccess.textContent = '--';
+                toolDetailLastUsed.textContent = '--';
+                toolDetailTags.innerHTML = '<span class="agent-chip">Nothing selected yet</span>';
+                return;
+            }
+
+            const tagValues = [
+                ...tool.phases.map((phase) => formatLabel(phase)),
+                ...(tool.server ? [tool.server] : []),
+                ...tool.tags.map((tag) => formatLabel(tag)),
+            ];
+
+            toolDetailName.textContent = tool.name;
+            toolDetailDescription.textContent = tool.description || 'No description available for this tool.';
+            toolDetailSource.textContent = resolveToolSourceLabel(tool);
+            toolDetailUsage.textContent = tool.usageCount > 0 ? `${tool.usageCount} observed runs` : 'Not observed yet';
+            toolDetailSuccess.textContent = tool.successRate === null ? 'N/A' : `${tool.successRate}%`;
+            toolDetailLastUsed.textContent = formatRelativeTimestamp(tool.lastUsed);
+            toolDetailTags.innerHTML = tagValues.length
+                ? tagValues.map((value) => `<span class="agent-chip">${escapeHtml(value)}</span>`).join('')
+                : '<span class="agent-chip">No phases or tags</span>';
+        }
+
+        function renderToolBrowser() {
+            const filteredTools = getFilteredTools();
+            const selectedStillVisible = filteredTools.find((tool) => tool.id === agentToolDirectoryState.selectedToolId);
+            const selectedTool = selectedStillVisible || filteredTools[0] || null;
+            agentToolDirectoryState.selectedToolId = selectedTool ? selectedTool.id : '';
+
+            toolBrowserCount.textContent = `${filteredTools.length} tool${filteredTools.length === 1 ? '' : 's'} shown`;
+            toolBrowserList.innerHTML = filteredTools.length
+                ? filteredTools.map((tool) => {
+                    const isActive = tool.id === agentToolDirectoryState.selectedToolId;
+                    const usageLabel = tool.usageCount > 0 ? `${tool.usageCount} uses` : 'Catalog only';
+                    const chips = [
+                        resolveToolSourceLabel(tool),
+                        ...tool.phases.slice(0, 2).map((phase) => formatLabel(phase)),
+                    ];
+
+                    return `
+                        <div class="tool-browser-item ${isActive ? 'active' : ''}" data-tool-id="${escapeHtml(tool.id)}">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="min-w-0">
+                                    <div class="font-semibold text-slate-100 truncate">${escapeHtml(tool.name)}</div>
+                                    <div class="text-xs text-slate-400 mt-1">${escapeHtml(tool.server || tool.description || 'Tool catalog entry')}</div>
+                                </div>
+                                <div class="text-right text-xs text-slate-400 whitespace-nowrap">${escapeHtml(usageLabel)}</div>
+                            </div>
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                ${chips.map((chip) => `<span class="tool-badge">${escapeHtml(chip)}</span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('')
+                : '<div class="text-center py-10 text-slate-400">No tools match the current filters.</div>';
+
+            toolBrowserList.querySelectorAll('[data-tool-id]').forEach((node) => {
+                node.addEventListener('click', () => {
+                    agentToolDirectoryState.selectedToolId = node.dataset.toolId || '';
+                    renderToolBrowser();
+                });
+            });
+
+            renderSelectedTool(selectedTool);
+        }
+
+        async function fetchAgentToolDirectory(force = false) {
+            if (!force && agentToolDirectoryState.lastFetchedAt && (Date.now() - agentToolDirectoryState.lastFetchedAt) < AGENT_TOOL_REFRESH_INTERVAL) {
+                return;
+            }
+
+            const [agentsStatus, phasesData, kgToolsData, mcpServersData] = await Promise.all([
+                fetch(getApiUrl('/api/agents/status')).then((response) => response.json()).catch(() => ({ agents: {} })),
+                fetch(getApiUrl('/api/monitoring/phases')).then((response) => response.json()).catch(() => ({ phases: [] })),
+                fetch(getApiUrl('/api/analytics/kg/tools?limit=80')).then((response) => response.json()).catch(() => ({ tools: [] })),
+                fetch(getApiUrl('/api/mcp/servers')).then((response) => response.json()).catch(() => ({ servers: [] })),
+            ]);
+
+            agentToolDirectoryState.agents = normalizeAgents(agentsStatus.agents || {});
+            agentToolDirectoryState.tools = buildToolDirectory(
+                phasesData.phases || [],
+                kgToolsData.tools || [],
+                mcpServersData.servers || [],
+            );
+            agentToolDirectoryState.lastFetchedAt = Date.now();
+
+            const stamp = new Date(agentToolDirectoryState.lastFetchedAt).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+            });
+            toolBrowserUpdated.textContent = `Updated ${stamp}`;
+
+            renderAgentShowcase(agentToolDirectoryState.agents);
+            renderToolBrowser();
+        }
+
+        function setActiveTab(tabName) {
+            tabPanels.forEach((panel) => {
+                const isActive = panel.dataset.tabPanel === tabName;
+                panel.classList.toggle('hidden', !isActive);
+            });
+
+            tabButtons.forEach((button) => {
+                const isActive = button.dataset.tabTarget === tabName;
+                button.classList.toggle('active', isActive);
+                button.setAttribute('aria-selected', String(isActive));
+            });
+
+            if (dashboardHeaderControls) {
+                dashboardHeaderControls.classList.toggle('hidden', tabName !== 'dashboard');
+            }
+
+            if (tabName === 'agents-tools') {
+                fetchAgentToolDirectory().catch((error) => {
+                    console.error('Error fetching agent/tool directory:', error);
+                });
+            }
+
+            const url = new URL(window.location.href);
+            url.hash = tabName === 'dashboard' ? '' : tabName;
+            window.history.replaceState({}, '', url);
+        }
+
+        function formatApiError(detail) {
+            if (Array.isArray(detail)) {
+                return detail.map((item) => {
+                    if (typeof item === 'string') {
+                        return item;
+                    }
+
+                    if (item && typeof item === 'object') {
+                        const field = Array.isArray(item.loc) ? item.loc.slice(1).join('.') : '';
+                        return field ? `${field}: ${item.msg || 'Invalid value'}` : item.msg || 'Invalid value';
+                    }
+
+                    return 'Request failed';
+                }).join(' ');
+            }
+
+            if (detail && typeof detail === 'object') {
+                return detail.message || JSON.stringify(detail);
+            }
+
+            return detail || 'Request failed';
+        }
+
+        function showJobSubmissionFeedback(message, variant) {
+            jobSubmissionFeedback.textContent = message;
+            jobSubmissionFeedback.className = `form-feedback ${variant}`;
+        }
+
+        function hideJobSubmissionFeedback() {
+            jobSubmissionFeedback.textContent = '';
+            jobSubmissionFeedback.className = 'form-feedback hidden';
+        }
+
+        function showJobSubmissionResult(data) {
+            jobSubmissionMessage.textContent = data.message || 'Job queued successfully.';
+            jobSubmissionJobId.textContent = data.job_id || '--';
+            jobSubmissionStatus.textContent = (data.status || 'queued').toUpperCase();
+            jobSubmissionEstimate.textContent = data.estimated_start || '--';
+            jobSubmissionResult.classList.remove('hidden');
+        }
+
+        function hideJobSubmissionResult() {
+            jobSubmissionResult.classList.add('hidden');
+        }
+
+        // Fetch dashboard data
+        async function fetchDashboardData() {
+            try {
+                // Fetch health
+                const health = await fetch(getApiUrl('/api/health')).then(r => r.json()).catch(() => ({}));
+
+                // Fetch jobs from monitoring endpoint
+                const jobsData = await fetch(getApiUrl('/api/monitoring/active')).then(r => r.json()).catch(() => ({ jobs: [] }));
+                const jobs = jobsData.jobs || [];
+
+                // Fetch costs
+                const costsData = await fetch(getApiUrl('/api/monitoring/costs')).then(r => r.json()).catch(() => ({ metrics: {} }));
+
+                updateSystemStatus(health);
+                updateJobQueue(jobs);
+                updateCosts(costsData.metrics || costsData);
+                updateLastUpdate();
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            }
+        }
+
+        // Fetch analytics data
+        async function fetchAnalyticsData() {
+            try {
+                // Fetch agent analytics
+                const agentAnalytics = await fetch(getApiUrl('/api/analytics/agents'))
+                    .then(r => r.json())
+                    .catch(() => ({ agent_stats: {} }));
+
+                // Fetch cost analytics
+                const costAnalytics = await fetch(getApiUrl('/api/analytics/costs'))
+                    .then(r => r.json())
+                    .catch(() => ({ total_cost: 0, daily_costs: {}, by_agent: {} }));
+
+                // Fetch job analytics
+                const jobAnalytics = await fetch(getApiUrl('/api/analytics/jobs?limit=50'))
+                    .then(r => r.json())
+                    .catch(() => ({ jobs: [] }));
+
+                updateAgentAnalyticsCards(agentAnalytics.agent_stats || {});
+                updateCostAnalyticsChart(costAnalytics);
+                updateJobHistoryTable(jobAnalytics.jobs || []);
+            } catch (error) {
+                console.error('Error fetching analytics data:', error);
+            }
+        }
+
+        function updateSystemStatus(health) {
+            // API Latency
+            if (health.api_latency_ms !== undefined) {
+                document.getElementById('apiLatency').textContent = Math.round(health.api_latency_ms);
+            }
+
+            // Gateway Status
+            const gatewayStatus = document.getElementById('gatewayStatus');
+            if (health.status === 'healthy') {
+                gatewayStatus.className = 'status-badge healthy';
+                gatewayStatus.innerHTML = '<span>✓ Healthy</span>';
+            } else if (health.status === 'degraded') {
+                gatewayStatus.className = 'status-badge degraded';
+                gatewayStatus.innerHTML = '<span>⚠ Degraded</span>';
+            } else {
+                gatewayStatus.className = 'status-badge unhealthy';
+                gatewayStatus.innerHTML = '<span>✗ Unhealthy</span>';
+            }
+
+            // Uptime
+            if (health.uptime_hours !== undefined) {
+                document.getElementById('uptimeValue').textContent = Math.round(health.uptime_hours) + 'h';
+            }
+
+            // Memory
+            if (health.memory_usage_mb !== undefined) {
+                const memPercent = Math.min((health.memory_usage_mb / 16000) * 100, 100);
+                document.getElementById('memoryUsage').textContent = health.memory_usage_mb.toFixed(0) + ' MB';
+                document.getElementById('memoryBar').style.width = memPercent + '%';
+            }
+
+            // CPU
+            if (health.cpu_usage_percent !== undefined) {
+                document.getElementById('cpuValue').textContent = health.cpu_usage_percent.toFixed(1) + '%';
+            }
+
+            // Errors
+            if (health.errors_last_hour !== undefined) {
+                document.getElementById('errorCount').textContent = health.errors_last_hour;
+            }
+        }
+
+        function updateJobQueue(jobs) {
+            const container = document.getElementById('jobsContainer');
+
+            if (!jobs || jobs.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-slate-400">No active jobs</div>';
+                document.getElementById('activeJobsCount').textContent = '0';
+                return;
+            }
+
+            document.getElementById('activeJobsCount').textContent = jobs.filter(j => j.status === 'running').length;
+
+            const jobsHtml = jobs.slice(0, 10).map((job, idx) => {
+                const statusClass = `job-status ${job.status || 'pending'}`;
+                const elapsed = job.created_at ? Math.round((Date.now() - new Date(job.created_at).getTime()) / 1000) : 0;
+                const cost = job.cost_usd ? `$${job.cost_usd.toFixed(4)}` : '$--';
+
+                return `
+                    <div class="job-row fade-in">
+                        <div class="truncate text-sm">${job.task || job.id}</div>
+                        <span class="${statusClass}">${(job.status || 'pending').toUpperCase()}</span>
+                        <div class="text-sm text-slate-400">${elapsed}s</div>
+                        <div class="text-sm text-slate-400">${cost}</div>
+                        <div class="text-sm text-slate-500">${job.agent || '--'}</div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = jobsHtml;
+
+            // Update status counts
+            const statuses = {
+                done: jobs.filter(j => j.status === 'done').length,
+                running: jobs.filter(j => j.status === 'running').length,
+                pending: jobs.filter(j => j.status === 'pending').length,
+                failed: jobs.filter(j => j.status === 'failed').length
+            };
+
+            Object.entries(statuses).forEach(([status, count]) => {
+                const el = document.getElementById(`job${status.charAt(0).toUpperCase() + status.slice(1)}`);
+                if (el) el.textContent = count;
+            });
+
+            // Update agent performance
+            updateAgentPerformance(jobs);
+        }
+
+        function updateAgentPerformance(jobs) {
+            const agentStats = {};
+            jobs.forEach(job => {
+                const agent = job.agent || 'unknown';
+                if (!agentStats[agent]) {
+                    agentStats[agent] = { total: 0, success: 0, cost: 0 };
+                }
+                agentStats[agent].total++;
+                if (job.status === 'done') agentStats[agent].success++;
+                agentStats[agent].cost += job.cost_usd || 0;
+            });
+
+            const performanceHtml = Object.entries(agentStats)
+                .sort((a, b) => b[1].total - a[1].total)
+                .slice(0, 5)
+                .map(([agent, stats]) => {
+                    const successRate = stats.total > 0 ? Math.round((stats.success / stats.total) * 100) : 0;
+                    return `
+                        <div class="p-3 bg-slate-800 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold text-sm">${agent}</span>
+                                <span class="text-xs text-slate-400">${successRate}% success</span>
+                            </div>
+                            <div class="flex gap-2 text-xs text-slate-400">
+                                <span>Jobs: ${stats.total}</span>
+                                <span>Cost: $${stats.cost.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            document.getElementById('agentPerformance').innerHTML = performanceHtml || '<div class="text-slate-400">No agent data</div>';
+        }
+
+        function updateCosts(metrics) {
+            if (!metrics) return;
+
+            // Handle both old format (daily/weekly/monthly) and new format (total_cost + by_model)
+            const dailyCost = metrics.daily_cost_usd || (metrics.total_cost / 7) || 0;
+            const weeklyCost = metrics.weekly_cost_usd || metrics.total_cost || 0;
+            const monthlyCost = metrics.monthly_cost_usd || (metrics.total_cost * 4.3) || 0;
+
+            const costs = {
+                daily: dailyCost,
+                weekly: weeklyCost,
+                monthly: monthlyCost
+            };
+
+            const maxCost = Math.max(costs.daily, costs.weekly, costs.monthly) || 100;
+
+            const costBars = document.getElementById('costBreakdown').querySelectorAll('.cost-bar');
+            costBars[0].querySelector('.cost-bar-inner').style.width = (costs.daily / maxCost * 100) + '%';
+            costBars[0].querySelector('.cost-bar-value').textContent = '$' + costs.daily.toFixed(4);
+
+            costBars[1].querySelector('.cost-bar-inner').style.width = (costs.weekly / maxCost * 100) + '%';
+            costBars[1].querySelector('.cost-bar-value').textContent = '$' + costs.weekly.toFixed(4);
+
+            costBars[2].querySelector('.cost-bar-inner').style.width = (costs.monthly / maxCost * 100) + '%';
+            costBars[2].querySelector('.cost-bar-value').textContent = '$' + costs.monthly.toFixed(4);
+
+            document.getElementById('dailyCost').textContent = '$' + costs.daily.toFixed(4);
+
+            // Model distribution
+            if (metrics.by_model) {
+                updateModelChart(metrics.by_model);
+            }
+
+            // Tool heatmap (synthetic if not available)
+            if (metrics.tool_usage) {
+                updateToolHeatmap(metrics.tool_usage);
+            } else if (metrics.by_agent) {
+                // Generate a simple heatmap from agent usage
+                const toolUsage = {};
+                Object.entries(metrics.by_agent || {}).forEach(([agent, cost], idx) => {
+                    toolUsage[`hour_${idx % 24}`] = Math.round(cost * 100);
+                });
+                updateToolHeatmap(toolUsage);
+            }
+        }
+
+        function updateModelChart(data) {
+            const ctx = document.getElementById('modelChart');
+            if (!ctx) return;
+
+            const labels = Object.keys(data);
+            const values = Object.values(data);
+            const colors = labels.map(label => chartColors[label] || '#6366f1');
+
+            if (modelChart) {
+                modelChart.data.labels = labels;
+                modelChart.data.datasets[0].data = values;
+                modelChart.data.datasets[0].backgroundColor = colors;
+                modelChart.update();
+            } else {
+                modelChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: colors,
+                            borderColor: '#1e293b',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#e2e8f0', padding: 12, font: { size: 12 } }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateToolHeatmap(toolUsage) {
+            const container = document.getElementById('toolHeatmap');
+            const hours = Array.from({ length: 24 }, (_, i) => i);
+
+            const heatmapHtml = hours.map(hour => {
+                const usage = toolUsage[`hour_${hour}`] || 0;
+                const intensity = Math.min(usage / 100, 1);
+                const color = `rgba(99, 102, 241, ${0.2 + intensity * 0.8})`;
+                return `
+                    <div class="heatmap-cell" style="background-color: ${color}; border: 1px solid rgba(99, 102, 241, 0.3);" title="${hour}:00 - ${usage} uses">
+                        ${hour}
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = heatmapHtml;
+        }
+
+        function updateLastUpdate() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('lastUpdate').textContent = time;
+        }
+
+        // Update agent analytics cards
+        function updateAgentAnalyticsCards(agentStats) {
+            const container = document.getElementById('analyticsAgentCards');
+            if (!agentStats || Object.keys(agentStats).length === 0) {
+                container.innerHTML = '<div class="text-slate-400 col-span-full text-center py-8">No agent data available</div>';
+                return;
+            }
+
+            const cardsHtml = Object.entries(agentStats)
+                .sort((a, b) => (b[1].jobs_completed || 0) - (a[1].jobs_completed || 0))
+                .slice(0, 6)
+                .map(([agent, stats]) => {
+                    const successRate = stats.success_rate || 0;
+                    const costBg = successRate >= 80 ? 'bg-green-900/20' : successRate >= 50 ? 'bg-yellow-900/20' : 'bg-red-900/20';
+                    const costColor = successRate >= 80 ? 'text-green-400' : successRate >= 50 ? 'text-yellow-400' : 'text-red-400';
+
+                    return `
+                        <div class="p-4 rounded-lg border border-slate-600 ${costBg}">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="font-semibold text-sm truncate">${agent}</div>
+                                <div class="${costColor} text-xs font-bold">${Math.round(successRate)}%</div>
+                            </div>
+                            <div class="space-y-2 text-xs text-slate-300">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Jobs:</span>
+                                    <span class="font-semibold">${stats.jobs_completed || 0}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Avg Cost:</span>
+                                    <span class="font-semibold">$${(stats.avg_cost_usd || 0).toFixed(4)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Total Cost:</span>
+                                    <span class="font-semibold">${(stats.total_cost_usd || 0).toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            container.innerHTML = cardsHtml || '<div class="text-slate-400 col-span-full text-center py-8">No agent data</div>';
+        }
+
+        // Update cost analytics chart
+        let costAnalyticsChartInstance = null;
+        function updateCostAnalyticsChart(costAnalytics) {
+            const ctx = document.getElementById('costAnalyticsChart');
+            if (!ctx) return;
+
+            const dailyCosts = costAnalytics.daily_costs || {};
+            const lastDays = Object.entries(dailyCosts)
+                .sort((a, b) => new Date(a[0]) - new Date(b[0]))
+                .slice(-30);
+
+            const labels = lastDays.map(([date]) => {
+                const d = new Date(date);
+                return `${d.getMonth()+1}/${d.getDate()}`;
+            });
+            const data = lastDays.map(([_, cost]) => cost);
+
+            if (costAnalyticsChartInstance) {
+                costAnalyticsChartInstance.data.labels = labels;
+                costAnalyticsChartInstance.data.datasets[0].data = data;
+                costAnalyticsChartInstance.update();
+            } else {
+                costAnalyticsChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Daily Cost ($)',
+                            data: data,
+                            backgroundColor: 'rgba(99, 102, 241, 0.6)',
+                            borderColor: '#6366f1',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: '#e2e8f0', padding: 12, font: { size: 12 } }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                            },
+                            x: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Update job history table
+        function updateJobHistoryTable(jobs) {
+            const container = document.getElementById('jobHistoryRows');
+            if (!jobs || jobs.length === 0) {
+                container.innerHTML = '<tr class="text-slate-400"><td class="py-4 px-4" colspan="6">No jobs found</td></tr>';
+                return;
+            }
+
+            const rowsHtml = jobs.slice(0, 30).map(job => {
+                const statusClass = {
+                    'done': 'text-green-400',
+                    'failed': 'text-red-400',
+                    'running': 'text-blue-400',
+                    'pending': 'text-yellow-400'
+                }[job.status || 'pending'] || 'text-slate-400';
+
+                const timestamp = new Date(job.timestamp || Date.now());
+                const timeStr = timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const dateStr = timestamp.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+                return `
+                    <tr class="hover:bg-slate-800/50 transition-colors">
+                        <td class="py-3 px-4 text-slate-300 font-mono text-xs truncate" title="${job.id || '--'}">${(job.id || '--').substring(0, 12)}</td>
+                        <td class="py-3 px-4 text-slate-300">${job.agent || '--'}</td>
+                        <td class="py-3 px-4">
+                            <span class="inline-block px-2 py-1 rounded text-xs font-semibold ${statusClass} bg-slate-800">
+                                ${(job.status || 'pending').toUpperCase()}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-right text-slate-300">${job.duration_seconds ? job.duration_seconds.toFixed(1) : '--'}</td>
+                        <td class="py-3 px-4 text-right text-slate-300 font-semibold">$${(job.cost_usd || 0).toFixed(4)}</td>
+                        <td class="py-3 px-4 text-slate-400 text-xs">${dateStr} ${timeStr}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            container.innerHTML = rowsHtml;
+        }
+
+        // Filter job history
+        document.getElementById('jobHistoryFilter').addEventListener('change', async (e) => {
+            const status = e.target.value;
+            try {
+                const url = status ? `/api/analytics/jobs?status=${status}&limit=50` : '/api/analytics/jobs?limit=50';
+                const data = await fetch(getApiUrl(url)).then(r => r.json()).catch(() => ({ jobs: [] }));
+                updateJobHistoryTable(data.jobs || []);
+            } catch (error) {
+                console.error('Error filtering jobs:', error);
+            }
+        });
+
+        // Refresh job history
+        document.getElementById('jobHistoryRefresh').addEventListener('click', fetchAnalyticsData);
+
+        // Refresh button
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            fetchDashboardData();
+            fetchAnalyticsData();
+            fetchAgentToolDirectory(true).catch((error) => {
+                console.error('Error refreshing agent/tool directory:', error);
+            });
+        });
+
+        tabButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                setActiveTab(button.dataset.tabTarget);
+            });
+        });
+
+        clientKeyInput.value = window.sessionStorage.getItem(CLIENT_KEY_STORAGE_KEY) || '';
+        clientKeyInput.addEventListener('input', () => {
+            const value = clientKeyInput.value.trim();
+            if (value) {
+                window.sessionStorage.setItem(CLIENT_KEY_STORAGE_KEY, value);
+            } else {
+                window.sessionStorage.removeItem(CLIENT_KEY_STORAGE_KEY);
+            }
+        });
+
+        clearJobFormBtn.addEventListener('click', () => {
+            jobSubmissionForm.reset();
+            hideJobSubmissionFeedback();
+            hideJobSubmissionResult();
+        });
+
+        viewDashboardBtn.addEventListener('click', () => {
+            setActiveTab('dashboard');
+            fetchDashboardData();
+            fetchAnalyticsData();
+        });
+
+        [toolSearchInput, toolSourceFilter, toolPhaseFilter].forEach((node) => {
+            node.addEventListener('input', renderToolBrowser);
+            node.addEventListener('change', renderToolBrowser);
+        });
+
+        jobSubmissionForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            hideJobSubmissionFeedback();
+            hideJobSubmissionResult();
+
+            const clientKey = clientKeyInput.value.trim();
+            if (!clientKey) {
+                showJobSubmissionFeedback('Client API key is required to call /api/intake.', 'error');
+                clientKeyInput.focus();
+                return;
+            }
+
+            const formData = new FormData(jobSubmissionForm);
+            const body = {
+                project_name: String(formData.get('project_name') || '').trim(),
+                description: String(formData.get('description') || '').trim(),
+                task_type: String(formData.get('task_type') || ''),
+                priority: String(formData.get('priority') || 'P2'),
+            };
+
+            const budgetLimit = String(formData.get('budget_limit') || '').trim();
+            if (budgetLimit) {
+                const parsedBudget = Number.parseFloat(budgetLimit);
+                if (!Number.isNaN(parsedBudget)) {
+                    body.budget_limit = parsedBudget;
+                }
+            }
+
+            const contactEmail = String(formData.get('contact_email') || '').trim();
+            if (contactEmail) {
+                body.contact_email = contactEmail;
+            }
+
+            submitJobBtn.disabled = true;
+            submitJobBtn.innerHTML = '<span class="spinner"></span> Submitting...';
+
+            try {
+                const response = await fetch(getApiUrl('/api/intake'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Client-Key': clientKey,
+                    },
+                    body: JSON.stringify(body),
+                });
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    throw new Error(formatApiError(data.detail || data.message));
+                }
+
+                showJobSubmissionFeedback(data.message || 'Job queued successfully.', 'success');
+                showJobSubmissionResult(data);
+                jobSubmissionForm.reset();
+                fetchDashboardData();
+                fetchAnalyticsData();
+                fetchAgentToolDirectory(true).catch((error) => {
+                    console.error('Error refreshing agent/tool directory:', error);
+                });
+            } catch (error) {
+                hideJobSubmissionResult();
+                showJobSubmissionFeedback(error.message || 'Submission failed.', 'error');
+            } finally {
+                submitJobBtn.disabled = false;
+                submitJobBtn.textContent = 'Submit Job';
+            }
+        });
+
+        const initialTab = window.location.hash === '#submit'
+            ? 'submit'
+            : window.location.hash === '#agents-tools'
+                ? 'agents-tools'
+                : 'dashboard';
+        setActiveTab(initialTab);
+
+        // Auto-refresh every 30 seconds
+        fetchDashboardData();
+        fetchAnalyticsData();
+        setInterval(fetchDashboardData, 30000);
+        setInterval(() => {
+            const agentToolsPanel = document.getElementById('agentToolsTabPanel');
+            if (agentToolsPanel && !agentToolsPanel.classList.contains('hidden')) {
+                fetchAgentToolDirectory(true).catch((error) => {
+                    console.error('Error auto-refreshing agent/tool directory:', error);
+                });
+            }
+        }, AGENT_TOOL_REFRESH_INTERVAL);
+
+        // Update time display every second
+        setInterval(updateLastUpdate, 1000);
+    </script>
+</body>
+</html>

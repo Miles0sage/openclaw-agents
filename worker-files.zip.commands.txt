@@ -1,0 +1,37 @@
+# === STEP 1: Install Node.js (if not installed) ===
+# Download from: https://nodejs.org
+# Then restart your terminal
+
+# === STEP 2: Install Wrangler ===
+npm install -g wrangler
+
+# === STEP 3: Create and go to project folder ===
+mkdir C:\openclaw-worker
+cd C:\openclaw-worker
+
+# === STEP 4: Create cloudflare-worker.js ===
+# Copy the content from: http://<your-vps-ip>:18789 (we'll make it available)
+# Or I can paste it here - let me know
+
+# === STEP 5: Create wrangler.toml ===
+# Paste this content into wrangler.toml:
+
+name = "oversserclaw-worker"
+main = "cloudflare-worker.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+WORKER_VERSION = "1.0.0"
+
+# === STEP 6: Login to Cloudflare ===
+wrangler login
+
+# === STEP 7: Set secrets ===
+echo 7fca3b8d2e914a5c9d8f6b0a1c3e5d7f2a4b6c8d0e1f2a3b4c5d6e7f8a9b0c1d | wrangler secret put OPENCLAW_TOKEN
+echo http://<your-vps-ip>:18789 | wrangler secret put OPENCLAW_GATEWAY
+
+# === STEP 8: Deploy ===
+wrangler deploy
+
+# === DONE! ===
+# Your worker will be live at: https://oversserclaw-worker.amit-shah-5201.workers.dev

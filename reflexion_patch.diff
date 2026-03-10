@@ -1,0 +1,23 @@
+--- a/autonomous_runner.py
++++ b/autonomous_runner.py
+@@ -2264,6 +2264,20 @@
+                     })
+                     break
+                 else: # This is the retry_with_diagnosis path
++                    # --- REFLEXION MEMORY INJECTION START ---
++                    # Search for similar past failures
++                    past_reflections = search_reflections(
++                        query=error_message, # Use the current error message as query
++                        agent_key=step_agent,
++                        limit=3 # Limit to top 3 relevant reflections
++                    )
++                    reflexion_context = ""
++                    if past_reflections:
++                        reflexion_context = format_reflections_for_prompt(past_reflections)
++                        logger.info(f"Step {step.index}: Injected {len(past_reflections)} past reflections into retry prompt.")
++
++                    # Prepend reflexion context to the prompt
++                    if reflexion_context:
++                        prompt = f"{reflexion_context}\n\n{prompt}"
++                    # --- REFLEXION MEMORY INJECTION END ---
+                     logger.info(f"Step {step.index}: Retrying with diagnosis (attempt {attempt+1}/{max_retries})...")

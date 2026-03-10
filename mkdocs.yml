@@ -1,0 +1,98 @@
+site_name: OpenClaw
+site_url: https://docs<your-domain>
+site_description: Autonomous AI agent orchestration platform
+repo_url: https://github.com/cybershield-agency/openclaw
+repo_name: openclaw
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: red
+    accent: teal
+  font:
+    text: Space Grotesk
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+  logo: assets/pixel-lobster.svg
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/cybershield-agency/openclaw
+  generator: false
+
+extra_css:
+  - assets/custom.css
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Configuration: getting-started/configuration.md
+  - Architecture:
+    - Overview: architecture/overview.md
+    - Pipeline Phases: architecture/pipeline.md
+    - Agent Routing: architecture/agents.md
+    - Tool System: architecture/tools.md
+  - Features:
+    - Real-Time Streaming: features/streaming.md
+    - Observability & Tracing: features/tracing.md
+    - DAG Parallel Execution: features/dag-executor.md
+    - LLM-as-Judge Evaluation: features/llm-judge.md
+    - Knowledge Graph: features/knowledge-graph.md
+    - Reflexion & Self-Repair: features/reflexion.md
+  - API Reference:
+    - REST API: api/rest.md
+    - Analytics API: api/analytics.md
+    - Streaming API: api/streaming.md
+  - Benchmarks:
+    - Running Benchmarks: benchmarks/running.md
+    - Results: benchmarks/results.md
+    - Adding Problems: benchmarks/adding-problems.md
+  - Deployment:
+    - VPS Setup: deployment/vps.md
+    - Systemd Service: deployment/systemd.md
+    - Environment Variables: deployment/environment.md
+  - Comparison: comparison.md
+  - Contributing: contributing.md

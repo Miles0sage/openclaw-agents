@@ -1,0 +1,366 @@
+{
+  "metadata": {
+    "step": 2,
+    "name": "Classification, Deduplication, and Scoring",
+    "date": "2026-03-04",
+    "status": "COMPLETE",
+    "total_items": 10,
+    "duplicates_found": 0,
+    "buckets": 4,
+    "quality_gates": {
+      "all_items_classified": true,
+      "all_items_scored": true,
+      "duplicates_removed": true,
+      "priority_matrix_generated": true,
+      "department_ownership_assigned": true
+    }
+  },
+  "deduplication_report": {
+    "total_duplicates_found": 0,
+    "duplicate_sets": [],
+    "cross_category_relationships": [
+      {
+        "item_id": "claude_extended_tool_use",
+        "primary_bucket": "ai_coding_agents_automation",
+        "secondary_relevance": "openclaw_multi_agent_relevance",
+        "overlap_reason": "Tool use enhancements directly benefit agent coordination"
+      },
+      {
+        "item_id": "mcp_server_registry_expansion",
+        "primary_bucket": "mcp_ecosystem_changes",
+        "secondary_relevance": "openclaw_multi_agent_relevance",
+        "overlap_reason": "MCP servers specifically designed for agent coordination patterns"
+      },
+      {
+        "item_id": "agent_handoff_protocols",
+        "primary_bucket": "openclaw_multi_agent_relevance",
+        "secondary_relevance": "all_buckets",
+        "overlap_reason": "Foundational to entire system - impacts all agent interactions"
+      }
+    ],
+    "note": "No true duplicates found. All items represent distinct research findings. Cross-category relationships documented for integration planning."
+  },
+  "scoring_methodology": {
+    "technical_impact": {
+      "scale": "1-10",
+      "1": "Minimal impact - nice to have, no architectural implications",
+      "5": "Medium impact - affects specific components, optimization opportunity",
+      "10": "Transformative - fundamental capability shift or critical dependency"
+    },
+    "integration_urgency": {
+      "scale": "1-10",
+      "1": "Future consideration - no immediate business need",
+      "5": "Medium urgency - should address within 1-2 months",
+      "10": "Immediate action required - blocking or critical path item"
+    },
+    "combined_score": "Technical Impact + Integration Urgency (max: 20)"
+  },
+  "priority_assignments": {
+    "critical_urgent": {
+      "threshold": "Combined score >= 17 AND urgency >= 8",
+      "items": [
+        {
+          "id": "mcp_1_0_stable",
+          "title": "MCP 1.0 Stable Release",
+          "combined_score": 18,
+          "owner_department": "CodeGen Elite",
+          "timeline_days": "ongoing",
+          "action": "Immediate migration planning"
+        }
+      ]
+    },
+    "high_impact_urgent": {
+      "threshold": "Combined score >= 14 AND urgency >= 6",
+      "items": [
+        {
+          "id": "agent_handoff_protocols",
+          "title": "Agent Handoff Protocols Research",
+          "combined_score": 17,
+          "owner_department": "Overseer",
+          "timeline_days": 14,
+          "action": "Research and implement within 2 weeks"
+        },
+        {
+          "id": "claude_extended_tool_use",
+          "title": "Claude Extended Tool Use",
+          "combined_score": 15,
+          "owner_department": "CodeGen Pro",
+          "timeline_days": 7,
+          "action": "Update agent framework within 1 week"
+        },
+        {
+          "id": "mcp_server_registry_expansion",
+          "title": "MCP Server Registry Expansion",
+          "combined_score": 15,
+          "owner_department": "CodeGen Pro",
+          "timeline_days": 14,
+          "action": "Evaluate and integrate new servers within 2 weeks"
+        }
+      ]
+    },
+    "high_impact_medium_urgency": {
+      "threshold": "Combined score >= 12 AND urgency >= 4",
+      "items": [
+        {
+          "id": "distributed_agent_memory",
+          "title": "Distributed Agent Memory Systems",
+          "combined_score": 14,
+          "owner_department": "CodeGen Elite",
+          "timeline_days": 30,
+          "action": "Design phase within 1 month"
+        },
+        {
+          "id": "agentic_benchmark_suite",
+          "title": "Agentic Framework Benchmark Suite",
+          "combined_score": 13,
+          "owner_department": "CodeGen Pro",
+          "timeline_days": 21,
+          "action": "Integrate benchmarking within 3 weeks"
+        },
+        {
+          "id": "openai_o1_reasoning",
+          "title": "OpenAI o1 Enhanced Reasoning",
+          "combined_score": 12,
+          "owner_department": "CodeGen Elite",
+          "timeline_days": 30,
+          "action": "Evaluation testing within 1 month"
+        }
+      ]
+    },
+    "medium_priority": {
+      "threshold": "Combined score >= 10",
+      "items": [
+        {
+          "id": "deepseek_coding_models",
+          "title": "DeepSeek Coding Model Updates",
+          "combined_score": 11,
+          "owner_department": "CodeGen Pro",
+          "timeline_days": 60,
+          "action": "Cost optimization evaluation within 2 months"
+        },
+        {
+          "id": "gemini_3_context_window",
+          "title": "Gemini 3 Advanced Context Window",
+          "combined_score": 10,
+          "owner_department": "CodeGen Pro",
+          "timeline_days": 42,
+          "action": "Long-form task testing within 6 weeks"
+        },
+        {
+          "id": "langchain_agent_improvements",
+          "title": "Langchain 0.2 Agent Improvements",
+          "combined_score": 10,
+          "owner_department": "CodeGen Elite",
+          "timeline_days": 60,
+          "action": "Architecture review within 2 months"
+        }
+      ]
+    }
+  },
+  "department_allocation": {
+    "overseer": {
+      "items": [
+        {
+          "id": "agent_handoff_protocols",
+          "title": "Agent Handoff Protocols Research",
+          "priority": "P0-HIGH",
+          "timeline_days": 14
+        }
+      ],
+      "total_capacity_needed_days": 14,
+      "parallel_capacity": 1
+    },
+    "codegen_pro": {
+      "items": [
+        {
+          "id": "claude_extended_tool_use",
+          "title": "Claude Extended Tool Use",
+          "priority": "P0-HIGH",
+          "timeline_days": 7
+        },
+        {
+          "id": "mcp_server_registry_expansion",
+          "title": "MCP Server Registry Expansion",
+          "priority": "P0-HIGH",
+          "timeline_days": 14
+        },
+        {
+          "id": "agentic_benchmark_suite",
+          "title": "Agentic Framework Benchmark Suite",
+          "priority": "P1",
+          "timeline_days": 21
+        },
+        {
+          "id": "deepseek_coding_models",
+          "title": "DeepSeek Coding Model Updates",
+          "priority": "P2",
+          "timeline_days": 60
+        },
+        {
+          "id": "gemini_3_context_window",
+          "title": "Gemini 3 Advanced Context Window",
+          "priority": "P2",
+          "timeline_days": 42
+        }
+      ],
+      "total_capacity_needed_days": 144,
+      "parallel_capacity": 3,
+      "recommended_allocation": "7 days (P0-Claude) + 14 days (P0-MCP) in parallel = 14 days total for P0 items"
+    },
+    "codegen_elite": {
+      "items": [
+        {
+          "id": "mcp_1_0_stable",
+          "title": "MCP 1.0 Stable Release",
+          "priority": "P0-CRITICAL",
+          "timeline_days": "ongoing"
+        },
+        {
+          "id": "distributed_agent_memory",
+          "title": "Distributed Agent Memory Systems",
+          "priority": "P1",
+          "timeline_days": 30
+        },
+        {
+          "id": "openai_o1_reasoning",
+          "title": "OpenAI o1 Enhanced Reasoning",
+          "priority": "P1",
+          "timeline_days": 30
+        },
+        {
+          "id": "langchain_agent_improvements",
+          "title": "Langchain 0.2 Agent Improvements",
+          "priority": "P2",
+          "timeline_days": 60
+        }
+      ],
+      "total_capacity_needed_days": "120+",
+      "parallel_capacity": 2,
+      "recommended_allocation": "MCP 1.0 (ongoing) + Memory (30 days, starts week 1) = concurrent tracking"
+    }
+  },
+  "quick_wins": {
+    "definition": "High ROI items with minimal effort (< 3 weeks, significant business impact)",
+    "items": [
+      {
+        "rank": 1,
+        "id": "mcp_1_0_stable",
+        "title": "MCP 1.0 Migration Planning",
+        "effort_days": 1,
+        "impact": "CRITICAL",
+        "reason": "Blocks all other MCP work; must be done immediately"
+      },
+      {
+        "rank": 2,
+        "id": "claude_extended_tool_use",
+        "title": "Claude Extended Tool Use",
+        "effort_days": 7,
+        "impact": "HIGH",
+        "reason": "Immediate capability lift for all agents; straightforward API integration"
+      },
+      {
+        "rank": 3,
+        "id": "agent_handoff_protocols",
+        "title": "Agent Handoff Research & Design",
+        "effort_days": 14,
+        "impact": "HIGH",
+        "reason": "Foundational to system reliability; research already available"
+      }
+    ]
+  },
+  "implementation_checklist": {
+    "week_1": [
+      {
+        "day": 1,
+        "task": "MCP 1.0 breaking changes analysis",
+        "owner": "CodeGen Elite",
+        "status": "pending"
+      },
+      {
+        "day": 1,
+        "task": "Agent handoff protocols research review",
+        "owner": "Overseer",
+        "status": "pending"
+      },
+      {
+        "day": 2,
+        "task": "Claude extended tool use API exploration",
+        "owner": "CodeGen Pro",
+        "status": "pending"
+      },
+      {
+        "day": 3,
+        "task": "MCP 1.0 migration plan draft",
+        "owner": "CodeGen Elite",
+        "status": "pending"
+      },
+      {
+        "day": 5,
+        "task": "New MCP server evaluation framework",
+        "owner": "CodeGen Pro",
+        "status": "pending"
+      }
+    ],
+    "weeks_2_3": [
+      {
+        "task": "Claude tool use integration testing",
+        "owner": "CodeGen Pro",
+        "status": "pending"
+      },
+      {
+        "task": "Agent handoff state machine design",
+        "owner": "Overseer",
+        "status": "pending"
+      },
+      {
+        "task": "New MCP servers integration",
+        "owner": "CodeGen Pro",
+        "status": "pending"
+      },
+      {
+        "task": "Agentic benchmark suite integration start",
+        "owner": "CodeGen Pro",
+        "status": "pending"
+      }
+    ]
+  },
+  "risk_assessment": {
+    "critical_risks": [
+      {
+        "item_id": "mcp_1_0_stable",
+        "risk": "Breaking changes could impact multiple agent systems",
+        "mitigation": "Staged rollout with comprehensive testing and rollback plan"
+      }
+    ],
+    "high_risks": [
+      {
+        "item_id": "distributed_agent_memory",
+        "risk": "New distributed system adds complexity and potential failure points",
+        "mitigation": "Start with prototype, rigorous testing, monitoring from day 1"
+      },
+      {
+        "item_id": "agent_handoff_protocols",
+        "risk": "Changing core agent coordination could affect system stability",
+        "mitigation": "Research-driven design, test on shadow traffic first"
+      }
+    ]
+  },
+  "success_metrics": {
+    "step_2_completion": {
+      "all_items_classified": "✅",
+      "all_items_scored": "✅",
+      "duplicates_identified": "✅ (0 found)",
+      "priority_matrix_created": "✅",
+      "department_assignments": "✅",
+      "integration_recommendations": "✅",
+      "ready_for_step_3": true
+    },
+    "implementation_tracking": {
+      "track_mcp_1_0_migration_progress": "weekly",
+      "track_handoff_protocol_implementation": "weekly",
+      "track_claude_tool_use_integration": "2x weekly",
+      "track_mcp_server_adoption": "2x weekly",
+      "track_cost_reductions": "monthly"
+    }
+  }
+}

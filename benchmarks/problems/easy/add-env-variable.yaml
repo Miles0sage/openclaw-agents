@@ -1,0 +1,27 @@
+id: add-env-variable
+category: feature
+difficulty: easy
+description: |
+  Add DATABASE_URL to .env.example and config loader.
+agent_key: coder_agent
+max_cost_usd: 0.05
+max_duration_sec: 60
+tags: [config, env]
+
+setup:
+  files:
+    - path: .env.example
+      content: |
+        APP_NAME=myapp
+        PORT=3000
+    - path: src/config.py
+      content: |
+        import os
+        APP_NAME = os.getenv("APP_NAME", "myapp")
+
+expected:
+  files:
+    - path: .env.example
+      contains: ["DATABASE_URL", "postgresql://"]
+    - path: src/config.py
+      contains: ["DATABASE_URL", "os.getenv"]

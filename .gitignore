@@ -1,0 +1,150 @@
+node_modules
+**/node_modules/
+.env
+docker-compose.extra.yml
+dist
+*.bun-build
+pnpm-lock.yaml
+bun.lock
+bun.lockb
+coverage
+.pnpm-store
+.worktrees/
+.DS_Store
+**/.DS_Store
+ui/src/ui/__screenshots__/
+ui/playwright-report/
+ui/test-results/
+
+# Bun build artifacts
+*.bun-build
+apps/macos/.build/
+apps/shared/MoltbotKit/.build/
+**/ModuleCache/
+bin/
+bin/clawdbot-mac
+bin/docs-list
+apps/macos/.build-local/
+apps/macos/.swiftpm/
+apps/shared/MoltbotKit/.swiftpm/
+Core/
+apps/ios/*.xcodeproj/
+apps/ios/*.xcworkspace/
+apps/ios/.swiftpm/
+vendor/
+apps/ios/Clawdbot.xcodeproj/
+apps/ios/Clawdbot.xcodeproj/**
+apps/macos/.build/**
+**/*.bun-build
+apps/ios/*.xcfilelist
+
+# Vendor build artifacts
+vendor/a2ui/renderers/lit/dist/
+src/canvas-host/a2ui/*.bundle.js
+src/canvas-host/a2ui/*.map
+.bundle.hash
+
+# fastlane (iOS)
+apps/ios/fastlane/README.md
+apps/ios/fastlane/report.xml
+apps/ios/fastlane/Preview.html
+apps/ios/fastlane/screenshots/
+apps/ios/fastlane/test_output/
+apps/ios/fastlane/logs/
+apps/ios/fastlane/.env
+apps/ios/fastlane/report.xml
+
+# fastlane build artifacts (local)
+apps/ios/*.ipa
+apps/ios/*.dSYM.zip
+
+# provisioning profiles (local)
+apps/ios/*.mobileprovision
+.env
+
+# Local untracked files
+.local/
+IDENTITY.md
+USER.md
+.tgz
+
+# local tooling
+.serena/
+
+# Agent credentials and memory (NEVER COMMIT)
+memory/
+.agent/*.json
+!.agent/workflows/
+
+# Persistent data directories (runtime state, not source code)
+data/sessions/
+data/costs/
+data/events/
+data/jobs/runs/
+data/jobs/jobs.jsonl
+data/jobs/kill_flags.json
+data/jobs/proposals.jsonl
+data/jobs/tasks.json
+data/clients/
+data/health/
+data/memories/
+data/memories.jsonl
+data/metrics/
+data/reflections/
+data/tmux_agents.log
+data/workflows/
+*.db
+__pycache__/
+*.pyc
+ci.yml.wanted
+logs/
+
+data/agent_outputs/
+data/agent_sessions/
+data/jobs/worktrees/
+data/eval_results/
+
+# Sensitive data files
+data/semantic_metadata.json
+data/semantic_index.pkl
+data/trading/kalshi_private.pem
+.opencode/
+
+# Entire data directory
+data/
+
+# Private configs and session logs
+.claude/
+CLAUDE.md.private
+fly.private.toml
+
+# Build outputs
+site/
+build/
+dist/
+.docs-venv/
+
+# Archive (secrets)
+archive/
+archive/old-dashboards/
+
+# Internal tooling (VPS-specific)
+.github/copilot-instructions.md
+.mcp.json
+fly.toml
+
+# Internal documentation and work logs
+workspace/
+repo-summaries/
+tasks/
+examples/n8n-workflows/
+
+# Internal/backup files
+.coverage
+.cursorrules
+.dashboard.env.template
+*.backup
+*.pre-slim-backup
+*.service
+services/cursor-tasks/queue/
+services/cursor-tasks/.cursorrules

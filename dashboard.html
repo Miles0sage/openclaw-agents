@@ -1,0 +1,4401 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OPENCLAW // Overseer Dashboard</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap");
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #08090c;
+        --surface: #0f1116;
+        --surface2: #151820;
+        --surface3: #1a1e28;
+        --border: #1e2230;
+        --border2: #2a2f40;
+        --text: #d4d8e8;
+        --text2: #9298b0;
+        --text3: #6a7094;
+        --text-bright: #eef0f8;
+        --green: #45c882;
+        --green-bg: rgba(69, 200, 130, 0.12);
+        --yellow: #e8a832;
+        --yellow-bg: rgba(232, 168, 50, 0.12);
+        --red: #e84545;
+        --red-bg: rgba(232, 69, 69, 0.12);
+        --blue: #4588e8;
+        --blue-bg: rgba(69, 136, 232, 0.12);
+        --purple: #8b5cf6;
+        --purple-bg: rgba(139, 92, 246, 0.12);
+        --orange: #f97316;
+        --orange-bg: rgba(249, 115, 22, 0.12);
+        --cyan: #22d3ee;
+        --cyan-bg: rgba(34, 211, 238, 0.12);
+        --amber: #e8a832;
+        --accent: #e8a832;
+        --radius: 8px;
+        --glass: #0f1116;
+        --glass-border: #1e2230;
+      }
+      body {
+        font-family:
+          "Outfit",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        position: relative;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 0;
+      }
+      body > * {
+        position: relative;
+        z-index: 1;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      a {
+        color: var(--amber);
+        text-decoration: none;
+      }
+      code {
+        font-family: "JetBrains Mono", "Fira Code", monospace;
+        font-size: 12px;
+        background: var(--surface2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: var(--text-bright);
+      }
+
+      /* Header */
+      .header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 0 32px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 1px 0 0 rgba(232, 168, 50, 0.06);
+      }
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .logo {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text-bright);
+      }
+      .logo-icon {
+        width: 28px;
+        height: 28px;
+        background: var(--amber);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 800;
+        color: #08090c;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .status-pill {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .status-pill.warn {
+        background: var(--yellow-bg);
+        color: var(--yellow);
+      }
+      .status-pill.err {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .auth-input {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 7px 12px;
+        color: var(--text);
+        font-size: 12px;
+        width: 180px;
+        font-family: "JetBrains Mono", monospace;
+        transition: border-color 0.2s;
+      }
+      .auth-input:focus {
+        outline: none;
+        border-color: var(--amber);
+        box-shadow: 0 0 0 3px rgba(232, 168, 50, 0.1);
+      }
+      .btn {
+        font-family: "JetBrains Mono", monospace;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 7px 14px;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.15s;
+      }
+      .btn:hover {
+        border-color: var(--amber);
+        background: var(--surface3);
+      }
+      .btn-primary {
+        background: var(--amber);
+        border-color: var(--amber);
+        color: #08090c;
+        font-weight: 600;
+      }
+      .btn-primary:hover {
+        background: #d49a28;
+        border-color: #d49a28;
+      }
+      .btn-danger {
+        background: transparent;
+        border-color: var(--red);
+        color: var(--red);
+      }
+      .btn-danger:hover {
+        background: var(--red-bg);
+      }
+      .btn-sm {
+        padding: 4px 10px;
+        font-size: 11px;
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        gap: 0;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 0 32px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        position: sticky;
+        top: 56px;
+        z-index: 99;
+      }
+      .tabs::-webkit-scrollbar {
+        display: none;
+      }
+      .tab {
+        font-family: "JetBrains Mono", monospace;
+        padding: 12px 20px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text3);
+        border-bottom: 2px solid transparent;
+        white-space: nowrap;
+        transition: all 0.15s;
+        user-select: none;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      .tab:hover {
+        color: var(--text2);
+      }
+      .tab.active {
+        color: var(--amber);
+        border-bottom-color: var(--amber);
+      }
+
+      /* Layout */
+      .content {
+        padding: 24px 32px;
+        max-width: 1440px;
+        margin: 0 auto;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .grid-4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .section {
+        margin-bottom: 24px;
+      }
+      .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text2);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        transition: all 0.2s;
+        animation: fadeIn 0.3s ease-out;
+      }
+      .card:hover {
+        border-color: rgba(232, 168, 50, 0.25);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* Glass card — now solid dark */
+      .glass-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        transition: all 0.2s;
+        animation: fadeIn 0.3s ease-out;
+      }
+      .glass-card:hover {
+        border-color: rgba(232, 168, 50, 0.25);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Stat cards */
+      .stat {
+        position: relative;
+        overflow: hidden;
+      }
+      .stat .stat-icon {
+        position: absolute;
+        right: 16px;
+        top: 16px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 28px;
+        opacity: 0.06;
+        font-weight: 800;
+      }
+      .stat-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 8px;
+      }
+      .stat-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: -1px;
+        line-height: 1;
+      }
+      .stat-sub {
+        font-family: "Outfit", sans-serif;
+        font-size: 12px;
+        color: var(--text3);
+        margin-top: 6px;
+      }
+      .stat.green .stat-value {
+        color: var(--green);
+      }
+      .stat.blue .stat-value {
+        color: var(--blue);
+      }
+      .stat.yellow .stat-value {
+        color: var(--yellow);
+      }
+      .stat.red .stat-value {
+        color: var(--red);
+      }
+      .stat.purple .stat-value {
+        color: var(--purple);
+      }
+
+      /* Badge */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      .badge-green {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .badge-yellow {
+        background: var(--yellow-bg);
+        color: var(--yellow);
+      }
+      .badge-red {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .badge-blue {
+        background: var(--blue-bg);
+        color: var(--blue);
+      }
+      .badge-purple {
+        background: var(--purple-bg);
+        color: var(--purple);
+      }
+      .badge-orange {
+        background: var(--orange-bg);
+        color: var(--orange);
+      }
+      .badge-cyan {
+        background: var(--cyan-bg);
+        color: var(--cyan);
+      }
+
+      /* Table */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th {
+        font-family: "JetBrains Mono", monospace;
+        text-align: left;
+        padding: 10px 14px;
+        color: var(--text3);
+        font-weight: 600;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg);
+      }
+      td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+      }
+      tr:hover td {
+        background: rgba(232, 168, 50, 0.02);
+      }
+      .td-truncate {
+        max-width: 320px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* Progress bar */
+      .progress {
+        height: 3px;
+        background: var(--surface3);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 8px;
+      }
+      .progress-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.6s ease;
+      }
+      .progress-fill.green {
+        background: var(--green);
+      }
+      .progress-fill.yellow {
+        background: var(--yellow);
+      }
+      .progress-fill.red {
+        background: var(--red);
+      }
+
+      /* Charts */
+      .chart-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        height: 140px;
+        padding: 12px 0 24px;
+      }
+      .chart-bar {
+        flex: 1;
+        min-width: 32px;
+        max-width: 80px;
+        border-radius: 4px 4px 0 0;
+        position: relative;
+        transition:
+          height 0.5s ease,
+          opacity 0.2s;
+        cursor: pointer;
+      }
+      .chart-bar:hover {
+        opacity: 0.85;
+      }
+      .chart-bar .val {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-bright);
+        white-space: nowrap;
+      }
+      .chart-bar .label {
+        position: absolute;
+        bottom: -22px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--text3);
+        white-space: nowrap;
+        max-width: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* Agent card */
+      .agent-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.2s;
+      }
+      .agent-card:hover {
+        border-color: rgba(232, 168, 50, 0.25);
+        transform: translateY(-1px);
+      }
+      .agent-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .agent-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .agent-name {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-bright);
+      }
+      .agent-meta {
+        font-size: 12px;
+        color: var(--text3);
+        margin-top: 2px;
+      }
+
+      /* Events */
+      .event-item {
+        display: flex;
+        gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+      }
+      .event-item:last-child {
+        border-bottom: none;
+      }
+      .event-time {
+        color: var(--text3);
+        font-size: 11px;
+        white-space: nowrap;
+        min-width: 90px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .event-detail {
+        color: var(--text3);
+        margin-top: 4px;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      /* Filter bar */
+      .filter-bar {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .filter-btn {
+        font-family: "JetBrains Mono", monospace;
+        padding: 5px 14px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text3);
+        transition: all 0.15s;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+      .filter-btn:hover {
+        color: var(--text);
+        border-color: var(--amber);
+      }
+      .filter-btn.active {
+        background: var(--amber);
+        border-color: var(--amber);
+        color: #08090c;
+      }
+
+      /* Panel */
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+
+      /* Spinner */
+      .spinner {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid var(--border);
+        border-top-color: var(--amber);
+        border-radius: 50%;
+        animation: spin 0.5s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--surface2);
+        border: 1px solid var(--amber);
+        border-radius: 6px;
+        padding: 12px 20px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--text-bright);
+        z-index: 200;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: all 0.25s;
+        pointer-events: none;
+        box-shadow: 0 4px 16px rgba(232, 168, 50, 0.1);
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Empty state */
+      .empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text3);
+        font-size: 13px;
+      }
+
+      /* View Toggle (List/Kanban/Flow) */
+      .view-toggle {
+        display: inline-flex;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .view-toggle-btn {
+        font-family: "JetBrains Mono", monospace;
+        padding: 6px 16px;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        color: var(--text3);
+        transition: all 0.15s;
+        border-right: 1px solid var(--border);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+      .view-toggle-btn:last-child {
+        border-right: none;
+      }
+      .view-toggle-btn:hover {
+        color: var(--text);
+        background: var(--surface2);
+      }
+      .view-toggle-btn.active {
+        background: var(--amber);
+        color: #08090c;
+      }
+
+      /* ========== KANBAN BOARD ========== */
+      .kanban-board {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 12px;
+        min-height: 400px;
+        overflow-x: auto;
+      }
+      .kanban-column {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        min-width: 180px;
+        display: flex;
+        flex-direction: column;
+      }
+      .kanban-col-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .kanban-col-title {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+      .kanban-col-count {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: var(--surface2);
+        color: var(--text2);
+      }
+      .kanban-cards {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-height: 60px;
+      }
+      .kanban-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 12px;
+        cursor: grab;
+        transition: all 0.2s;
+        animation: kanbanCardIn 0.3s ease-out;
+      }
+      .kanban-card:hover {
+        border-color: rgba(232, 168, 50, 0.4);
+        transform: translateY(-2px);
+        box-shadow:
+          0 4px 12px rgba(0, 0, 0, 0.3),
+          0 0 0 1px rgba(232, 168, 50, 0.1);
+      }
+      .kanban-card:active {
+        cursor: grabbing;
+      }
+      @keyframes kanbanCardIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .kanban-card-id {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--text3);
+        margin-bottom: 6px;
+      }
+      .kanban-card-task {
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.4;
+        margin-bottom: 8px;
+        color: var(--text);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .kanban-card-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--text3);
+      }
+      .kanban-card-project {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 500;
+        color: var(--amber);
+        font-size: 10px;
+      }
+      .kanban-card-cost {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .kanban-card-elapsed {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--text3);
+        margin-top: 4px;
+      }
+
+      /* Kanban column accent lines */
+      .kanban-column[data-status="pending"] .kanban-col-title {
+        color: var(--yellow);
+      }
+      .kanban-column[data-status="analyzing"] .kanban-col-title {
+        color: var(--cyan);
+      }
+      .kanban-column[data-status="running"] .kanban-col-title {
+        color: var(--blue);
+      }
+      .kanban-column[data-status="pr_ready"] .kanban-col-title {
+        color: var(--purple);
+      }
+      .kanban-column[data-status="done"] .kanban-col-title {
+        color: var(--green);
+      }
+      .kanban-column[data-status="failed"] .kanban-col-title {
+        color: var(--red);
+      }
+
+      .kanban-column[data-status="pending"] {
+        border-top: 2px solid var(--yellow);
+      }
+      .kanban-column[data-status="analyzing"] {
+        border-top: 2px solid var(--cyan);
+      }
+      .kanban-column[data-status="running"] {
+        border-top: 2px solid var(--blue);
+      }
+      .kanban-column[data-status="pr_ready"] {
+        border-top: 2px solid var(--purple);
+      }
+      .kanban-column[data-status="done"] {
+        border-top: 2px solid var(--green);
+      }
+      .kanban-column[data-status="failed"] {
+        border-top: 2px solid var(--red);
+      }
+
+      /* ========== ACTIVITY HEATMAP ========== */
+      .heatmap-container {
+        overflow-x: auto;
+      }
+      .heatmap-grid {
+        display: grid;
+        grid-template-columns: 40px repeat(24, 1fr);
+        gap: 2px;
+        min-width: 600px;
+      }
+      .heatmap-cell {
+        aspect-ratio: 1;
+        border-radius: 2px;
+        background: var(--surface2);
+        transition: all 0.15s;
+        cursor: pointer;
+        position: relative;
+        min-width: 14px;
+        min-height: 14px;
+      }
+      .heatmap-cell:hover {
+        outline: 2px solid var(--amber);
+        outline-offset: 1px;
+        z-index: 2;
+      }
+      .heatmap-cell.h1 {
+        background: rgba(232, 168, 50, 0.15);
+      }
+      .heatmap-cell.h2 {
+        background: rgba(232, 168, 50, 0.3);
+      }
+      .heatmap-cell.h3 {
+        background: rgba(232, 168, 50, 0.5);
+      }
+      .heatmap-cell.h4 {
+        background: rgba(232, 168, 50, 0.7);
+      }
+      .heatmap-cell.h5 {
+        background: rgba(232, 168, 50, 0.9);
+      }
+      .heatmap-day-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--text3);
+        display: flex;
+        align-items: center;
+        padding-right: 4px;
+      }
+      .heatmap-hour-labels {
+        display: grid;
+        grid-template-columns: 40px repeat(24, 1fr);
+        gap: 2px;
+        margin-bottom: 4px;
+        min-width: 600px;
+      }
+      .heatmap-hour-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--text3);
+        text-align: center;
+      }
+      .heatmap-tooltip {
+        position: fixed;
+        background: var(--surface2);
+        border: 1px solid var(--amber);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 12px;
+        z-index: 300;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s;
+        box-shadow: 0 4px 16px rgba(232, 168, 50, 0.1);
+      }
+      .heatmap-tooltip.visible {
+        opacity: 1;
+      }
+      .heatmap-legend {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 10px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--text3);
+      }
+      .heatmap-legend-cell {
+        width: 14px;
+        height: 14px;
+        border-radius: 2px;
+      }
+
+      /* ========== AGENT PANES ========== */
+      .panes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 12px;
+      }
+      .pane-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        transition: all 0.2s;
+      }
+      .pane-card:hover {
+        border-color: rgba(232, 168, 50, 0.25);
+        transform: translateY(-2px);
+      }
+      .pane-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .pane-id {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--amber);
+        font-weight: 600;
+      }
+      .pane-runtime {
+        font-size: 11px;
+        color: var(--text3);
+        font-family: "JetBrains Mono", monospace;
+      }
+      .pane-output {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 8px 10px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--text2);
+        line-height: 1.5;
+        max-height: 60px;
+        overflow: hidden;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .pane-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: 10px;
+      }
+      .pane-placeholder {
+        text-align: center;
+        padding: 48px 20px;
+        color: var(--text3);
+      }
+      .pane-placeholder-icon {
+        font-size: 40px;
+        opacity: 0.3;
+        margin-bottom: 12px;
+      }
+      .spawn-bar {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .spawn-input {
+        flex: 1;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 8px 14px;
+        color: var(--text);
+        font-size: 13px;
+        font-family: "Outfit", sans-serif;
+        transition: border-color 0.2s;
+      }
+      .spawn-input:focus {
+        outline: none;
+        border-color: var(--amber);
+        box-shadow: 0 0 0 3px rgba(232, 168, 50, 0.08);
+      }
+
+      /* ========== FLOW VISUALIZATION ========== */
+      .flow-container {
+        position: relative;
+        padding: 40px 0;
+        overflow-x: auto;
+      }
+      .flow-pipeline {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        min-width: 700px;
+        padding: 0 20px;
+      }
+      .flow-stage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        z-index: 2;
+      }
+      .flow-stage:hover {
+        transform: scale(1.05);
+      }
+      .flow-stage:hover .flow-stage-box {
+        border-color: var(--amber);
+        box-shadow: 0 0 20px rgba(232, 168, 50, 0.15);
+      }
+      .flow-stage-box {
+        width: 110px;
+        height: 70px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s;
+      }
+      .flow-stage-box.active {
+        border-color: var(--amber);
+        box-shadow: 0 0 20px rgba(232, 168, 50, 0.12);
+      }
+      .flow-stage-name {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 4px;
+      }
+      .flow-stage-count {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .flow-stage-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--text3);
+        margin-top: 8px;
+        letter-spacing: 0.5px;
+      }
+      .flow-connector {
+        width: 60px;
+        height: 2px;
+        background: var(--border);
+        position: relative;
+        flex-shrink: 0;
+      }
+      .flow-connector::after {
+        content: "";
+        position: absolute;
+        right: -4px;
+        top: -3px;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid var(--border2);
+        border-top: 2px solid var(--border2);
+        transform: rotate(45deg);
+      }
+      .flow-dot {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--amber);
+        top: -2px;
+        animation: flowDotMove 2s linear infinite;
+        box-shadow: 0 0 8px rgba(232, 168, 50, 0.6);
+      }
+      @keyframes flowDotMove {
+        0% {
+          left: 0;
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          left: calc(100% - 6px);
+          opacity: 0;
+        }
+      }
+
+      /* Stage colors */
+      .flow-stage[data-stage="intake"] .flow-stage-name {
+        color: var(--yellow);
+      }
+      .flow-stage[data-stage="analysis"] .flow-stage-name {
+        color: var(--cyan);
+      }
+      .flow-stage[data-stage="coding"] .flow-stage-name {
+        color: var(--blue);
+      }
+      .flow-stage[data-stage="review"] .flow-stage-name {
+        color: var(--orange);
+      }
+      .flow-stage[data-stage="pr"] .flow-stage-name {
+        color: var(--purple);
+      }
+      .flow-stage[data-stage="done"] .flow-stage-name {
+        color: var(--green);
+      }
+
+      .flow-stage[data-stage="intake"] .flow-stage-count {
+        color: var(--yellow);
+      }
+      .flow-stage[data-stage="analysis"] .flow-stage-count {
+        color: var(--cyan);
+      }
+      .flow-stage[data-stage="coding"] .flow-stage-count {
+        color: var(--blue);
+      }
+      .flow-stage[data-stage="review"] .flow-stage-count {
+        color: var(--orange);
+      }
+      .flow-stage[data-stage="pr"] .flow-stage-count {
+        color: var(--purple);
+      }
+      .flow-stage[data-stage="done"] .flow-stage-count {
+        color: var(--green);
+      }
+
+      /* ========== SPARKLINE & CIRCULAR PROGRESS ========== */
+      .sparkline-container {
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 32px;
+        margin-top: 6px;
+      }
+      .sparkline-bar {
+        flex: 1;
+        background: var(--amber);
+        border-radius: 2px 2px 0 0;
+        min-width: 4px;
+        transition: height 0.3s ease;
+        opacity: 0.5;
+      }
+      .sparkline-bar:last-child {
+        opacity: 1;
+      }
+      .circular-progress {
+        position: relative;
+        width: 56px;
+        height: 56px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .circular-progress svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: rotate(-90deg);
+      }
+      .circular-progress-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        font-weight: 700;
+        z-index: 1;
+      }
+
+      /* ========== ENHANCED STATS ROW ========== */
+      .enhanced-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .enhanced-stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px 20px;
+        transition: all 0.2s;
+        animation: fadeIn 0.3s ease-out;
+      }
+      .enhanced-stat-card:hover {
+        border-color: rgba(232, 168, 50, 0.25);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      }
+      .enhanced-stat-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        font-weight: 500;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 6px;
+      }
+      .enhanced-stat-main {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .enhanced-stat-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        line-height: 1;
+      }
+
+      /* ========== JOB VIEW CONTAINER ========== */
+      .job-view-list,
+      .job-view-kanban,
+      .job-view-flow {
+        display: none;
+      }
+      .job-view-list.active,
+      .job-view-kanban.active,
+      .job-view-flow.active {
+        display: block;
+      }
+
+      /* Responsive */
+      @media (max-width: 1200px) {
+        .kanban-board {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      @media (max-width: 1024px) {
+        .grid-4,
+        .enhanced-stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .grid-3 {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .kanban-board {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 768px) {
+        .header {
+          padding: 0 16px;
+        }
+        .tabs {
+          padding: 0 16px;
+        }
+        .content {
+          padding: 16px;
+        }
+        .grid-4,
+        .grid-3,
+        .grid-2,
+        .enhanced-stats {
+          grid-template-columns: 1fr;
+        }
+        .auth-input {
+          width: 120px;
+        }
+        .stat-value {
+          font-size: 24px;
+        }
+        .kanban-board {
+          grid-template-columns: 1fr;
+        }
+        .flow-pipeline {
+          min-width: 500px;
+        }
+        .flow-stage-box {
+          width: 80px;
+          height: 55px;
+        }
+        .flow-connector {
+          width: 30px;
+        }
+      }
+
+      /* ========== ATTENTION ZONES ========== */
+      .attention-zones {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .attention-zone {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px 20px;
+        transition: all 0.25s;
+        position: relative;
+        overflow: hidden;
+        animation: fadeIn 0.3s ease-out;
+      }
+      .attention-zone:hover {
+        transform: translateY(-2px);
+      }
+      .attention-zone.zone-red {
+        border-color: rgba(232, 69, 69, 0.35);
+        box-shadow: 0 0 16px rgba(232, 69, 69, 0.06);
+      }
+      .attention-zone.zone-red .zone-header {
+        color: var(--red);
+      }
+      .attention-zone.zone-green {
+        border-color: rgba(69, 200, 130, 0.35);
+        box-shadow: 0 0 16px rgba(69, 200, 130, 0.06);
+      }
+      .attention-zone.zone-green .zone-header {
+        color: var(--green);
+      }
+      .attention-zone.zone-gray {
+        border-color: var(--border);
+      }
+      .attention-zone.zone-gray .zone-header {
+        color: var(--text3);
+      }
+      .zone-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .zone-title {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+      .zone-count {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        font-weight: 700;
+        min-width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        background: var(--surface2);
+      }
+      .zone-items {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .zone-item {
+        font-size: 12px;
+        color: var(--text2);
+        padding: 6px 10px;
+        background: var(--surface2);
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .zone-item-icon {
+        flex-shrink: 0;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--amber);
+      }
+      .zone-empty {
+        font-size: 12px;
+        color: var(--text3);
+        padding: 8px 0;
+        text-align: center;
+      }
+
+      /* ========== SPARKLINE ========== */
+      .sparkline-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px 20px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        animation: fadeIn 0.3s ease-out;
+      }
+      .sparkline-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        white-space: nowrap;
+      }
+      .sparkline-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--green);
+        white-space: nowrap;
+      }
+      .sparkline-svg {
+        flex: 1;
+        min-width: 120px;
+        max-width: 300px;
+      }
+
+      /* ========== REACTIONS LOG ========== */
+      .reactions-panel {
+        margin-top: 24px;
+      }
+      .reaction-item {
+        display: grid;
+        grid-template-columns: 100px 1fr 1fr auto;
+        gap: 12px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        font-size: 12px;
+        align-items: center;
+      }
+      .reaction-item:last-child {
+        border-bottom: none;
+      }
+      .reaction-time {
+        color: var(--text3);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+      }
+      .reaction-rule {
+        font-weight: 500;
+        color: var(--text-bright);
+      }
+      .reaction-action {
+        color: var(--cyan);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+      }
+      .reaction-result {
+        font-size: 11px;
+      }
+
+      @media (max-width: 900px) {
+        .attention-zones {
+          grid-template-columns: 1fr;
+        }
+        .sparkline-card {
+          flex-wrap: wrap;
+        }
+        .reaction-item {
+          grid-template-columns: 1fr 1fr;
+          gap: 6px;
+        }
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  </head>
+  <body>
+    <!-- Floating Nav Dock -->
+    <div
+      id="ocNavDock"
+      style="
+        position: fixed;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      "
+    >
+      <div
+        id="ocNavToggle"
+        style="
+          position: absolute;
+          right: 100%;
+          top: 50%;
+          transform: translateY(-50%);
+          background: #0f1116;
+          border: 1px solid #1e2230;
+          border-right: none;
+          border-radius: 6px 0 0 6px;
+          padding: 8px 6px;
+          cursor: pointer;
+          color: #e8a832;
+          font-size: 14px;
+          writing-mode: vertical-rl;
+          font-family: &quot;JetBrains Mono&quot;, monospace;
+          font-size: 10px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+        "
+        onclick="
+          document.getElementById('ocNavPanel').style.display =
+            document.getElementById('ocNavPanel').style.display === 'none' ? 'flex' : 'none'
+        "
+      >
+        NAV
+      </div>
+      <div
+        id="ocNavPanel"
+        style="
+          display: none;
+          flex-direction: column;
+          background: #0f1116;
+          border: 1px solid #1e2230;
+          border-right: none;
+          border-radius: 8px 0 0 8px;
+          padding: 8px 6px;
+          gap: 4px;
+          min-width: 140px;
+          box-shadow: -4px 0 20px rgba(0, 0, 0, 0.5);
+        "
+      >
+        <div
+          style="
+            font-family: &quot;JetBrains Mono&quot;, monospace;
+            font-size: 9px;
+            color: #6a7094;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 4px 8px;
+            margin-bottom: 2px;
+          "
+        >
+          OpenClaw
+        </div>
+        <a
+          href="/dashboard.html"
+          style="
+            font-family: &quot;JetBrains Mono&quot;, monospace;
+            font-size: 11px;
+            color: #d4d8e8;
+            text-decoration: none;
+            padding: 6px 8px;
+            border-radius: 4px;
+            transition: all 0.15s;
+            border-left: 2px solid transparent;
+          "
+          onmouseover="
+            this.style.background = '#151820';
+            this.style.borderLeftColor = '#e8a832';
+          "
+          onmouseout="
+            this.style.background = '';
+            this.style.borderLeftColor = 'transparent';
+          "
+          >Dashboard</a
+        >
+        <a
+          href="/client-portal"
+          style="
+            font-family: &quot;JetBrains Mono&quot;, monospace;
+            font-size: 11px;
+            color: #d4d8e8;
+            text-decoration: none;
+            padding: 6px 8px;
+            border-radius: 4px;
+            transition: all 0.15s;
+            border-left: 2px solid transparent;
+          "
+          onmouseover="
+            this.style.background = '#151820';
+            this.style.borderLeftColor = '#e8a832';
+          "
+          onmouseout="
+            this.style.background = '';
+            this.style.borderLeftColor = 'transparent';
+          "
+          >Client Portal</a
+        >
+        <a
+          href="/secrets"
+          style="
+            font-family: &quot;JetBrains Mono&quot;, monospace;
+            font-size: 11px;
+            color: #d4d8e8;
+            text-decoration: none;
+            padding: 6px 8px;
+            border-radius: 4px;
+            transition: all 0.15s;
+            border-left: 2px solid transparent;
+          "
+          onmouseover="
+            this.style.background = '#151820';
+            this.style.borderLeftColor = '#e8a832';
+          "
+          onmouseout="
+            this.style.background = '';
+            this.style.borderLeftColor = 'transparent';
+          "
+          >Secrets</a
+        >
+        <a
+          href="/metrics-dashboard"
+          style="
+            font-family: &quot;JetBrains Mono&quot;, monospace;
+            font-size: 11px;
+            color: #d4d8e8;
+            text-decoration: none;
+            padding: 6px 8px;
+            border-radius: 4px;
+            transition: all 0.15s;
+            border-left: 2px solid transparent;
+          "
+          onmouseover="
+            this.style.background = '#151820';
+            this.style.borderLeftColor = '#e8a832';
+          "
+          onmouseout="
+            this.style.background = '';
+            this.style.borderLeftColor = 'transparent';
+          "
+          >Metrics</a
+        >
+        <a
+          href="/mobile"
+          style="
+            font-family: &quot;JetBrains Mono&quot;, monospace;
+            font-size: 11px;
+            color: #d4d8e8;
+            text-decoration: none;
+            padding: 6px 8px;
+            border-radius: 4px;
+            transition: all 0.15s;
+            border-left: 2px solid transparent;
+          "
+          onmouseover="
+            this.style.background = '#151820';
+            this.style.borderLeftColor = '#e8a832';
+          "
+          onmouseout="
+            this.style.background = '';
+            this.style.borderLeftColor = 'transparent';
+          "
+          >Mobile</a
+        >
+        <div style="border-top: 1px solid #1e2230; margin: 4px 0"></div>
+        <a
+          href="/"
+          style="
+            font-family: &quot;JetBrains Mono&quot;, monospace;
+            font-size: 10px;
+            color: #6a7094;
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.15s;
+          "
+          onmouseover="this.style.color = '#e8a832'"
+          onmouseout="this.style.color = '#6a7094'"
+          >Landing Page</a
+        >
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="logo">
+          <div class="logo-icon">OC</div>
+          <span>OPENCLAW</span>
+        </div>
+        <div class="status-pill" id="systemStatus">
+          <span class="status-dot"></span>
+          <span>Connecting...</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="lastRefresh" style="font-size: 12px; color: var(--text3)">--</span>
+        <input type="text" class="auth-input" id="authToken" placeholder="Auth token..." />
+        <button class="btn" onclick="refreshAll()">Refresh</button>
+        <label
+          style="
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text3);
+            cursor: pointer;
+            user-select: none;
+          "
+        >
+          <input
+            type="checkbox"
+            id="autoRefresh"
+            checked
+            onchange="toggleAutoRefresh()"
+            style="accent-color: var(--amber)"
+          />
+          Auto
+        </label>
+        <button
+          class="btn"
+          onclick="document.querySelector('[data-panel=settings]').click()"
+          title="Settings & Secrets"
+          style="
+            font-size: 14px;
+            padding: 5px 10px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            cursor: pointer;
+            border-radius: 6px;
+            color: var(--text3);
+            transition: all 0.15s;
+          "
+          onmouseover="
+            this.style.color = 'var(--amber)';
+            this.style.borderColor = 'var(--amber)';
+          "
+          onmouseout="
+            this.style.color = 'var(--text3)';
+            this.style.borderColor = 'var(--border)';
+          "
+        >
+          &#9881;
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-panel="overview">Overview</div>
+      <div class="tab" data-panel="agents">Agents</div>
+      <div class="tab" data-panel="costs">Costs</div>
+      <div class="tab" data-panel="jobs">Jobs</div>
+      <div class="tab" data-panel="proposals">Proposals</div>
+      <div class="tab" data-panel="events">Events</div>
+      <div class="tab" data-panel="panes">Agent Panes</div>
+      <div class="tab" data-panel="system">System</div>
+      <div class="tab" data-panel="settings" style="margin-left: auto; color: var(--text3)">
+        Settings
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <!-- OVERVIEW -->
+      <div class="panel active" id="panel-overview">
+        <!-- Performance Sparkline -->
+        <div class="sparkline-card" id="sparklineCard">
+          <div>
+            <div class="sparkline-label">7-Day Success Rate</div>
+            <div class="sparkline-value" id="sparklineValue">--%</div>
+          </div>
+          <svg
+            class="sparkline-svg"
+            id="sparklineSvg"
+            viewBox="0 0 200 50"
+            preserveAspectRatio="none"
+          ></svg>
+        </div>
+
+        <!-- Attention Zones -->
+        <div class="attention-zones" id="attentionZones">
+          <div class="attention-zone zone-red">
+            <div class="zone-header">
+              <span class="zone-title">Needs You</span>
+              <span class="zone-count" id="zoneNeedsCount">0</span>
+            </div>
+            <div class="zone-items" id="zoneNeedsItems"><div class="zone-empty">No data</div></div>
+          </div>
+          <div class="attention-zone zone-green">
+            <div class="zone-header">
+              <span class="zone-title">Working</span>
+              <span class="zone-count" id="zoneWorkingCount">0</span>
+            </div>
+            <div class="zone-items" id="zoneWorkingItems">
+              <div class="zone-empty">No data</div>
+            </div>
+          </div>
+          <div class="attention-zone zone-gray">
+            <div class="zone-header">
+              <span class="zone-title">Done</span>
+              <span class="zone-count" id="zoneDoneCount">0</span>
+            </div>
+            <div class="zone-items" id="zoneDoneItems"><div class="zone-empty">No data</div></div>
+          </div>
+        </div>
+
+        <!-- Enhanced Stats Row -->
+        <div class="enhanced-stats" id="enhancedStats"></div>
+
+        <!-- Original stat cards -->
+        <div class="grid grid-4 section" id="statCards"></div>
+
+        <!-- Flow Visualization -->
+        <div class="glass-card section">
+          <div class="card-header">
+            <span class="card-title">Job Pipeline Flow</span>
+            <span style="font-size: 11px; color: var(--text3)">Click a stage to filter</span>
+          </div>
+          <div class="flow-container" id="flowViz"></div>
+        </div>
+
+        <!-- Activity Heatmap -->
+        <div class="glass-card section">
+          <div class="card-header">
+            <span class="card-title">Activity Heatmap (7 days)</span>
+          </div>
+          <div class="heatmap-container" id="heatmapContainer"></div>
+        </div>
+
+        <div class="grid grid-2 section">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Cost by Agent</span></div>
+            <div id="costByAgentChart" class="chart-bars"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Recent Jobs</span></div>
+            <div id="recentJobs"></div>
+          </div>
+        </div>
+        <div class="grid grid-2 section">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Recent Events</span></div>
+            <div id="recentEvents"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Agent Status</span></div>
+            <div id="agentStatusOverview"></div>
+          </div>
+        </div>
+
+        <!-- Reactions Log -->
+        <div class="card section reactions-panel">
+          <div class="card-header">
+            <span class="card-title">Reactions Log</span>
+            <span style="font-size: 11px; color: var(--text3)" id="reactionsRefresh"
+              >Auto-refresh 30s</span
+            >
+          </div>
+          <div id="reactionsLog">
+            <div class="empty">Loading reactions...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AGENTS -->
+      <div class="panel" id="panel-agents">
+        <div class="grid grid-2" id="agentCards"></div>
+      </div>
+
+      <!-- COSTS -->
+      <div class="panel" id="panel-costs">
+        <div class="grid grid-4 section" id="costStatCards"></div>
+        <div class="grid grid-2 section">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Cost by Agent</span></div>
+            <div id="costAgentFull" class="chart-bars" style="height: 180px"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Cost by Project</span></div>
+            <div id="costProjectFull" class="chart-bars" style="height: 180px"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Budget Details</span></div>
+          <div id="budgetStatus"></div>
+        </div>
+      </div>
+
+      <!-- JOBS (with view toggle) -->
+      <div class="panel" id="panel-jobs">
+        <div class="card">
+          <div class="card-header">
+            <div style="display: flex; align-items: center; gap: 12px">
+              <span class="card-title">Jobs</span>
+              <span style="font-size: 12px; color: var(--text3)" id="jobCount"></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px">
+              <div class="view-toggle" id="jobViewToggle">
+                <button class="view-toggle-btn active" data-view="list">List</button>
+                <button class="view-toggle-btn" data-view="kanban">Kanban</button>
+                <button class="view-toggle-btn" data-view="flow">Flow</button>
+              </div>
+              <div class="filter-bar" id="jobFilters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="done">Done</button>
+                <button class="filter-btn" data-filter="pending">Pending</button>
+                <button class="filter-btn" data-filter="failed">Failed</button>
+                <button class="filter-btn" data-filter="running">Running</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- List View -->
+          <div class="job-view-list active" id="jobViewList">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Project</th>
+                    <th>Task</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="jobsTable">
+                  <tr>
+                    <td colspan="7" class="empty">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Kanban View -->
+          <div class="job-view-kanban" id="jobViewKanban">
+            <div class="kanban-board" id="kanbanBoard"></div>
+          </div>
+
+          <!-- Flow View -->
+          <div class="job-view-flow" id="jobViewFlow">
+            <div class="flow-container" id="jobFlowViz"></div>
+            <div style="margin-top: 20px">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Project</th>
+                      <th>Task</th>
+                      <th>Priority</th>
+                      <th>Status</th>
+                      <th>Created</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="flowJobsTable">
+                    <tr>
+                      <td colspan="7" class="empty">Click a stage above to filter</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROPOSALS -->
+      <div class="panel" id="panel-proposals">
+        <div class="card">
+          <div class="card-header">
+            <div style="display: flex; align-items: center; gap: 12px">
+              <span class="card-title">Proposals</span>
+              <span style="font-size: 12px; color: var(--text3)" id="proposalCount"></span>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Agent</th>
+                  <th>Est Cost</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody id="proposalsTable">
+                <tr>
+                  <td colspan="6" class="empty">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- EVENTS -->
+      <div class="panel" id="panel-events">
+        <div class="card">
+          <div class="card-header">
+            <div style="display: flex; align-items: center; gap: 12px">
+              <span class="card-title">Event Log</span>
+              <span style="font-size: 12px; color: var(--text3)" id="eventCount"></span>
+            </div>
+          </div>
+          <div id="eventLog"></div>
+        </div>
+      </div>
+
+      <!-- AGENT PANES -->
+      <div class="panel" id="panel-panes">
+        <div class="spawn-bar">
+          <input
+            type="text"
+            class="spawn-input"
+            id="spawnPrompt"
+            placeholder="Enter prompt to spawn new agent..."
+          />
+          <button class="btn btn-primary" onclick="spawnAgent()">Spawn New</button>
+        </div>
+        <div id="panesContent"></div>
+      </div>
+
+      <!-- SYSTEM -->
+      <div class="panel" id="panel-system">
+        <div class="grid grid-3 section">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Heartbeat</span></div>
+            <div id="heartbeatInfo"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Router</span></div>
+            <div id="routerInfo"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Approval Policy</span></div>
+            <div id="policyInfo"></div>
+          </div>
+        </div>
+        <div class="grid grid-2 section">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Cron Jobs</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Schedule</th>
+                    <th>Enabled</th>
+                    <th>Runs</th>
+                    <th>Last Run</th>
+                  </tr>
+                </thead>
+                <tbody id="cronTable">
+                  <tr>
+                    <td colspan="5" class="empty">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Memories</span>
+              <span style="font-size: 12px; color: var(--text3)" id="memoryCount"></span>
+            </div>
+            <div id="memoryList"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Quota Status</span></div>
+          <div id="quotaDetail"></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS & SECRETS -->
+      <div class="panel" id="panel-settings">
+        <div class="grid grid-2 section">
+          <!-- Gateway Settings -->
+          <div class="card">
+            <div class="card-header"><span class="card-title">Gateway Connection</span></div>
+            <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px">
+              <div>
+                <label
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 11px;
+                    color: var(--text3);
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-bottom: 6px;
+                    display: block;
+                  "
+                  >Gateway URL</label
+                >
+                <input
+                  type="text"
+                  id="settingsGatewayUrl"
+                  placeholder="https://<your-domain>"
+                  style="
+                    width: 100%;
+                    padding: 10px 12px;
+                    background: var(--surface2);
+                    border: 1px solid var(--border);
+                    border-radius: 6px;
+                    color: var(--text);
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    transition: border-color 0.2s;
+                  "
+                  onfocus="
+                    this.style.borderColor = 'var(--amber)';
+                    this.style.boxShadow = '0 0 0 2px rgba(232,168,50,0.1)';
+                  "
+                  onblur="
+                    this.style.borderColor = 'var(--border)';
+                    this.style.boxShadow = 'none';
+                  "
+                />
+              </div>
+              <div>
+                <label
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 11px;
+                    color: var(--text3);
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-bottom: 6px;
+                    display: block;
+                  "
+                  >Auth Token</label
+                >
+                <div style="display: flex; gap: 8px; align-items: center">
+                  <input
+                    type="password"
+                    id="settingsAuthToken"
+                    placeholder="Enter auth token..."
+                    style="
+                      flex: 1;
+                      padding: 10px 12px;
+                      background: var(--surface2);
+                      border: 1px solid var(--border);
+                      border-radius: 6px;
+                      color: var(--text);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      font-size: 12px;
+                      transition: border-color 0.2s;
+                    "
+                    onfocus="
+                      this.style.borderColor = 'var(--amber)';
+                      this.style.boxShadow = '0 0 0 2px rgba(232,168,50,0.1)';
+                    "
+                    onblur="
+                      this.style.borderColor = 'var(--border)';
+                      this.style.boxShadow = 'none';
+                    "
+                  />
+                  <button
+                    class="btn btn-sm"
+                    onclick="
+                      var i = document.getElementById('settingsAuthToken');
+                      i.type = i.type === 'password' ? 'text' : 'password';
+                    "
+                    style="white-space: nowrap"
+                  >
+                    Show/Hide
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 11px;
+                    color: var(--text3);
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-bottom: 6px;
+                    display: block;
+                  "
+                  >Auto Refresh</label
+                >
+                <div style="display: flex; gap: 12px; align-items: center">
+                  <label
+                    style="
+                      font-size: 12px;
+                      color: var(--text2);
+                      display: flex;
+                      align-items: center;
+                      gap: 6px;
+                      cursor: pointer;
+                    "
+                    ><input
+                      type="checkbox"
+                      id="settingsAutoRefresh"
+                      checked
+                      style="accent-color: var(--amber)"
+                    />
+                    Enable 30s polling</label
+                  >
+                </div>
+              </div>
+              <button
+                class="btn btn-primary"
+                onclick="saveGatewaySettings()"
+                style="align-self: flex-start; margin-top: 4px"
+              >
+                Save Settings
+              </button>
+            </div>
+          </div>
+
+          <!-- Connection Status -->
+          <div class="card">
+            <div class="card-header"><span class="card-title">Connection Status</span></div>
+            <div
+              style="padding: 16px; display: flex; flex-direction: column; gap: 12px"
+              id="settingsConnectionStatus"
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  padding: 10px;
+                  background: var(--surface2);
+                  border-radius: 6px;
+                  border: 1px solid var(--border);
+                "
+              >
+                <span
+                  style="
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background: var(--green);
+                    display: inline-block;
+                  "
+                  id="settingsStatusDot"
+                ></span>
+                <span
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    color: var(--text);
+                  "
+                  id="settingsStatusText"
+                  >Checking...</span
+                >
+              </div>
+              <div
+                style="
+                  font-size: 12px;
+                  color: var(--text3);
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 6px 0;
+                    border-bottom: 1px solid var(--border);
+                  "
+                >
+                  <span>Gateway</span><span id="settingsGwVersion">--</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 6px 0;
+                    border-bottom: 1px solid var(--border);
+                  "
+                >
+                  <span>Uptime</span><span id="settingsUptime">--</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0">
+                  <span>Last Ping</span><span id="settingsLastPing">--</span>
+                </div>
+              </div>
+              <button class="btn" onclick="testGatewayConnection()" style="align-self: flex-start">
+                Test Connection
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Secrets Manager -->
+        <div class="card section">
+          <div class="card-header">
+            <span class="card-title">Secrets & API Keys</span>
+            <span
+              style="
+                font-size: 11px;
+                color: var(--text3);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+              >Stored in browser localStorage (encrypted)</span
+            >
+          </div>
+          <div style="padding: 16px">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+              <!-- Slack -->
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 10px;
+                  padding: 16px;
+                  background: var(--surface2);
+                  border-radius: 6px;
+                  border: 1px solid var(--border);
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--text-bright);
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                  "
+                >
+                  <span style="color: var(--amber)">&#9670;</span> Slack
+                  <span
+                    class="badge badge-sm"
+                    id="secretStatusSlack"
+                    style="
+                      font-size: 10px;
+                      padding: 2px 6px;
+                      border-radius: 3px;
+                      background: var(--red-bg);
+                      color: var(--red);
+                      margin-left: auto;
+                    "
+                    >Not Set</span
+                  >
+                </div>
+                <div>
+                  <label
+                    style="
+                      font-size: 10px;
+                      color: var(--text3);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      text-transform: uppercase;
+                    "
+                    >Bot Token</label
+                  >
+                  <div style="display: flex; gap: 4px">
+                    <input
+                      type="password"
+                      data-secret="slack_bot_token"
+                      placeholder="xoxb-..."
+                      style="
+                        flex: 1;
+                        padding: 7px 10px;
+                        background: var(--bg);
+                        border: 1px solid var(--border);
+                        border-radius: 4px;
+                        color: var(--text);
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 11px;
+                      "
+                    /><button class="btn btn-sm" onclick="toggleSecretField(this)">
+                      &#128065;
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label
+                    style="
+                      font-size: 10px;
+                      color: var(--text3);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      text-transform: uppercase;
+                    "
+                    >App Token</label
+                  >
+                  <div style="display: flex; gap: 4px">
+                    <input
+                      type="password"
+                      data-secret="slack_app_token"
+                      placeholder="xapp-..."
+                      style="
+                        flex: 1;
+                        padding: 7px 10px;
+                        background: var(--bg);
+                        border: 1px solid var(--border);
+                        border-radius: 4px;
+                        color: var(--text);
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 11px;
+                      "
+                    /><button class="btn btn-sm" onclick="toggleSecretField(this)">
+                      &#128065;
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label
+                    style="
+                      font-size: 10px;
+                      color: var(--text3);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      text-transform: uppercase;
+                    "
+                    >Signing Secret</label
+                  >
+                  <div style="display: flex; gap: 4px">
+                    <input
+                      type="password"
+                      data-secret="slack_signing_secret"
+                      placeholder="..."
+                      style="
+                        flex: 1;
+                        padding: 7px 10px;
+                        background: var(--bg);
+                        border: 1px solid var(--border);
+                        border-radius: 4px;
+                        color: var(--text);
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 11px;
+                      "
+                    /><button class="btn btn-sm" onclick="toggleSecretField(this)">
+                      &#128065;
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label
+                    style="
+                      font-size: 10px;
+                      color: var(--text3);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      text-transform: uppercase;
+                    "
+                    >Channel</label
+                  ><input
+                    type="text"
+                    data-secret="slack_channel"
+                    placeholder="general"
+                    style="
+                      width: 100%;
+                      padding: 7px 10px;
+                      background: var(--bg);
+                      border: 1px solid var(--border);
+                      border-radius: 4px;
+                      color: var(--text);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      font-size: 11px;
+                    "
+                  />
+                </div>
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="saveSecretGroup('slack')"
+                  style="align-self: flex-start; margin-top: 4px"
+                >
+                  Save Slack
+                </button>
+              </div>
+
+              <!-- Telegram -->
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 10px;
+                  padding: 16px;
+                  background: var(--surface2);
+                  border-radius: 6px;
+                  border: 1px solid var(--border);
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--text-bright);
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                  "
+                >
+                  <span style="color: var(--blue)">&#9670;</span> Telegram
+                  <span
+                    class="badge badge-sm"
+                    id="secretStatusTelegram"
+                    style="
+                      font-size: 10px;
+                      padding: 2px 6px;
+                      border-radius: 3px;
+                      background: var(--red-bg);
+                      color: var(--red);
+                      margin-left: auto;
+                    "
+                    >Not Set</span
+                  >
+                </div>
+                <div>
+                  <label
+                    style="
+                      font-size: 10px;
+                      color: var(--text3);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      text-transform: uppercase;
+                    "
+                    >Bot Token</label
+                  >
+                  <div style="display: flex; gap: 4px">
+                    <input
+                      type="password"
+                      data-secret="telegram_bot_token"
+                      placeholder="123456789:ABC..."
+                      style="
+                        flex: 1;
+                        padding: 7px 10px;
+                        background: var(--bg);
+                        border: 1px solid var(--border);
+                        border-radius: 4px;
+                        color: var(--text);
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 11px;
+                      "
+                    /><button class="btn btn-sm" onclick="toggleSecretField(this)">
+                      &#128065;
+                    </button>
+                  </div>
+                </div>
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="saveSecretGroup('telegram')"
+                  style="align-self: flex-start; margin-top: 4px"
+                >
+                  Save Telegram
+                </button>
+              </div>
+
+              <!-- Discord -->
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 10px;
+                  padding: 16px;
+                  background: var(--surface2);
+                  border-radius: 6px;
+                  border: 1px solid var(--border);
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--text-bright);
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                  "
+                >
+                  <span style="color: var(--purple)">&#9670;</span> Discord
+                  <span
+                    class="badge badge-sm"
+                    id="secretStatusDiscord"
+                    style="
+                      font-size: 10px;
+                      padding: 2px 6px;
+                      border-radius: 3px;
+                      background: var(--red-bg);
+                      color: var(--red);
+                      margin-left: auto;
+                    "
+                    >Not Set</span
+                  >
+                </div>
+                <div>
+                  <label
+                    style="
+                      font-size: 10px;
+                      color: var(--text3);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      text-transform: uppercase;
+                    "
+                    >Bot Token</label
+                  >
+                  <div style="display: flex; gap: 4px">
+                    <input
+                      type="password"
+                      data-secret="discord_bot_token"
+                      placeholder="MTk4Nz..."
+                      style="
+                        flex: 1;
+                        padding: 7px 10px;
+                        background: var(--bg);
+                        border: 1px solid var(--border);
+                        border-radius: 4px;
+                        color: var(--text);
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 11px;
+                      "
+                    /><button class="btn btn-sm" onclick="toggleSecretField(this)">
+                      &#128065;
+                    </button>
+                  </div>
+                </div>
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="saveSecretGroup('discord')"
+                  style="align-self: flex-start; margin-top: 4px"
+                >
+                  Save Discord
+                </button>
+              </div>
+
+              <!-- Anthropic -->
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 10px;
+                  padding: 16px;
+                  background: var(--surface2);
+                  border-radius: 6px;
+                  border: 1px solid var(--border);
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--text-bright);
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                  "
+                >
+                  <span style="color: var(--cyan)">&#9670;</span> Anthropic
+                  <span
+                    class="badge badge-sm"
+                    id="secretStatusAnthropic"
+                    style="
+                      font-size: 10px;
+                      padding: 2px 6px;
+                      border-radius: 3px;
+                      background: var(--red-bg);
+                      color: var(--red);
+                      margin-left: auto;
+                    "
+                    >Not Set</span
+                  >
+                </div>
+                <div>
+                  <label
+                    style="
+                      font-size: 10px;
+                      color: var(--text3);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      text-transform: uppercase;
+                    "
+                    >API Key</label
+                  >
+                  <div style="display: flex; gap: 4px">
+                    <input
+                      type="password"
+                      data-secret="anthropic_api_key"
+                      placeholder="sk-ant-..."
+                      style="
+                        flex: 1;
+                        padding: 7px 10px;
+                        background: var(--bg);
+                        border: 1px solid var(--border);
+                        border-radius: 4px;
+                        color: var(--text);
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 11px;
+                      "
+                    /><button class="btn btn-sm" onclick="toggleSecretField(this)">
+                      &#128065;
+                    </button>
+                  </div>
+                </div>
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="saveSecretGroup('anthropic')"
+                  style="align-self: flex-start; margin-top: 4px"
+                >
+                  Save Anthropic
+                </button>
+              </div>
+
+              <!-- GitHub -->
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 10px;
+                  padding: 16px;
+                  background: var(--surface2);
+                  border-radius: 6px;
+                  border: 1px solid var(--border);
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--text-bright);
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                  "
+                >
+                  <span style="color: var(--text2)">&#9670;</span> GitHub
+                  <span
+                    class="badge badge-sm"
+                    id="secretStatusGithub"
+                    style="
+                      font-size: 10px;
+                      padding: 2px 6px;
+                      border-radius: 3px;
+                      background: var(--red-bg);
+                      color: var(--red);
+                      margin-left: auto;
+                    "
+                    >Not Set</span
+                  >
+                </div>
+                <div>
+                  <label
+                    style="
+                      font-size: 10px;
+                      color: var(--text3);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      text-transform: uppercase;
+                    "
+                    >Personal Access Token</label
+                  >
+                  <div style="display: flex; gap: 4px">
+                    <input
+                      type="password"
+                      data-secret="github_token"
+                      placeholder="ghp_..."
+                      style="
+                        flex: 1;
+                        padding: 7px 10px;
+                        background: var(--bg);
+                        border: 1px solid var(--border);
+                        border-radius: 4px;
+                        color: var(--text);
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 11px;
+                      "
+                    /><button class="btn btn-sm" onclick="toggleSecretField(this)">
+                      &#128065;
+                    </button>
+                  </div>
+                </div>
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="saveSecretGroup('github')"
+                  style="align-self: flex-start; margin-top: 4px"
+                >
+                  Save GitHub
+                </button>
+              </div>
+
+              <!-- Google/Gemini -->
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 10px;
+                  padding: 16px;
+                  background: var(--surface2);
+                  border-radius: 6px;
+                  border: 1px solid var(--border);
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--text-bright);
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                  "
+                >
+                  <span style="color: var(--green)">&#9670;</span> Google / Gemini
+                  <span
+                    class="badge badge-sm"
+                    id="secretStatusGoogle"
+                    style="
+                      font-size: 10px;
+                      padding: 2px 6px;
+                      border-radius: 3px;
+                      background: var(--red-bg);
+                      color: var(--red);
+                      margin-left: auto;
+                    "
+                    >Not Set</span
+                  >
+                </div>
+                <div>
+                  <label
+                    style="
+                      font-size: 10px;
+                      color: var(--text3);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      text-transform: uppercase;
+                    "
+                    >API Key</label
+                  >
+                  <div style="display: flex; gap: 4px">
+                    <input
+                      type="password"
+                      data-secret="google_api_key"
+                      placeholder="AIza..."
+                      style="
+                        flex: 1;
+                        padding: 7px 10px;
+                        background: var(--bg);
+                        border: 1px solid var(--border);
+                        border-radius: 4px;
+                        color: var(--text);
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 11px;
+                      "
+                    /><button class="btn btn-sm" onclick="toggleSecretField(this)">
+                      &#128065;
+                    </button>
+                  </div>
+                </div>
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="saveSecretGroup('google')"
+                  style="align-self: flex-start; margin-top: 4px"
+                >
+                  Save Google
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Heatmap tooltip -->
+    <div class="heatmap-tooltip" id="heatmapTooltip"></div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      let refreshTimer = null,
+        jobFilter = "all",
+        jobView = "list",
+        flowStageFilter = null,
+        panesRefreshTimer = null;
+
+      const STATE = {
+        health: null,
+        agents: null,
+        costs: null,
+        jobs: null,
+        proposals: null,
+        events: null,
+        memories: null,
+        cron: null,
+        heartbeat: null,
+        quotas: null,
+        router: null,
+        policy: null,
+        panes: null,
+      };
+
+      // ==================== HELPERS ====================
+      function getToken() {
+        return document.getElementById("authToken").value.trim();
+      }
+      async function api(path) {
+        const headers = { Accept: "application/json" };
+        const token = getToken();
+        if (token) headers["X-Auth-Token"] = token;
+        try {
+          const r = await fetch(path, { headers });
+          if (!r.ok) return { _error: r.status };
+          return await r.json();
+        } catch (e) {
+          return { _error: e.message };
+        }
+      }
+      function fmt$(v) {
+        return "$" + Number(v || 0).toFixed(2);
+      }
+      function fmtDate(s) {
+        if (!s) return "--";
+        const d = new Date(s);
+        return (
+          d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) +
+          " " +
+          d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+        );
+      }
+      function timeAgo(s) {
+        if (!s) return "--";
+        const ms = Date.now() - new Date(s).getTime();
+        const m = Math.floor(ms / 60000);
+        if (m < 1) return "just now";
+        if (m < 60) return m + "m ago";
+        const h = Math.floor(m / 60);
+        if (h < 24) return h + "h ago";
+        return Math.floor(h / 24) + "d ago";
+      }
+      function elapsed(start, end) {
+        if (!start) return "--";
+        const ms = (end ? new Date(end) : new Date()) - new Date(start);
+        const m = Math.floor(ms / 60000);
+        if (m < 1) return "<1m";
+        if (m < 60) return m + "m";
+        const h = Math.floor(m / 60);
+        return h + "h " + (m % 60) + "m";
+      }
+      function shortId(s) {
+        return s ? s.slice(-8) : "--";
+      }
+      function statusBadge(s) {
+        const m = {
+          done: "green",
+          completed: "green",
+          approved: "green",
+          idle: "green",
+          running: "blue",
+          active: "blue",
+          analyzing: "cyan",
+          pending: "yellow",
+          queued: "yellow",
+          pr_ready: "purple",
+          failed: "red",
+          rejected: "red",
+          error: "red",
+          killed_cost_limit: "red",
+          killed_timeout: "red",
+          killed_circuit_breaker: "red",
+          killed_manual: "orange",
+          killed_iteration_limit: "red",
+        };
+        return `<span class="badge badge-${m[s] || "yellow"}">${(s || "unknown").replace(/_/g, " ")}</span>`;
+      }
+      function priorityBadge(p) {
+        const m = { P0: "red", P1: "orange", P2: "blue", P3: "green" };
+        return `<span class="badge badge-${m[p] || "blue"}">${p || "--"}</span>`;
+      }
+      function toast(msg, dur = 2500) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), dur);
+      }
+      const COLORS = [
+        "#e8a832",
+        "#45c882",
+        "#4588e8",
+        "#e84545",
+        "#8b5cf6",
+        "#22d3ee",
+        "#f97316",
+        "#ec4899",
+      ];
+
+      function renderBarChart(id, data, h) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.height = (h || 140) + "px";
+        if (!data || Object.keys(data).length === 0) {
+          el.innerHTML = '<div class="empty">No data</div>';
+          return;
+        }
+        const max = Math.max(...Object.values(data), 0.001);
+        el.innerHTML = Object.entries(data)
+          .map(([k, v], i) => {
+            const pct = (v / max) * 100;
+            const color = COLORS[i % COLORS.length];
+            const name = k
+              .replace(/_/g, " ")
+              .replace(/claude.*/, "claude")
+              .replace(/-agent/, "");
+            return `<div class="chart-bar" style="height:${Math.max(pct, 5)}%;background:${color}" title="${k}: ${fmt$(v)}"><span class="val">${fmt$(v)}</span><span class="label">${name}</span></div>`;
+          })
+          .join("");
+      }
+
+      // ==================== TABS ====================
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+          document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+          tab.classList.add("active");
+          document.getElementById("panel-" + tab.dataset.panel).classList.add("active");
+          // Start/stop panes refresh
+          if (tab.dataset.panel === "panes") {
+            fetchPanes();
+            panesRefreshTimer = setInterval(fetchPanes, 5000);
+          } else {
+            clearInterval(panesRefreshTimer);
+            panesRefreshTimer = null;
+          }
+          if (tab.dataset.panel === "settings") initSettings();
+        });
+      });
+
+      // ==================== JOB VIEW TOGGLE ====================
+      document.getElementById("jobViewToggle").addEventListener("click", (e) => {
+        if (!e.target.classList.contains("view-toggle-btn")) return;
+        document
+          .querySelectorAll("#jobViewToggle .view-toggle-btn")
+          .forEach((b) => b.classList.remove("active"));
+        e.target.classList.add("active");
+        jobView = e.target.dataset.view;
+        document
+          .querySelectorAll("[class^='job-view-']")
+          .forEach((v) => v.classList.remove("active"));
+        document
+          .getElementById("jobView" + jobView.charAt(0).toUpperCase() + jobView.slice(1))
+          .classList.add("active");
+        if (jobView === "kanban") renderKanbanBoard();
+        if (jobView === "flow") renderJobFlowView();
+      });
+
+      // ==================== JOB FILTERS ====================
+      document.getElementById("jobFilters").addEventListener("click", (e) => {
+        if (!e.target.classList.contains("filter-btn")) return;
+        document
+          .querySelectorAll("#jobFilters .filter-btn")
+          .forEach((b) => b.classList.remove("active"));
+        e.target.classList.add("active");
+        jobFilter = e.target.dataset.filter;
+        renderJobsPanel();
+        if (jobView === "kanban") renderKanbanBoard();
+      });
+
+      // ==================== DATA FETCH ====================
+      async function fetchAll() {
+        const [
+          health,
+          agents,
+          costs,
+          quotas,
+          proposals,
+          events,
+          memories,
+          cron,
+          heartbeat,
+          router,
+          policy,
+          jobs,
+        ] = await Promise.all([
+          api("/health"),
+          api("/api/agents"),
+          api("/api/costs/summary"),
+          api("/api/quotas/status"),
+          api("/api/proposals"),
+          api("/api/events"),
+          api("/api/memories"),
+          api("/api/cron/jobs"),
+          api("/api/heartbeat/status"),
+          api("/api/route/health"),
+          api("/api/policy"),
+          api("/api/jobs"),
+        ]);
+        Object.assign(STATE, {
+          health,
+          agents,
+          costs,
+          quotas,
+          proposals,
+          events,
+          memories,
+          cron,
+          heartbeat,
+          router,
+          policy,
+          jobs,
+        });
+      }
+
+      async function fetchPanes() {
+        try {
+          const r = await api("/api/agents/panes");
+          STATE.panes = r;
+        } catch (e) {
+          STATE.panes = { _error: "unavailable" };
+        }
+        renderPanesPanel();
+      }
+
+      // ==================== RENDERERS ====================
+      function renderSystemStatus() {
+        const el = document.getElementById("systemStatus");
+        const h = STATE.health;
+        if (!h || h._error) {
+          el.className = "status-pill err";
+          el.innerHTML = '<span class="status-dot"></span>Offline';
+          return;
+        }
+        el.className = "status-pill";
+        el.innerHTML = `<span class="status-dot"></span>${h.status || "Operational"} &middot; v${h.version || "?"} &middot; ${h.agents_active || 0} agents`;
+      }
+
+      // ==================== ENHANCED STATS ====================
+      function renderEnhancedStats() {
+        const el = document.getElementById("enhancedStats");
+        const jobs = STATE.jobs?.jobs || [];
+        const events = STATE.events?.events || [];
+        const costs = STATE.costs?.data || STATE.costs || {};
+
+        // Jobs per day (last 7 days)
+        const now = new Date();
+        const dayBuckets = [];
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(now);
+          d.setDate(d.getDate() - i);
+          const dayStr = d.toISOString().slice(0, 10);
+          const count = jobs.filter(
+            (j) => j.created_at && j.created_at.slice(0, 10) === dayStr,
+          ).length;
+          dayBuckets.push(count);
+        }
+        const maxDay = Math.max(...dayBuckets, 1);
+
+        // Cost per day (last 7 days) - estimate from jobs
+        const costBuckets = [];
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(now);
+          d.setDate(d.getDate() - i);
+          const dayStr = d.toISOString().slice(0, 10);
+          const dayJobs = jobs.filter((j) => j.created_at && j.created_at.slice(0, 10) === dayStr);
+          const total = dayJobs.reduce((s, j) => s + (j.cost_usd || 0), 0);
+          costBuckets.push(total);
+        }
+        const maxCost = Math.max(...costBuckets, 0.01);
+
+        // Success rate
+        const doneJobs = jobs.filter((j) => j.status === "done" || j.status === "completed").length;
+        const failedJobs = jobs.filter(
+          (j) => j.status === "failed" || (j.status && j.status.startsWith("killed")),
+        ).length;
+        const total = doneJobs + failedJobs;
+        const successRate = total > 0 ? Math.round((doneJobs / total) * 100) : 100;
+
+        // Average job duration
+        const durations = jobs
+          .filter((j) => j.created_at && j.completed_at)
+          .map((j) => new Date(j.completed_at) - new Date(j.created_at));
+        const avgMs =
+          durations.length > 0 ? durations.reduce((a, b) => a + b, 0) / durations.length : 0;
+        const avgMin = Math.round(avgMs / 60000);
+        const avgStr =
+          avgMin < 60 ? avgMin + "m" : Math.floor(avgMin / 60) + "h " + (avgMin % 60) + "m";
+
+        // Render sparklines
+        const jobsSparkline = dayBuckets
+          .map(
+            (v) =>
+              `<div class="sparkline-bar" style="height:${Math.max((v / maxDay) * 100, 4)}%;background:var(--blue)"></div>`,
+          )
+          .join("");
+
+        const costSparkline = costBuckets
+          .map(
+            (v) =>
+              `<div class="sparkline-bar" style="height:${Math.max((v / maxCost) * 100, 4)}%;background:var(--green)"></div>`,
+          )
+          .join("");
+
+        // Circular progress SVG
+        const circumference = 2 * Math.PI * 22;
+        const offset = circumference - (successRate / 100) * circumference;
+        const progressColor =
+          successRate >= 80 ? "var(--green)" : successRate >= 50 ? "var(--yellow)" : "var(--red)";
+
+        el.innerHTML = `
+          <div class="enhanced-stat-card">
+            <div class="enhanced-stat-label">Jobs / Day (7d)</div>
+            <div class="enhanced-stat-main">
+              <div class="enhanced-stat-value" style="color:var(--blue)">${dayBuckets[6]}</div>
+            </div>
+            <div class="sparkline-container">${jobsSparkline}</div>
+          </div>
+          <div class="enhanced-stat-card">
+            <div class="enhanced-stat-label">Cost Trend (7d)</div>
+            <div class="enhanced-stat-main">
+              <div class="enhanced-stat-value" style="color:var(--green)">${fmt$(costBuckets[6])}</div>
+            </div>
+            <div class="sparkline-container">${costSparkline}</div>
+          </div>
+          <div class="enhanced-stat-card">
+            <div class="enhanced-stat-label">Success Rate</div>
+            <div class="enhanced-stat-main">
+              <div class="enhanced-stat-value" style="color:${progressColor}">${successRate}%</div>
+              <div class="circular-progress">
+                <svg width="56" height="56" viewBox="0 0 56 56">
+                  <circle cx="28" cy="28" r="22" fill="none" stroke="var(--surface2)" stroke-width="4"/>
+                  <circle cx="28" cy="28" r="22" fill="none" stroke="${progressColor}" stroke-width="4"
+                    stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
+                    stroke-linecap="round" style="transition:stroke-dashoffset 0.6s ease"/>
+                </svg>
+                <span class="circular-progress-value" style="color:${progressColor};font-size:11px">${doneJobs}/${total}</span>
+              </div>
+            </div>
+          </div>
+          <div class="enhanced-stat-card">
+            <div class="enhanced-stat-label">Avg Duration</div>
+            <div class="enhanced-stat-main">
+              <div class="enhanced-stat-value" style="color:var(--purple)">${avgStr || "--"}</div>
+            </div>
+            <div style="font-size:12px;color:var(--text3);margin-top:8px">${durations.length} completed jobs</div>
+          </div>
+        `;
+      }
+
+      function renderStatCards() {
+        const el = document.getElementById("statCards");
+        const costs = STATE.costs?.data || STATE.costs || {};
+        const agents = STATE.agents?.agents || [];
+        const jobs = STATE.jobs?.jobs || [];
+        const events = STATE.events?.events || [];
+        const doneJobs = jobs.filter((j) => j.status === "done" || j.status === "completed").length;
+        const failedJobs = jobs.filter(
+          (j) => j.status === "failed" || j.status?.startsWith("killed"),
+        ).length;
+        const activeJobs = jobs.filter(
+          (j) =>
+            j.status === "running" ||
+            j.status === "active" ||
+            j.status === "pending" ||
+            j.status === "queued",
+        ).length;
+        el.innerHTML = `
+          <div class="card stat green"><span class="stat-icon">A</span><div class="stat-label">Agents</div><div class="stat-value">${agents.length}</div><div class="stat-sub">${agents.filter((a) => a.status === "idle").length} idle</div></div>
+          <div class="card stat blue"><span class="stat-icon">$</span><div class="stat-label">Total Cost</div><div class="stat-value">${fmt$(costs.total_cost)}</div><div class="stat-sub">${costs.entries_count || 0} API calls</div></div>
+          <div class="card stat ${failedJobs > 0 ? "red" : "green"}"><span class="stat-icon">J</span><div class="stat-label">Jobs</div><div class="stat-value">${jobs.length}</div><div class="stat-sub">${doneJobs} done, ${failedJobs} failed, ${activeJobs} active</div></div>
+          <div class="card stat purple"><span class="stat-icon">E</span><div class="stat-label">Events</div><div class="stat-value">${events.length}</div><div class="stat-sub">last: ${timeAgo(events[0]?.timestamp)}</div></div>
+        `;
+      }
+
+      function renderOverviewCharts() {
+        const costs = STATE.costs?.data || STATE.costs || {};
+        renderBarChart("costByAgentChart", costs.by_agent);
+      }
+
+      function renderRecentJobs() {
+        const el = document.getElementById("recentJobs");
+        const jobs = (STATE.jobs?.jobs || []).slice(0, 6);
+        if (!jobs.length) {
+          el.innerHTML = '<div class="empty">No jobs</div>';
+          return;
+        }
+        el.innerHTML = jobs
+          .map(
+            (j) => `
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${j.description || j.task || "--"}</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">${j.project_name || j.project || "--"} &middot; ${timeAgo(j.created_at)}</div>
+            </div>
+            ${statusBadge(j.status)}
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      function renderRecentEvents() {
+        const el = document.getElementById("recentEvents");
+        const events = (STATE.events?.events || []).slice(0, 5);
+        if (!events.length) {
+          el.innerHTML = '<div class="empty">No events</div>';
+          return;
+        }
+        el.innerHTML = events
+          .map((e) => {
+            const tc = {
+              "proposal.created": "blue",
+              "job.created": "green",
+              "job.completed": "green",
+              "job.failed": "red",
+              "agent.error": "red",
+              "agent.timeout": "yellow",
+            };
+            return `<div class="event-item"><div class="event-time">${timeAgo(e.timestamp)}</div><div style="flex:1"><span class="badge badge-${tc[e.event_type] || "yellow"}" style="font-size:10px">${e.event_type}</span><div class="event-detail">${e.data?.title || e.data?.job_id || e.data?.reason || JSON.stringify(e.data).slice(0, 100)}</div></div></div>`;
+          })
+          .join("");
+      }
+
+      function renderAgentStatusOverview() {
+        const el = document.getElementById("agentStatusOverview");
+        const agents = STATE.agents?.agents || [];
+        if (!agents.length) {
+          el.innerHTML = '<div class="empty">No agents</div>';
+          return;
+        }
+        const roleColors = {
+          coordinator: "#3b82f6",
+          developer: "#22c55e",
+          security: "#ef4444",
+          data_specialist: "#a855f7",
+          elite_developer: "#f97316",
+        };
+        el.innerHTML = agents
+          .map((a) => {
+            const bg = roleColors[a.role] || "#3b82f6";
+            return `<div class="agent-card" style="margin-bottom:8px"><div class="agent-avatar" style="background:${bg}">${(a.name || "?")[0]}</div><div class="agent-info"><div class="agent-name">${a.name}</div><div class="agent-meta">${a.model?.split("-").slice(0, 2).join(" ") || "--"}</div></div>${statusBadge(a.status)}</div>`;
+          })
+          .join("");
+      }
+
+      function renderAgentsPanel() {
+        const el = document.getElementById("agentCards");
+        const agents = STATE.agents?.agents || [];
+        if (!agents.length) {
+          el.innerHTML = '<div class="card"><div class="empty">No agents</div></div>';
+          return;
+        }
+        const roleColors = {
+          coordinator: "#3b82f6",
+          developer: "#22c55e",
+          security: "#ef4444",
+          data_specialist: "#a855f7",
+          elite_developer: "#f97316",
+        };
+        el.innerHTML = agents
+          .map((a) => {
+            const bg = roleColors[a.role] || "#3b82f6";
+            return `<div class="card"><div style="display:flex;align-items:center;gap:14px;margin-bottom:16px"><div class="agent-avatar" style="background:${bg};width:48px;height:48px;font-size:20px">${(a.name || "?")[0]}</div><div style="flex:1"><div style="font-size:16px;font-weight:700">${a.name}</div><div style="font-size:12px;color:var(--text3)">${a.id}</div></div>${statusBadge(a.status)}</div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13px">
+            <span style="color:var(--text3)">Provider</span><span>${a.provider}</span>
+            <span style="color:var(--text3)">Model</span><span><code>${a.model}</code></span>
+            <span style="color:var(--text3)">Role</span><span>${a.role}</span>
+          </div></div>`;
+          })
+          .join("");
+      }
+
+      function renderCostsPanel() {
+        const costs = STATE.costs?.data || STATE.costs || {};
+        const quotas = STATE.quotas?.data || STATE.quotas || {};
+        const dp = quotas.daily_percent || 0,
+          mp = quotas.monthly_percent || 0;
+        document.getElementById("costStatCards").innerHTML = `
+          <div class="card stat blue"><div class="stat-label">Total Spend</div><div class="stat-value">${fmt$(costs.total_cost)}</div><div class="stat-sub">${costs.entries_count || 0} API calls</div></div>
+          <div class="card stat ${dp > 80 ? "red" : "green"}"><div class="stat-label">Daily</div><div class="stat-value">${fmt$(quotas.daily_used)}</div><div class="stat-sub">of ${fmt$(quotas.daily_budget)}</div><div class="progress"><div class="progress-fill ${dp > 80 ? "red" : dp > 50 ? "yellow" : "green"}" style="width:${Math.min(dp, 100)}%"></div></div></div>
+          <div class="card stat ${mp > 80 ? "red" : "green"}"><div class="stat-label">Monthly</div><div class="stat-value">${fmt$(quotas.monthly_used)}</div><div class="stat-sub">of ${fmt$(quotas.monthly_budget)}</div><div class="progress"><div class="progress-fill ${mp > 80 ? "red" : mp > 50 ? "yellow" : "green"}" style="width:${Math.min(mp, 100)}%"></div></div></div>
+          <div class="card stat green"><div class="stat-label">Status</div><div class="stat-value" style="font-size:20px">${quotas.status || "OK"}</div><div class="stat-sub">Quotas ${quotas.quotas_enabled ? "enabled" : "disabled"}</div></div>
+        `;
+        renderBarChart("costAgentFull", costs.by_agent, 180);
+        renderBarChart("costProjectFull", costs.by_project, 180);
+        const bEl = document.getElementById("budgetStatus");
+        if (costs.timestamp_range) {
+          bEl.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;font-size:13px">
+            <div><span style="color:var(--text3)">First entry</span><br/>${fmtDate(costs.timestamp_range.first)}</div>
+            <div><span style="color:var(--text3)">Last entry</span><br/>${fmtDate(costs.timestamp_range.last)}</div>
+            <div><span style="color:var(--text3)">Daily remaining</span><br/><strong style="color:var(--green)">${fmt$(quotas.daily_remaining)}</strong></div>
+            <div><span style="color:var(--text3)">Monthly remaining</span><br/><strong style="color:var(--green)">${fmt$(quotas.monthly_remaining)}</strong></div>
+          </div>`;
+        } else {
+          bEl.innerHTML = '<div class="empty">No cost data yet</div>';
+        }
+      }
+
+      function renderJobsPanel() {
+        const el = document.getElementById("jobsTable");
+        const allJobs = STATE.jobs?.jobs || [];
+        const countEl = document.getElementById("jobCount");
+        if (!allJobs.length && STATE.jobs?._error === "unauthorized") {
+          el.innerHTML =
+            '<tr><td colspan="7" class="empty" style="color:var(--yellow)">Auth required</td></tr>';
+          return;
+        }
+        let jobs = filterJobs(allJobs);
+        countEl.textContent = `${jobs.length} of ${allJobs.length}`;
+        if (!jobs.length) {
+          el.innerHTML = '<tr><td colspan="7" class="empty">No jobs</td></tr>';
+          return;
+        }
+        el.innerHTML = jobs
+          .map((j) => {
+            const id = j.job_id || j.id || "";
+            const task = j.description || j.task || "";
+            const project = j.project_name || j.project || "--";
+            const isActive = [
+              "running",
+              "active",
+              "pending",
+              "queued",
+              "researching",
+              "planning",
+              "executing",
+              "analyzing",
+            ].includes(j.status);
+            return `<tr>
+            <td><code>${shortId(id)}</code></td>
+            <td style="font-weight:500">${project}</td>
+            <td class="td-truncate" title="${task.replace(/"/g, "&quot;")}">${task || "--"}</td>
+            <td>${priorityBadge(j.priority)}</td>
+            <td>${statusBadge(j.status)}</td>
+            <td style="white-space:nowrap;color:var(--text3)">${timeAgo(j.created_at)}</td>
+            <td>${isActive ? `<button class="btn btn-danger btn-sm" onclick="killJob('${id}')">Kill</button>` : ""}</td>
+          </tr>`;
+          })
+          .join("");
+      }
+
+      function filterJobs(allJobs) {
+        if (jobFilter === "all") return allJobs;
+        if (jobFilter === "running")
+          return allJobs.filter((j) =>
+            [
+              "running",
+              "active",
+              "pending",
+              "queued",
+              "researching",
+              "planning",
+              "executing",
+              "analyzing",
+            ].includes(j.status),
+          );
+        return allJobs.filter(
+          (j) =>
+            j.status === jobFilter || (jobFilter === "failed" && j.status?.startsWith("killed")),
+        );
+      }
+
+      async function killJob(jobId) {
+        if (!confirm("Kill job " + shortId(jobId) + "?")) return;
+        const r = await fetch("/api/jobs/" + jobId + "/kill", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Auth-Token": getToken() },
+          body: JSON.stringify({ reason: "Manual kill from dashboard" }),
+        });
+        if (r.ok) {
+          toast("Job killed");
+          refreshAll();
+        } else {
+          toast("Kill failed: " + r.status);
+        }
+      }
+
+      // ==================== KANBAN BOARD ====================
+      function renderKanbanBoard() {
+        const el = document.getElementById("kanbanBoard");
+        const allJobs = STATE.jobs?.jobs || [];
+
+        const columns = [
+          { status: "pending", label: "Pending", statuses: ["pending", "queued"] },
+          {
+            status: "analyzing",
+            label: "Analyzing",
+            statuses: ["analyzing", "researching", "planning"],
+          },
+          { status: "running", label: "Running", statuses: ["running", "active", "executing"] },
+          { status: "pr_ready", label: "PR Ready", statuses: ["pr_ready"] },
+          { status: "done", label: "Done", statuses: ["done", "completed"] },
+          {
+            status: "failed",
+            label: "Failed",
+            statuses: [
+              "failed",
+              "killed_cost_limit",
+              "killed_timeout",
+              "killed_circuit_breaker",
+              "killed_manual",
+              "killed_iteration_limit",
+              "error",
+            ],
+          },
+        ];
+
+        el.innerHTML = columns
+          .map((col) => {
+            const colJobs = allJobs.filter((j) => col.statuses.includes(j.status));
+            const cards = colJobs
+              .map((j) => {
+                const id = j.job_id || j.id || "";
+                const task = j.description || j.task || "";
+                const project = j.project_name || j.project || "--";
+                const cost = j.cost_usd || 0;
+                return `<div class="kanban-card" draggable="true">
+              <div class="kanban-card-id">${shortId(id)}</div>
+              <div class="kanban-card-task">${task || "No description"}</div>
+              <div class="kanban-card-meta">
+                <span class="kanban-card-project">${project}</span>
+                <span class="kanban-card-cost">${fmt$(cost)}</span>
+              </div>
+              <div class="kanban-card-elapsed">${elapsed(j.created_at, j.completed_at)}</div>
+            </div>`;
+              })
+              .join("");
+
+            return `<div class="kanban-column" data-status="${col.status}">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title">${col.label}</span>
+              <span class="kanban-col-count">${colJobs.length}</span>
+            </div>
+            <div class="kanban-cards">${cards || '<div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">No jobs</div>'}</div>
+          </div>`;
+          })
+          .join("");
+      }
+
+      // ==================== FLOW VISUALIZATION ====================
+      function getJobStageCounts() {
+        const jobs = STATE.jobs?.jobs || [];
+        const stages = {
+          intake: jobs.filter((j) => ["pending", "queued"].includes(j.status)).length,
+          analysis: jobs.filter((j) => ["analyzing", "researching", "planning"].includes(j.status))
+            .length,
+          coding: jobs.filter((j) => ["running", "active", "executing"].includes(j.status)).length,
+          review: jobs.filter((j) => j.status === "pr_ready").length,
+          pr: jobs.filter((j) => j.status === "approved").length,
+          done: jobs.filter((j) => ["done", "completed"].includes(j.status)).length,
+        };
+        return stages;
+      }
+
+      function renderFlowVisualization(containerId, clickable) {
+        const el = document.getElementById(containerId);
+        const counts = getJobStageCounts();
+        const stageData = [
+          { key: "intake", label: "Intake", filter: ["pending", "queued"] },
+          { key: "analysis", label: "Analysis", filter: ["analyzing", "researching", "planning"] },
+          { key: "coding", label: "Coding", filter: ["running", "active", "executing"] },
+          { key: "review", label: "Review", filter: ["pr_ready"] },
+          { key: "pr", label: "PR", filter: ["approved"] },
+          { key: "done", label: "Done", filter: ["done", "completed"] },
+        ];
+
+        let html = '<div class="flow-pipeline">';
+        stageData.forEach((stage, i) => {
+          const count = counts[stage.key];
+          const hasJobs = count > 0;
+          const isActive = flowStageFilter && flowStageFilter === stage.key;
+          html += `<div class="flow-stage" data-stage="${stage.key}" onclick="${clickable ? `filterByStage('${stage.key}')` : ""}">
+            <div class="flow-stage-box ${isActive ? "active" : ""}">
+              <div class="flow-stage-name">${stage.label}</div>
+              <div class="flow-stage-count">${count}</div>
+            </div>
+            <div class="flow-stage-label">${stage.label}</div>
+          </div>`;
+          if (i < stageData.length - 1) {
+            html += `<div class="flow-connector">${hasJobs ? '<div class="flow-dot"></div>' : ""}</div>`;
+          }
+        });
+        html += "</div>";
+        el.innerHTML = html;
+      }
+
+      function renderFlowViz() {
+        renderFlowVisualization("flowViz", false);
+      }
+
+      function renderJobFlowView() {
+        renderFlowVisualization("jobFlowViz", true);
+        renderFlowFilteredTable();
+      }
+
+      function filterByStage(stageKey) {
+        flowStageFilter = flowStageFilter === stageKey ? null : stageKey;
+        renderJobFlowView();
+      }
+
+      function renderFlowFilteredTable() {
+        const el = document.getElementById("flowJobsTable");
+        const allJobs = STATE.jobs?.jobs || [];
+        const stageMap = {
+          intake: ["pending", "queued"],
+          analysis: ["analyzing", "researching", "planning"],
+          coding: ["running", "active", "executing"],
+          review: ["pr_ready"],
+          pr: ["approved"],
+          done: ["done", "completed"],
+        };
+
+        let jobs = allJobs;
+        if (flowStageFilter && stageMap[flowStageFilter]) {
+          jobs = allJobs.filter((j) => stageMap[flowStageFilter].includes(j.status));
+        }
+
+        if (!jobs.length) {
+          el.innerHTML = `<tr><td colspan="7" class="empty">${flowStageFilter ? "No jobs in " + flowStageFilter : "Click a stage above to filter"}</td></tr>`;
+          return;
+        }
+        el.innerHTML = jobs
+          .map((j) => {
+            const id = j.job_id || j.id || "";
+            const task = j.description || j.task || "";
+            const project = j.project_name || j.project || "--";
+            const isActive = [
+              "running",
+              "active",
+              "pending",
+              "queued",
+              "researching",
+              "planning",
+              "executing",
+              "analyzing",
+            ].includes(j.status);
+            return `<tr>
+            <td><code>${shortId(id)}</code></td>
+            <td style="font-weight:500">${project}</td>
+            <td class="td-truncate" title="${task.replace(/"/g, "&quot;")}">${task || "--"}</td>
+            <td>${priorityBadge(j.priority)}</td>
+            <td>${statusBadge(j.status)}</td>
+            <td style="white-space:nowrap;color:var(--text3)">${timeAgo(j.created_at)}</td>
+            <td>${isActive ? `<button class="btn btn-danger btn-sm" onclick="killJob('${id}')">Kill</button>` : ""}</td>
+          </tr>`;
+          })
+          .join("");
+      }
+
+      // ==================== ACTIVITY HEATMAP ====================
+      function renderHeatmap() {
+        const container = document.getElementById("heatmapContainer");
+        const events = STATE.events?.events || [];
+        const jobs = STATE.jobs?.jobs || [];
+
+        // Build hour buckets for last 7 days
+        const now = new Date();
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const buckets = {}; // "YYYY-MM-DD-HH" -> count
+
+        // Count events by hour
+        events.forEach((e) => {
+          if (!e.timestamp) return;
+          const d = new Date(e.timestamp);
+          const key = d.toISOString().slice(0, 13);
+          buckets[key] = (buckets[key] || 0) + 1;
+        });
+
+        // Also count job creation
+        jobs.forEach((j) => {
+          if (!j.created_at) return;
+          const d = new Date(j.created_at);
+          const key = d.toISOString().slice(0, 13);
+          buckets[key] = (buckets[key] || 0) + 1;
+        });
+
+        // Find max for color scaling
+        const vals = Object.values(buckets);
+        const maxVal = Math.max(...vals, 1);
+
+        // Build 7 days x 24 hours grid
+        let hourLabelsHtml = "<div></div>"; // empty cell for day label column
+        for (let h = 0; h < 24; h++) {
+          hourLabelsHtml += `<div class="heatmap-hour-label">${h.toString().padStart(2, "0")}</div>`;
+        }
+
+        let gridHtml = "";
+        for (let d = 6; d >= 0; d--) {
+          const day = new Date(now);
+          day.setDate(day.getDate() - d);
+          const dayStr = dayNames[day.getDay()];
+          const dateStr = day.toISOString().slice(0, 10);
+
+          gridHtml += `<div class="heatmap-day-label">${dayStr}</div>`;
+
+          for (let h = 0; h < 24; h++) {
+            const key = dateStr + "T" + h.toString().padStart(2, "0");
+            const count = buckets[key] || 0;
+            let level = 0;
+            if (count > 0) level = 1;
+            if (count >= maxVal * 0.25) level = 2;
+            if (count >= maxVal * 0.5) level = 3;
+            if (count >= maxVal * 0.75) level = 4;
+            if (count >= maxVal * 0.95) level = 5;
+
+            gridHtml += `<div class="heatmap-cell h${level}" data-date="${dateStr}" data-hour="${h}" data-count="${count}"
+              onmouseenter="showHeatmapTooltip(event, '${dateStr}', ${h}, ${count})"
+              onmouseleave="hideHeatmapTooltip()"></div>`;
+          }
+        }
+
+        container.innerHTML = `
+          <div class="heatmap-hour-labels">${hourLabelsHtml}</div>
+          <div class="heatmap-grid">${gridHtml}</div>
+          <div class="heatmap-legend">
+            <span>Less</span>
+            <div class="heatmap-legend-cell" style="background:var(--surface2)"></div>
+            <div class="heatmap-legend-cell h1" style="background:rgba(232,168,50,0.15)"></div>
+            <div class="heatmap-legend-cell h2" style="background:rgba(232,168,50,0.3)"></div>
+            <div class="heatmap-legend-cell h3" style="background:rgba(232,168,50,0.5)"></div>
+            <div class="heatmap-legend-cell h4" style="background:rgba(232,168,50,0.7)"></div>
+            <div class="heatmap-legend-cell h5" style="background:rgba(232,168,50,0.9)"></div>
+            <span>More</span>
+          </div>
+        `;
+      }
+
+      function showHeatmapTooltip(event, date, hour, count) {
+        const tip = document.getElementById("heatmapTooltip");
+        const hourStr =
+          hour.toString().padStart(2, "0") + ":00-" + hour.toString().padStart(2, "0") + ":59";
+        tip.innerHTML = `<div style="font-weight:600">${date}</div><div style="color:var(--text3)">${hourStr}</div><div style="margin-top:4px"><strong style="color:var(--accent)">${count}</strong> events</div>`;
+        tip.style.left = event.clientX + 12 + "px";
+        tip.style.top = event.clientY - 10 + "px";
+        tip.classList.add("visible");
+      }
+
+      function hideHeatmapTooltip() {
+        document.getElementById("heatmapTooltip").classList.remove("visible");
+      }
+
+      // ==================== AGENT PANES ====================
+      function renderPanesPanel() {
+        const el = document.getElementById("panesContent");
+        const panes = STATE.panes;
+
+        if (!panes || panes._error) {
+          el.innerHTML = `<div class="pane-placeholder">
+            <div class="pane-placeholder-icon">&#x2699;</div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:6px">Agents API not available</div>
+            <div style="font-size:13px">The <code>/api/agents/panes</code> endpoint is not responding.<br/>Start the agent manager to enable live pane monitoring.</div>
+          </div>`;
+          return;
+        }
+
+        const panesList = panes.agents || panes.panes || panes.data || [];
+        if (!panesList.length) {
+          el.innerHTML = `<div class="pane-placeholder">
+            <div class="pane-placeholder-icon">&#x25A3;</div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:6px">No active agent panes</div>
+            <div style="font-size:13px">Use "Spawn New" above to start an agent.</div>
+          </div>`;
+          return;
+        }
+
+        el.innerHTML = `<div class="panes-grid">${panesList
+          .map(
+            (p) => `
+          <div class="pane-card">
+            <div class="pane-header">
+              <div>
+                <span class="pane-id">${p.pane_id || p.id || "--"}</span>
+                ${p.job_id ? `<span style="margin-left:8px;font-size:11px;color:var(--text3)">Job: <code>${shortId(p.job_id)}</code></span>` : ""}
+              </div>
+              <span class="pane-runtime">${p.runtime_human || elapsed(p.started_at, null)}</span>
+            </div>
+            <div class="pane-output">${(p.last_output || p.output || "No output").replace(/</g, "&lt;")}</div>
+            <div class="pane-actions">
+              <button class="btn btn-danger btn-sm" onclick="killPane('${p.pane_id || p.id}')">Kill</button>
+            </div>
+          </div>
+        `,
+          )
+          .join("")}</div>`;
+      }
+
+      async function killPane(paneId) {
+        if (!confirm("Kill agent pane " + paneId + "?")) return;
+        try {
+          const r = await fetch("/api/agents/panes/" + encodeURIComponent(paneId), {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json", "X-Auth-Token": getToken() },
+          });
+          if (r.ok) {
+            toast("Pane killed");
+            fetchPanes();
+          } else {
+            toast("Kill failed: " + r.status);
+          }
+        } catch (e) {
+          toast("Kill failed: " + e.message);
+        }
+      }
+
+      async function spawnAgent() {
+        const prompt = document.getElementById("spawnPrompt").value.trim();
+        if (!prompt) {
+          toast("Enter a prompt first");
+          return;
+        }
+        try {
+          const r = await fetch("/api/agents/spawn", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-Auth-Token": getToken() },
+            body: JSON.stringify({ prompt }),
+          });
+          if (r.ok) {
+            toast("Agent spawned");
+            document.getElementById("spawnPrompt").value = "";
+            fetchPanes();
+          } else {
+            toast("Spawn failed: " + r.status);
+          }
+        } catch (e) {
+          toast("Spawn failed: " + e.message);
+        }
+      }
+
+      // ==================== PROPOSALS, EVENTS, SYSTEM ====================
+      function renderProposalsPanel() {
+        const el = document.getElementById("proposalsTable");
+        const proposals = STATE.proposals?.proposals || [];
+        document.getElementById("proposalCount").textContent = `${proposals.length} total`;
+        if (!proposals.length) {
+          el.innerHTML = '<tr><td colspan="6" class="empty">No proposals</td></tr>';
+          return;
+        }
+        el.innerHTML = proposals
+          .map(
+            (p) => `<tr>
+          <td><code>${shortId(p.id)}</code></td>
+          <td style="font-weight:500">${p.title || "--"}</td>
+          <td>${p.agent_pref || "--"}</td>
+          <td style="font-family:monospace">${fmt$(p.cost_est_usd)}</td>
+          <td>${statusBadge(p.status)}</td>
+          <td style="white-space:nowrap;color:var(--text3)">${timeAgo(p.created_at)}</td>
+        </tr>`,
+          )
+          .join("");
+      }
+
+      function renderEventsPanel() {
+        const el = document.getElementById("eventLog");
+        const events = STATE.events?.events || [];
+        document.getElementById("eventCount").textContent = `${events.length} total`;
+        if (!events.length) {
+          el.innerHTML = '<div class="empty">No events</div>';
+          return;
+        }
+        const tc = {
+          "proposal.created": "blue",
+          "job.created": "green",
+          "job.completed": "green",
+          "job.failed": "red",
+          "agent.error": "red",
+          "agent.timeout": "yellow",
+          "cost.alert": "orange",
+        };
+        el.innerHTML = events
+          .map(
+            (e) =>
+              `<div class="event-item"><div class="event-time">${fmtDate(e.timestamp)}</div><div style="flex:1"><div><span class="badge badge-${tc[e.event_type] || "yellow"}">${e.event_type}</span></div><div class="event-detail">${e.data?.title || e.data?.description || e.data?.reason || e.data?.job_id || JSON.stringify(e.data).slice(0, 120)}</div></div></div>`,
+          )
+          .join("");
+      }
+
+      function renderSystemPanel() {
+        // Heartbeat
+        const hbEl = document.getElementById("heartbeatInfo");
+        const hb = STATE.heartbeat;
+        if (hb && !hb._error) {
+          const m = hb.monitor || {};
+          hbEl.innerHTML = `<div style="margin-bottom:10px">${statusBadge(hb.status)}</div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px">
+            <span style="color:var(--text3)">Running</span><span>${m.running ? "Yes" : "No"}</span>
+            <span style="color:var(--text3)">Monitoring</span><span>${m.agents_monitoring || 0} agents</span>
+            <span style="color:var(--text3)">Interval</span><span>${(m.config?.check_interval_ms || 0) / 1000}s</span>
+          </div>`;
+        } else {
+          hbEl.innerHTML = '<div class="empty">Unavailable</div>';
+        }
+
+        // Router
+        const rtEl = document.getElementById("routerInfo");
+        const rt = STATE.router;
+        if (rt && !rt._error) {
+          rtEl.innerHTML = `<div style="margin-bottom:10px">${statusBadge(rt.status)}</div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px">
+            <span style="color:var(--text3)">Version</span><span>${rt.router_version || "--"}</span>
+            <span style="color:var(--text3)">Models</span><span>${rt.models_available || 0}</span>
+          </div>`;
+        } else {
+          rtEl.innerHTML = '<div class="empty">Unavailable</div>';
+        }
+
+        // Policy
+        const plEl = document.getElementById("policyInfo");
+        const rules = STATE.policy?.rules || [];
+        if (rules.length) {
+          plEl.innerHTML = rules
+            .map(
+              (
+                r,
+              ) => `<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;align-items:center;gap:8px">
+            <span style="font-weight:500">${r.name}</span>
+            <span class="badge badge-${r.action === "approve" ? "green" : r.action === "require_human" ? "yellow" : "red"}">${r.action}</span>
+            ${r.max_cost_usd ? `<span style="color:var(--text3);font-size:12px">max ${fmt$(r.max_cost_usd)}</span>` : ""}
+          </div>`,
+            )
+            .join("");
+        } else {
+          plEl.innerHTML = '<div class="empty">No policies</div>';
+        }
+
+        // Cron
+        const cronEl = document.getElementById("cronTable");
+        const cronJobs = STATE.cron?.jobs || [];
+        if (cronJobs.length) {
+          cronEl.innerHTML = cronJobs
+            .map(
+              (c) =>
+                `<tr><td style="font-weight:500">${c.name}</td><td><code>${c.cron_expr}</code></td><td>${c.enabled ? '<span class="badge badge-green">ON</span>' : '<span class="badge badge-red">OFF</span>'}</td><td>${c.run_count || 0}</td><td style="color:var(--text3)">${fmtDate(c.last_run)}</td></tr>`,
+            )
+            .join("");
+        } else {
+          cronEl.innerHTML = '<tr><td colspan="5" class="empty">No cron jobs</td></tr>';
+        }
+
+        // Memories
+        const memEl = document.getElementById("memoryList");
+        const memories = STATE.memories?.memories || [];
+        document.getElementById("memoryCount").textContent = `${memories.length}`;
+        if (memories.length) {
+          memEl.innerHTML = memories
+            .slice(0, 10)
+            .map(
+              (
+                m,
+              ) => `<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+            <div style="display:flex;justify-content:space-between;align-items:start;gap:8px"><span style="line-height:1.4">${m.content?.slice(0, 120) || "--"}</span><span class="badge badge-blue" style="flex-shrink:0">${m.importance || 0}</span></div>
+            <div style="color:var(--text3);font-size:11px;margin-top:4px">${(m.tags || []).join(", ")} &middot; ${timeAgo(m.created_at)}</div>
+          </div>`,
+            )
+            .join("");
+        } else {
+          memEl.innerHTML = '<div class="empty">No memories</div>';
+        }
+
+        // Quotas
+        const qEl = document.getElementById("quotaDetail");
+        const q = STATE.quotas?.data || STATE.quotas || {};
+        qEl.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px">
+          <div><div style="color:var(--text3);font-size:12px;margin-bottom:6px">Daily Budget</div><div style="font-size:24px;font-weight:700">${fmt$(q.daily_used)} <span style="color:var(--text3);font-size:14px">/ ${fmt$(q.daily_budget)}</span></div><div class="progress"><div class="progress-fill ${(q.daily_percent || 0) > 80 ? "red" : "green"}" style="width:${Math.min(q.daily_percent || 0, 100)}%"></div></div></div>
+          <div><div style="color:var(--text3);font-size:12px;margin-bottom:6px">Monthly Budget</div><div style="font-size:24px;font-weight:700">${fmt$(q.monthly_used)} <span style="color:var(--text3);font-size:14px">/ ${fmt$(q.monthly_budget)}</span></div><div class="progress"><div class="progress-fill ${(q.monthly_percent || 0) > 80 ? "red" : "green"}" style="width:${Math.min(q.monthly_percent || 0, 100)}%"></div></div></div>
+        </div>`;
+      }
+
+      // ==================== MAIN ====================
+      async function refreshAll() {
+        document.getElementById("lastRefresh").innerHTML = '<span class="spinner"></span>';
+        try {
+          await fetchAll();
+          renderSystemStatus();
+          renderEnhancedStats();
+          renderStatCards();
+          renderFlowViz();
+          renderHeatmap();
+          renderOverviewCharts();
+          renderRecentJobs();
+          renderRecentEvents();
+          renderAgentStatusOverview();
+          renderAttentionZones();
+          renderSparkline();
+          renderReactionsLog();
+          renderAgentsPanel();
+          renderCostsPanel();
+          renderJobsPanel();
+          if (jobView === "kanban") renderKanbanBoard();
+          if (jobView === "flow") renderJobFlowView();
+          renderProposalsPanel();
+          renderEventsPanel();
+          renderSystemPanel();
+          document.getElementById("lastRefresh").textContent = new Date().toLocaleTimeString(
+            "en-US",
+            { hour: "2-digit", minute: "2-digit", second: "2-digit" },
+          );
+        } catch (e) {
+          document.getElementById("lastRefresh").textContent = "Error";
+          toast("Refresh failed");
+        }
+      }
+      function toggleAutoRefresh() {
+        if (document.getElementById("autoRefresh").checked) {
+          refreshTimer = setInterval(refreshAll, 30000);
+        } else {
+          clearInterval(refreshTimer);
+          refreshTimer = null;
+        }
+      }
+
+      // Spawn input enter key
+      document.getElementById("spawnPrompt").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") spawnAgent();
+      });
+
+      // ==================== ATTENTION ZONES ====================
+      function renderAttentionZones() {
+        const jobs = Array.isArray(STATE.jobs) ? STATE.jobs : STATE.jobs?.jobs || [];
+
+        // Needs You: failed, pr_ready (needs approval), stuck analyzing > 30min
+        const needsYou = [];
+        const now = Date.now();
+        jobs.forEach((j) => {
+          if (j.status === "failed")
+            needsYou.push({ icon: "!", text: `FAILED: ${j.task || j.id}`, id: j.id });
+          else if (j.status === "pr_ready")
+            needsYou.push({ icon: "?", text: `Approve: ${j.task || j.id}`, id: j.id });
+          else if (
+            j.status === "analyzing" &&
+            j.started_at &&
+            now - new Date(j.started_at).getTime() > 30 * 60000
+          )
+            needsYou.push({ icon: "!", text: `Stuck: ${j.task || j.id}`, id: j.id });
+        });
+
+        // Working: running, analyzing, pending
+        const working = [];
+        jobs.forEach((j) => {
+          if (["running", "analyzing", "pending"].includes(j.status))
+            working.push({ icon: ">", text: `${j.status}: ${j.task || j.id}`, id: j.id });
+        });
+
+        // Done: completed/approved recently (last 24h)
+        const done = [];
+        jobs.forEach((j) => {
+          if (["done", "approved"].includes(j.status)) {
+            const ts = j.completed_at || j.updated_at || j.created_at;
+            if (ts && now - new Date(ts).getTime() < 24 * 3600000)
+              done.push({ icon: "#", text: `${j.task || j.id}`, id: j.id });
+          }
+        });
+
+        function renderZone(items, countEl, itemsEl) {
+          document.getElementById(countEl).textContent = items.length;
+          const el = document.getElementById(itemsEl);
+          if (items.length === 0) {
+            el.innerHTML = '<div class="zone-empty">All clear</div>';
+          } else {
+            el.innerHTML = items
+              .slice(0, 5)
+              .map(
+                (i) =>
+                  `<div class="zone-item"><span class="zone-item-icon">${i.icon}</span>${i.text}</div>`,
+              )
+              .join("");
+          }
+        }
+
+        renderZone(needsYou, "zoneNeedsCount", "zoneNeedsItems");
+        renderZone(working, "zoneWorkingCount", "zoneWorkingItems");
+        renderZone(done, "zoneDoneCount", "zoneDoneItems");
+      }
+
+      // ==================== SPARKLINE ====================
+      async function renderSparkline() {
+        try {
+          const data = await api("/api/metrics/sparkline?days=7");
+          const points = data?.data || data?.points || data || [];
+          if (!Array.isArray(points) || points.length === 0) {
+            document.getElementById("sparklineValue").textContent = "No data";
+            return;
+          }
+          const rates = points.map((p) => p.success_rate ?? p.rate ?? p.value ?? 0);
+          const current = rates[rates.length - 1];
+          const valEl = document.getElementById("sparklineValue");
+          valEl.textContent = Math.round(current) + "%";
+          valEl.style.color =
+            current >= 80 ? "var(--green)" : current >= 50 ? "var(--yellow)" : "var(--red)";
+
+          // Draw SVG sparkline
+          const svg = document.getElementById("sparklineSvg");
+          const w = 200,
+            h = 50;
+          const maxR = Math.max(...rates, 100);
+          const minR = Math.min(...rates, 0);
+          const range = maxR - minR || 1;
+          const pts = rates.map((r, i) => {
+            const x = (i / (rates.length - 1 || 1)) * w;
+            const y = h - ((r - minR) / range) * (h - 10) - 5;
+            return { x, y };
+          });
+          const pathD = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y}`).join(" ");
+          svg.innerHTML = `
+            <polyline points="${pts.map((p) => p.x + "," + p.y).join(" ")}"
+              fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            ${pts.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="var(--green)" stroke="var(--surface)" stroke-width="1.5"/>`).join("")}
+          `;
+        } catch (e) {
+          document.getElementById("sparklineValue").textContent = "N/A";
+        }
+      }
+
+      // ==================== REACTIONS LOG ====================
+      async function renderReactionsLog() {
+        try {
+          const data = await api("/api/reactions/triggers?limit=10");
+          const triggers = data?.triggers || data?.data || data || [];
+          const el = document.getElementById("reactionsLog");
+          if (!Array.isArray(triggers) || triggers.length === 0) {
+            el.innerHTML = '<div class="empty">No reaction triggers recorded</div>';
+            return;
+          }
+          el.innerHTML = triggers
+            .slice(0, 10)
+            .map((t) => {
+              const ts = t.timestamp || t.created_at || "";
+              const time = ts
+                ? new Date(ts).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+                : "--";
+              const rule = t.rule || t.name || "Unknown";
+              const action = t.action || t.action_taken || "--";
+              const result = t.result || t.outcome || "";
+              const resultBadge =
+                result === "success" || result === "ok"
+                  ? '<span class="badge badge-green">OK</span>'
+                  : result === "failed" || result === "error"
+                    ? '<span class="badge badge-red">FAIL</span>'
+                    : `<span class="badge badge-blue">${result || "--"}</span>`;
+              return `<div class="reaction-item">
+              <span class="reaction-time">${time}</span>
+              <span class="reaction-rule">${rule}</span>
+              <span class="reaction-action">${action}</span>
+              ${resultBadge}
+            </div>`;
+            })
+            .join("");
+        } catch (e) {
+          document.getElementById("reactionsLog").innerHTML =
+            '<div class="empty">Failed to load reactions</div>';
+        }
+      }
+
+      // ==================== SETTINGS & SECRETS ====================
+      function toggleSecretField(btn) {
+        var inp = btn.parentElement.querySelector("input");
+        inp.type = inp.type === "password" ? "text" : "password";
+      }
+
+      function loadSecrets() {
+        var stored = localStorage.getItem("openclaw_secrets");
+        if (!stored) return;
+        try {
+          var secrets = JSON.parse(atob(stored));
+          document.querySelectorAll("[data-secret]").forEach(function (inp) {
+            var key = inp.getAttribute("data-secret");
+            if (secrets[key]) inp.value = secrets[key];
+          });
+          updateSecretStatuses(secrets);
+        } catch (e) {
+          console.error("Failed to load secrets:", e);
+        }
+      }
+
+      function updateSecretStatuses(secrets) {
+        var groups = {
+          Slack: ["slack_bot_token", "slack_app_token", "slack_signing_secret", "slack_channel"],
+          Telegram: ["telegram_bot_token"],
+          Discord: ["discord_bot_token"],
+          Anthropic: ["anthropic_api_key"],
+          Github: ["github_token"],
+          Google: ["google_api_key"],
+        };
+        Object.entries(groups).forEach(function (entry) {
+          var name = entry[0],
+            keys = entry[1];
+          var el = document.getElementById("secretStatus" + name);
+          if (!el) return;
+          var allSet = keys.every(function (k) {
+            return secrets[k] && secrets[k].trim();
+          });
+          var anySet = keys.some(function (k) {
+            return secrets[k] && secrets[k].trim();
+          });
+          if (allSet) {
+            el.textContent = "Configured";
+            el.style.background = "var(--green-bg)";
+            el.style.color = "var(--green)";
+          } else if (anySet) {
+            el.textContent = "Partial";
+            el.style.background = "var(--yellow-bg)";
+            el.style.color = "var(--yellow)";
+          } else {
+            el.textContent = "Not Set";
+            el.style.background = "var(--red-bg)";
+            el.style.color = "var(--red)";
+          }
+        });
+      }
+
+      function saveSecretGroup(group) {
+        var stored = localStorage.getItem("openclaw_secrets");
+        var secrets = {};
+        if (stored) {
+          try {
+            secrets = JSON.parse(atob(stored));
+          } catch (e) {}
+        }
+
+        var prefixes = {
+          slack: ["slack_bot_token", "slack_app_token", "slack_signing_secret", "slack_channel"],
+          telegram: ["telegram_bot_token"],
+          discord: ["discord_bot_token"],
+          anthropic: ["anthropic_api_key"],
+          github: ["github_token"],
+          google: ["google_api_key"],
+        };
+        var keys = prefixes[group] || [];
+        keys.forEach(function (key) {
+          var inp = document.querySelector('[data-secret="' + key + '"]');
+          if (inp) secrets[key] = inp.value.trim();
+        });
+
+        localStorage.setItem("openclaw_secrets", btoa(JSON.stringify(secrets)));
+        updateSecretStatuses(secrets);
+        showToast(group.charAt(0).toUpperCase() + group.slice(1) + " secrets saved");
+      }
+
+      function saveGatewaySettings() {
+        var url = document.getElementById("settingsGatewayUrl").value.trim();
+        var token = document.getElementById("settingsAuthToken").value.trim();
+        if (url) localStorage.setItem("ocGatewayUrl", url);
+        if (token) {
+          document.getElementById("authToken").value = token;
+          localStorage.setItem("ocAuthToken", token);
+        }
+        var autoRef = document.getElementById("settingsAutoRefresh").checked;
+        document.getElementById("autoRefresh").checked = autoRef;
+        toggleAutoRefresh();
+        showToast("Gateway settings saved");
+        testGatewayConnection();
+      }
+
+      async function testGatewayConnection() {
+        var dot = document.getElementById("settingsStatusDot");
+        var text = document.getElementById("settingsStatusText");
+        text.textContent = "Testing...";
+        dot.style.background = "var(--yellow)";
+        try {
+          var resp = await api("/health");
+          if (resp) {
+            dot.style.background = "var(--green)";
+            text.textContent = "Connected";
+            var v = resp.version || resp.name || "OpenClaw";
+            document.getElementById("settingsGwVersion").textContent = v;
+            document.getElementById("settingsUptime").textContent = resp.uptime || "--";
+            document.getElementById("settingsLastPing").textContent =
+              new Date().toLocaleTimeString();
+          } else {
+            dot.style.background = "var(--red)";
+            text.textContent = "Connection failed";
+          }
+        } catch (e) {
+          dot.style.background = "var(--red)";
+          text.textContent = "Error: " + e.message;
+        }
+      }
+
+      function initSettings() {
+        var savedUrl = localStorage.getItem("ocGatewayUrl") || location.origin;
+        var savedToken =
+          localStorage.getItem("ocAuthToken") || document.getElementById("authToken").value;
+        document.getElementById("settingsGatewayUrl").value = savedUrl;
+        document.getElementById("settingsAuthToken").value = savedToken;
+        document.getElementById("settingsAutoRefresh").checked =
+          document.getElementById("autoRefresh").checked;
+        loadSecrets();
+        testGatewayConnection();
+      }
+
+      refreshAll();
+      refreshTimer = setInterval(refreshAll, 30000);
+
+      // ─── SSE Real-Time Connection ─────────────────────────────
+      (function initSSE() {
+        var dashUrl = localStorage.getItem("ocGatewayUrl") || location.origin;
+        // Dashboard API runs on port 9001
+        var sseBase = dashUrl.replace(/:\d+$/, "") + ":9001";
+        var evtSource;
+
+        function connectSSE() {
+          try {
+            evtSource = new EventSource(sseBase + "/api/stream");
+
+            evtSource.addEventListener("connected", function (e) {
+              console.log("[SSE] Connected:", JSON.parse(e.data));
+              showToast("Live updates connected");
+            });
+
+            evtSource.addEventListener("jobs", function (e) {
+              try {
+                var data = JSON.parse(e.data);
+                var el = document.getElementById("sse-jobs-widget");
+                if (el && data.jobs) {
+                  var running = data.jobs.filter(function (j) {
+                    return j.status === "running";
+                  });
+                  el.innerHTML = "<b>" + running.length + "</b> running";
+                }
+              } catch (err) {
+                console.debug("SSE jobs parse error:", err);
+              }
+            });
+
+            evtSource.addEventListener("costs", function (e) {
+              try {
+                var data = JSON.parse(e.data);
+                var el = document.getElementById("sse-costs-widget");
+                if (el) {
+                  var total = data.total_cost_usd || data.daily_cost_usd || 0;
+                  el.innerHTML = "$" + total.toFixed(4);
+                }
+              } catch (err) {
+                console.debug("SSE costs parse error:", err);
+              }
+            });
+
+            evtSource.onerror = function () {
+              console.warn("[SSE] Connection lost, reconnecting in 5s...");
+              evtSource.close();
+              setTimeout(connectSSE, 5000);
+            };
+          } catch (err) {
+            console.debug("[SSE] Init failed:", err);
+            setTimeout(connectSSE, 10000);
+          }
+        }
+
+        connectSSE();
+      })();
+    </script>
+  </body>
+</html>

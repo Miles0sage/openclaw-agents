@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bean & Bloom — Coffee & Botanical Garden Cafe</title>
+  <meta name="description" content="Bean & Bloom is a cozy neighborhood coffee shop with a botanical garden theme. Fresh coffee, artisan pastries, and a living green oasis.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-logo">
+        <span class="logo-icon">&#127793;</span> Bean & Bloom
+      </a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#about">Our Story</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#contact">Visit Us</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-tagline">A Botanical Coffee Experience</p>
+      <h1>Bean <span class="ampersand">&</span> Bloom</h1>
+      <p class="hero-subtitle">Where every cup is rooted in nature</p>
+      <a href="#menu" class="btn btn-primary">Explore Our Menu</a>
+    </div>
+  </section>
+
+  <!-- Menu Section -->
+  <section class="section menu-section" id="menu">
+    <div class="container">
+      <h2 class="section-title">Our Menu</h2>
+      <p class="section-subtitle">Handcrafted drinks and baked goods, made fresh daily with botanical-inspired ingredients.</p>
+
+      <div class="menu-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="coffee">Coffee</button>
+        <button class="filter-btn" data-filter="tea">Tea</button>
+        <button class="filter-btn" data-filter="pastries">Pastries</button>
+        <button class="filter-btn" data-filter="specials">Specials</button>
+      </div>
+
+      <div class="menu-grid" id="menu-grid">
+        <!-- Populated by main.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="section about-section" id="about">
+    <div class="container about-container">
+      <div class="about-image">
+        <div class="about-image-placeholder">
+          <span>&#127807;</span>
+        </div>
+      </div>
+      <div class="about-text">
+        <h2 class="section-title section-title--left">Our Story</h2>
+        <p>Bean & Bloom started as a dream shared over a cup of coffee in a tiny greenhouse. We believed that the best conversations happen surrounded by living things — the scent of fresh soil, the green of trailing pothos, the warmth of a perfectly pulled espresso.</p>
+        <p>In 2021, we opened our doors in the heart of the neighborhood with a simple mission: create a space where coffee culture meets botanical beauty. Every plant you see is tended by hand. Every drink is crafted with ingredients inspired by the garden around you.</p>
+        <p>We source our beans from small-batch roasters who share our commitment to sustainability. Our pastries are baked in-house each morning. And our greenhouse seating area? It's our favorite spot too.</p>
+        <div class="about-stats">
+          <div class="stat">
+            <span class="stat-number">50+</span>
+            <span class="stat-label">Plant Species</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">12</span>
+            <span class="stat-label">Bean Origins</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">5</span>
+            <span class="stat-label">Years Growing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section class="section gallery-section" id="gallery">
+    <div class="container">
+      <h2 class="section-title">Step Inside</h2>
+      <p class="section-subtitle">A peek at life at Bean & Bloom.</p>
+
+      <div class="gallery-grid">
+        <div class="gallery-item gallery-item--tall">
+          <div class="gallery-placeholder" data-label="Greenhouse Seating">&#127795;</div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-placeholder" data-label="Latte Art">&#9749;</div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-placeholder" data-label="Fresh Pastries">&#127856;</div>
+        </div>
+        <div class="gallery-item gallery-item--wide">
+          <div class="gallery-placeholder" data-label="The Garden Bar">&#127811;</div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-placeholder" data-label="Morning Light">&#127773;</div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-placeholder" data-label="Bean Selection">&#127854;</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="section contact-section" id="contact">
+    <div class="container contact-container">
+      <div class="contact-info">
+        <h2 class="section-title section-title--left">Visit Us</h2>
+        <div class="contact-details">
+          <div class="contact-item">
+            <h3>Address</h3>
+            <p>742 Evergreen Terrace<br>Portland, OR 97205</p>
+          </div>
+          <div class="contact-item">
+            <h3>Hours</h3>
+            <p>Mon — Fri: 7am — 7pm<br>Sat — Sun: 8am — 8pm</p>
+          </div>
+          <div class="contact-item">
+            <h3>Contact</h3>
+            <p>hello@beanandbloom.cafe<br>(503) 555-0142</p>
+          </div>
+        </div>
+
+        <!-- Map Placeholder -->
+        <div class="map-placeholder">
+          <div class="map-inner">
+            <span class="map-icon">&#128205;</span>
+            <p>742 Evergreen Terrace, Portland OR</p>
+            <p class="map-note">Interactive map — replace with Google Maps embed</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form-wrapper">
+        <h3>Send Us a Message</h3>
+        <form class="contact-form" id="contact-form" novalidate>
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Your name" required>
+            <span class="form-error" id="name-error"></span>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="your@email.com" required>
+            <span class="form-error" id="email-error"></span>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" placeholder="Tell us what's on your mind..." required></textarea>
+            <span class="form-error" id="message-error"></span>
+          </div>
+          <button type="submit" class="btn btn-primary btn-submit">Send Message</button>
+          <div class="form-success" id="form-success">Thanks for reaching out! We'll get back to you soon.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-brand">
+        <span class="logo-icon">&#127793;</span> Bean & Bloom
+      </div>
+      <p class="footer-copy">&copy; 2026 Bean & Bloom. Brewed with love in Portland.</p>
+      <div class="footer-links">
+        <a href="#menu">Menu</a>
+        <a href="#about">Story</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

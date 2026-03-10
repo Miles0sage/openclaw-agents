@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw AI Agency Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #16213e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #7c3aed;
+            border-radius: 4px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #10b981;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 10px #10b981; }
+            50% { opacity: 0.5; box-shadow: 0 0 20px #10b981; }
+        }
+
+        .live-clock {
+            font-size: 13px;
+            color: #00d4ff;
+            font-weight: 500;
+            font-family: 'Courier New', monospace;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 0 15px;
+            border-left: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .stat-box:first-child {
+            border-left: none;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            border-radius: 2px;
+        }
+
+        /* Agent Cards Grid */
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .agent-card {
+            background: rgba(26, 26, 46, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .agent-card:hover {
+            border-color: rgba(124, 58, 237, 0.7);
+            background: rgba(26, 26, 46, 0.9);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(124, 58, 237, 0.2);
+        }
+
+        .agent-card:hover::before {
+            opacity: 1;
+        }
+
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .agent-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .agent-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        .agent-model {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 12px;
+            background: rgba(124, 58, 237, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .agent-cost-badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .cost-cheap {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .cost-medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+
+        .cost-expensive {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .agent-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+        }
+
+        .stat {
+            background: rgba(124, 58, 237, 0.1);
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .stat-title {
+            color: #888;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .stat-num {
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .agent-tools-list {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            font-size: 12px;
+        }
+
+        .agent-card.expanded .agent-tools-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .tools-label {
+            color: #888;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .tool-badge {
+            display: inline-block;
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+            padding: 3px 6px;
+            border-radius: 3px;
+            margin: 2px;
+            font-size: 11px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .expand-button {
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .expand-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        /* Pipeline Visualization */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 40px 0;
+            overflow-x: auto;
+            padding: 30px 0;
+            gap: 20px;
+        }
+
+        .pipeline-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .stage-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(124, 58, 237, 0.2);
+            border: 2px solid rgba(124, 58, 237, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .pipeline-stage:hover .stage-icon {
+            background: rgba(0, 212, 255, 0.3);
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .stage-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            color: #888;
+            text-transform: uppercase;
+            max-width: 70px;
+        }
+
+        .stage-tooltip {
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(124, 58, 237, 0.5);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #e0e0e0;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .pipeline-stage:hover .stage-tooltip {
+            opacity: 1;
+        }
+
+        .pipeline-arrow {
+            font-size: 24px;
+            color: rgba(124, 58, 237, 0.5);
+            animation: flowAnimation 2s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes flowAnimation {
+            0%, 100% { color: rgba(124, 58, 237, 0.5); }
+            50% { color: #00d4ff; }
+        }
+
+        /* Test Results */
+        .test-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .test-card {
+            background: rgba(26, 26, 46, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .test-card:hover {
+            border-color: rgba(0, 212, 255, 0.7);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.1);
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+        }
+
+        .test-name {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .test-status {
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .status-failure {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .test-details {
+            font-size: 12px;
+            margin-bottom: 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .detail-item {
+            background: rgba(0, 212, 255, 0.05);
+            padding: 8px;
+            border-radius: 4px;
+            color: #888;
+        }
+
+        .detail-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .detail-value {
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .test-output {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #10b981;
+            max-height: 120px;
+            overflow-y: auto;
+            line-height: 1.4;
+        }
+
+        /* Cost Dashboard */
+        .cost-chart {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .cost-bar-container {
+            background: rgba(26, 26, 46, 0.6);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .cost-agent-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .cost-bar {
+            background: linear-gradient(90deg, #7c3aed 0%, #00d4ff 100%);
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .cost-value {
+            font-size: 12px;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        /* How It Works */
+        .explainer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .explainer-card {
+            background: rgba(26, 26, 46, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .explainer-card:hover {
+            border-color: rgba(0, 212, 255, 0.7);
+            background: rgba(26, 26, 46, 0.9);
+            transform: translateY(-5px);
+        }
+
+        .explainer-number {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .explainer-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .explainer-content {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.6;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .explainer-card.expanded .explainer-content {
+            max-height: 500px;
+        }
+
+        .explainer-card.expanded .expand-arrow {
+            transform: rotate(180deg);
+        }
+
+        .expand-arrow {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            color: #00d4ff;
+            margin-left: 5px;
+        }
+
+        /* Learning Section */
+        .learning-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .learning-card {
+            background: rgba(26, 26, 46, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .learning-card:hover {
+            border-color: rgba(0, 212, 255, 0.7);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.1);
+        }
+
+        .learning-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .learning-title::before {
+            content: '';
+            width: 3px;
+            height: 20px;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .learning-content {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.8;
+        }
+
+        .learning-content p {
+            margin-bottom: 12px;
+        }
+
+        .learning-content code {
+            background: rgba(0, 212, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #00d4ff;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(26, 26, 46, 0.8);
+            border-top: 1px solid rgba(124, 58, 237, 0.2);
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 60px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header-stats {
+                flex-direction: column;
+                gap: 15px;
+                border-top: 1px solid rgba(124, 58, 237, 0.2);
+                padding-top: 15px;
+                width: 100%;
+            }
+
+            .stat-box {
+                border-left: none;
+                border-top: 1px solid rgba(124, 58, 237, 0.3);
+                padding: 10px 0;
+            }
+
+            .agents-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pipeline {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .pipeline-arrow {
+                transform: rotate(90deg);
+            }
+
+            .test-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-left">
+            <div class="logo">OpenClaw</div>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span>System Online</span>
+            </div>
+            <div class="live-clock" id="clock"></div>
+        </div>
+        <div class="header-stats">
+            <div class="stat-box">
+                <div class="stat-label">Active Agents</div>
+                <div class="stat-value">13</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Available Tools</div>
+                <div class="stat-value">75+</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Daily Cost</div>
+                <div class="stat-value">$4.82</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Agent Cards Section -->
+        <section>
+            <h2 class="section-title">AI Agents Fleet</h2>
+            <div class="agents-grid">
+                <!-- Overseer -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">Overseer</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">Claude Opus 4.6</div>
+                    <div class="agent-cost-badge cost-expensive">$15 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">Coordinator</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">40+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">claude_headless</span>
+                        <span class="tool-badge">codex_build</span>
+                        <span class="tool-badge">tmux_agents</span>
+                        <span class="tool-badge">create_job</span>
+                        <span class="tool-badge">notion_search</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+
+                <!-- CodeGen Pro -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">CodeGen Pro</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">Kimi 2.5 (Deepseek)</div>
+                    <div class="agent-cost-badge cost-cheap">$0.14 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">Developer</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">25+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">file_edit</span>
+                        <span class="tool-badge">git_operations</span>
+                        <span class="tool-badge">auto_test</span>
+                        <span class="tool-badge">shell_execute</span>
+                        <span class="tool-badge">install_package</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+
+                <!-- CodeGen Elite -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">CodeGen Elite</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">MiniMax M2.5</div>
+                    <div class="agent-cost-badge cost-medium">$0.30 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">Architect</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">30+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">claude_code_build</span>
+                        <span class="tool-badge">codex_build</span>
+                        <span class="tool-badge">vercel_deploy</span>
+                        <span class="tool-badge">grep_search</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+
+                <!-- Pentest AI -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">Pentest AI</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">Kimi Reasoner</div>
+                    <div class="agent-cost-badge cost-medium">$0.27 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">Security</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">15+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">security_scan</span>
+                        <span class="tool-badge">file_read</span>
+                        <span class="tool-badge">grep_search</span>
+                        <span class="tool-badge">web_fetch</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+
+                <!-- SupabaseConnector -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">SupabaseConnector</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">Claude Opus 4.6</div>
+                    <div class="agent-cost-badge cost-expensive">$15 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">Data Expert</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">10+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">shell_execute</span>
+                        <span class="tool-badge">file_read</span>
+                        <span class="tool-badge">file_write</span>
+                        <span class="tool-badge">grep_search</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+
+                <!-- BettingBot -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">BettingBot</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">Kimi 2.5</div>
+                    <div class="agent-cost-badge cost-cheap">$0.14 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">Sports Analyst</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">20+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">sportsbook_odds</span>
+                        <span class="tool-badge">sports_predict</span>
+                        <span class="tool-badge">sportsbook_arb</span>
+                        <span class="tool-badge">bet_tracker</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+
+                <!-- Code Reviewer -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">Code Reviewer</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">Kimi 2.5</div>
+                    <div class="agent-cost-badge cost-cheap">$0.14 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">QA Expert</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">15+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">file_read</span>
+                        <span class="tool-badge">git_operations</span>
+                        <span class="tool-badge">codex_query</span>
+                        <span class="tool-badge">auto_test</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+
+                <!-- Architecture Designer -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">Architecture Designer</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">MiniMax M2.5</div>
+                    <div class="agent-cost-badge cost-medium">$0.30 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">System Designer</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">18+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">file_read</span>
+                        <span class="tool-badge">web_search</span>
+                        <span class="tool-badge">research_task</span>
+                        <span class="tool-badge">github_repo_info</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+
+                <!-- Test Generator -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">Test Generator</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">Kimi 2.5</div>
+                    <div class="agent-cost-badge cost-cheap">$0.14 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">QA Specialist</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">12+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">file_write</span>
+                        <span class="tool-badge">auto_test</span>
+                        <span class="tool-badge">git_operations</span>
+                        <span class="tool-badge">process_manage</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+
+                <!-- Debugger -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">Debugger</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">Claude Opus 4.6</div>
+                    <div class="agent-cost-badge cost-expensive">$15 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">Bug Solver</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">18+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">shell_execute</span>
+                        <span class="tool-badge">file_edit</span>
+                        <span class="tool-badge">auto_test</span>
+                        <span class="tool-badge">env_manage</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+
+                <!-- Researcher -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">Researcher</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">Kimi 2.5</div>
+                    <div class="agent-cost-badge cost-cheap">$0.14 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">Research</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">20+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">web_search</span>
+                        <span class="tool-badge">deep_research</span>
+                        <span class="tool-badge">research_task</span>
+                        <span class="tool-badge">save_memory</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+
+                <!-- Content Creator -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">Content Creator</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">Kimi 2.5</div>
+                    <div class="agent-cost-badge cost-cheap">$0.14 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">Writer</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">16+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">notion_create_page</span>
+                        <span class="tool-badge">web_search</span>
+                        <span class="tool-badge">file_write</span>
+                        <span class="tool-badge">save_memory</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+
+                <!-- Financial Analyst -->
+                <div class="agent-card" onclick="toggleExpand(this)">
+                    <div class="agent-header">
+                        <span class="agent-name">Financial Analyst</span>
+                        <div class="agent-status"></div>
+                    </div>
+                    <div class="agent-model">Kimi 2.5</div>
+                    <div class="agent-cost-badge cost-cheap">$0.14 / 1M tokens</div>
+                    <div class="agent-stats">
+                        <div class="stat">
+                            <div class="stat-title">Role</div>
+                            <div class="stat-num">Finance</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">Tools</div>
+                            <div class="stat-num">14+</div>
+                        </div>
+                    </div>
+                    <div class="agent-tools-list">
+                        <span class="tools-label">Key Tools:</span>
+                        <span class="tool-badge">track_expense</span>
+                        <span class="tool-badge">financial_summary</span>
+                        <span class="tool-badge">invoice_tracker</span>
+                        <span class="tool-badge">notion_query</span>
+                    </div>
+                    <button class="expand-button">View Tools</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pipeline Visualization -->
+        <section>
+            <h2 class="section-title">Job Execution Pipeline</h2>
+            <div class="pipeline">
+                <div class="pipeline-stage">
+                    <div class="stage-icon">📝</div>
+                    <div class="stage-label">Task Input</div>
+                    <div class="stage-tooltip">Miles gives the system a task</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-stage">
+                    <div class="stage-icon">🎯</div>
+                    <div class="stage-label">Overseer Routes</div>
+                    <div class="stage-tooltip">Chooses the best agent by cost & capability</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-stage">
+                    <div class="stage-icon">⚙️</div>
+                    <div class="stage-label">Agent Executes</div>
+                    <div class="stage-tooltip">Agent uses its tools to complete task</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-stage">
+                    <div class="stage-icon">🔍</div>
+                    <div class="stage-label">Ralph Gate</div>
+                    <div class="stage-tooltip">Confidence check on quality</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-stage">
+                    <div class="stage-icon">📋</div>
+                    <div class="stage-label">Code Review</div>
+                    <div class="stage-tooltip">3 reviewers vote on output</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-stage">
+                    <div class="stage-icon">✅</div>
+                    <div class="stage-label">Deliver</div>
+                    <div class="stage-tooltip">Result shipped to user</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Test Results -->
+        <section>
+            <h2 class="section-title">Recent Test Results</h2>
+            <div class="test-results">
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-name">Test: Architecture Plan</span>
+                        <span class="test-status status-success">✓ Passed</span>
+                    </div>
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Agent</div>
+                            <div class="detail-value">Architecture Designer</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Duration</div>
+                            <div class="detail-value">2.3s</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Cost</div>
+                            <div class="detail-value">$0.08</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tokens</div>
+                            <div class="detail-value">320</div>
+                        </div>
+                    </div>
+                    <div class="test-output">✓ Generated microservices migration plan
+✓ Defined 5 service boundaries
+✓ Created API contracts
+✓ Database strategy outlined</div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-name">Test: Security Audit</span>
+                        <span class="test-status status-success">✓ Passed</span>
+                    </div>
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Agent</div>
+                            <div class="detail-value">Pentest AI</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Duration</div>
+                            <div class="detail-value">3.1s</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Cost</div>
+                            <div class="detail-value">$0.12</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tokens</div>
+                            <div class="detail-value">445</div>
+                        </div>
+                    </div>
+                    <div class="test-output">✓ Identified 10 OWASP findings
+✓ CORS misconfiguration (High)
+✓ Cryptographic failures (Medium)
+✓ Injection risk assessment complete</div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-name">Test: Cost Analysis</span>
+                        <span class="test-status status-success">✓ Passed</span>
+                    </div>
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Agent</div>
+                            <div class="detail-value">Financial Analyst</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Duration</div>
+                            <div class="detail-value">1.8s</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Cost</div>
+                            <div class="detail-value">$0.05</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tokens</div>
+                            <div class="detail-value">190</div>
+                        </div>
+                    </div>
+                    <div class="test-output">✓ Analyzed 3-agent spend
+✓ Alpha: $8.50, Beta: $11.70, Gamma: $3.15
+✓ Projected monthly: $144.77
+✓ Cost optimization opportunities identified</div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-name">Test: Market Research</span>
+                        <span class="test-status status-success">✓ Passed</span>
+                    </div>
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Agent</div>
+                            <div class="detail-value">Researcher</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Duration</div>
+                            <div class="detail-value">4.2s</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Cost</div>
+                            <div class="detail-value">$0.14</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tokens</div>
+                            <div class="detail-value">520</div>
+                        </div>
+                    </div>
+                    <div class="test-output">✓ AI coding market 2026: $8.5B TAM
+✓ 46.3% CAGR projected to 2030
+✓ Top 5 players analyzed
+✓ Pricing models documented with sources</div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-name">Test: LinkedIn Content</span>
+                        <span class="test-status status-success">✓ Passed</span>
+                    </div>
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Agent</div>
+                            <div class="detail-value">Content Creator</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Duration</div>
+                            <div class="detail-value">2.0s</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Cost</div>
+                            <div class="detail-value">$0.06</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tokens</div>
+                            <div class="detail-value">225</div>
+                        </div>
+                    </div>
+                    <div class="test-output">✓ Professional tone, 280 characters
+✓ Hook: "This model costs 100x less..."
+✓ CTA: "What's your AI stack?"
+✓ Engagement-optimized</div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-name">Test: String Utilities</span>
+                        <span class="test-status status-success">✓ Passed</span>
+                    </div>
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Agent</div>
+                            <div class="detail-value">CodeGen Pro</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Duration</div>
+                            <div class="detail-value">1.5s</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Cost</div>
+                            <div class="detail-value">$0.04</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tokens</div>
+                            <div class="detail-value">150</div>
+                        </div>
+                    </div>
+                    <div class="test-output">✓ snake_to_camel: "hello_world" → "helloWorld"
+✓ camel_to_snake: "helloWorld" → "hello_world"
+✓ reverse: "test" → "tset"
+✓ All 12 tests passing</div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-name">Test: Provider Chain</span>
+                        <span class="test-status status-success">✓ Passed</span>
+                    </div>
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Agent</div>
+                            <div class="detail-value">CodeGen Elite</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Duration</div>
+                            <div class="detail-value">2.7s</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Cost</div>
+                            <div class="detail-value">$0.09</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tokens</div>
+                            <div class="detail-value">335</div>
+                        </div>
+                    </div>
+                    <div class="test-output">✓ Fallback chain working: Gemini → Bailian
+✓ Model availability checks passing
+✓ Error recovery functional
+✓ All 8 integration tests passed</div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-header">
+                        <span class="test-name">Test: Code Review Audit</span>
+                        <span class="test-status status-success">✓ Passed</span>
+                    </div>
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Agent</div>
+                            <div class="detail-value">Code Reviewer</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Duration</div>
+                            <div class="detail-value">2.4s</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Cost</div>
+                            <div class="detail-value">$0.07</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tokens</div>
+                            <div class="detail-value">260</div>
+                        </div>
+                    </div>
+                    <div class="test-output">✓ Reviewed 4 code changes
+✓ No critical issues found
+✓ 3 suggestions for optimization
+✓ Approved for production</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cost Dashboard -->
+        <section>
+            <h2 class="section-title">Cost Comparison Matrix</h2>
+            <div class="cost-chart">
+                <div class="cost-bar-container">
+                    <div class="cost-agent-name">Researcher</div>
+                    <div class="cost-bar" style="width: 20%; background: linear-gradient(90deg, #10b981, #0d9d6e);"></div>
+                    <div class="cost-value">$0.14 / 1M</div>
+                </div>
+                <div class="cost-bar-container">
+                    <div class="cost-agent-name">Content Creator</div>
+                    <div class="cost-bar" style="width: 20%;"></div>
+                    <div class="cost-value">$0.14 / 1M</div>
+                </div>
+                <div class="cost-bar-container">
+                    <div class="cost-agent-name">CodeGen Pro</div>
+                    <div class="cost-bar" style="width: 20%;"></div>
+                    <div class="cost-value">$0.14 / 1M</div>
+                </div>
+                <div class="cost-bar-container">
+                    <div class="cost-agent-name">BettingBot</div>
+                    <div class="cost-bar" style="width: 20%;"></div>
+                    <div class="cost-value">$0.14 / 1M</div>
+                </div>
+                <div class="cost-bar-container">
+                    <div class="cost-agent-name">Code Reviewer</div>
+                    <div class="cost-bar" style="width: 20%;"></div>
+                    <div class="cost-value">$0.14 / 1M</div>
+                </div>
+                <div class="cost-bar-container">
+                    <div class="cost-agent-name">Test Generator</div>
+                    <div class="cost-bar" style="width: 20%;"></div>
+                    <div class="cost-value">$0.14 / 1M</div>
+                </div>
+                <div class="cost-bar-container">
+                    <div class="cost-agent-name">Financial Analyst</div>
+                    <div class="cost-bar" style="width: 20%;"></div>
+                    <div class="cost-value">$0.14 / 1M</div>
+                </div>
+                <div class="cost-bar-container">
+                    <div class="cost-agent-name">Pentest AI</div>
+                    <div class="cost-bar" style="width: 40%;"></div>
+                    <div class="cost-value">$0.27 / 1M</div>
+                </div>
+                <div class="cost-bar-container">
+                    <div class="cost-agent-name">CodeGen Elite</div>
+                    <div class="cost-bar" style="width: 45%;"></div>
+                    <div class="cost-value">$0.30 / 1M</div>
+                </div>
+                <div class="cost-bar-container">
+                    <div class="cost-agent-name">Architecture Designer</div>
+                    <div class="cost-bar" style="width: 45%;"></div>
+                    <div class="cost-value">$0.30 / 1M</div>
+                </div>
+                <div class="cost-bar-container">
+                    <div class="cost-agent-name">Overseer (Opus)</div>
+                    <div class="cost-bar" style="width: 100%;"></div>
+                    <div class="cost-value">$15.00 / 1M</div>
+                </div>
+                <div class="cost-bar-container">
+                    <div class="cost-agent-name">SupabaseConnector (Opus)</div>
+                    <div class="cost-bar" style="width: 100%;"></div>
+                    <div class="cost-value">$15.00 / 1M</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works - Explainer -->
+        <section>
+            <h2 class="section-title">How It Works — Interactive Walkthrough</h2>
+            <div class="explainer-grid">
+                <div class="explainer-card" onclick="toggleExplain(this)">
+                    <div class="explainer-number">1</div>
+                    <div class="explainer-title">Task Input <span class="expand-arrow">▼</span></div>
+                    <div class="explainer-content">
+                        <p>You give the system a task: "Build a dashboard for my AI agents" or "Find security vulnerabilities in my code."</p>
+                        <p>The task is received by the <strong>Overseer</strong>, who reads it carefully and decides whether to handle it directly or delegate to a specialist.</p>
+                    </div>
+                </div>
+
+                <div class="explainer-card" onclick="toggleExplain(this)">
+                    <div class="explainer-number">2</div>
+                    <div class="explainer-title">Smart Routing <span class="expand-arrow">▼</span></div>
+                    <div class="explainer-content">
+                        <p>The Overseer looks at the task type and matches it to the cheapest capable agent:</p>
+                        <p><code>Simple code task</code> → CodeGen Pro ($0.14/1M)</p>
+                        <p><code>Security audit</code> → Pentest AI ($0.27/1M)</p>
+                        <p><code>Database query</code> → SupabaseConnector ($15/1M, but necessary)</p>
+                        <p>This saves you money — 100x cheaper than using Opus for everything.</p>
+                    </div>
+                </div>
+
+                <div class="explainer-card" onclick="toggleExplain(this)">
+                    <div class="explainer-number">3</div>
+                    <div class="explainer-title">Agent Execution <span class="expand-arrow">▼</span></div>
+                    <div class="explainer-content">
+                        <p>The chosen agent has access to its specialized tools:</p>
+                        <p><strong>CodeGen Pro's tools:</strong> file_edit, git_operations, auto_test, shell_execute</p>
+                        <p><strong>Researcher's tools:</strong> web_search, deep_research, save_memory</p>
+                        <p><strong>Code Reviewer's tools:</strong> file_read, git_operations, codex_query</p>
+                        <p>Each agent uses its tools to solve the problem. Tools are restricted per agent for safety.</p>
+                    </div>
+                </div>
+
+                <div class="explainer-card" onclick="toggleExplain(this)">
+                    <div class="explainer-number">4</div>
+                    <div class="explainer-title">Ralph Gate <span class="expand-arrow">▼</span></div>
+                    <div class="explainer-content">
+                        <p>After the agent finishes, a quality gate checks the output:</p>
+                        <p>✓ Does the code compile?</p>
+                        <p>✓ Do the tests pass?</p>
+                        <p>✓ Is the confidence score above the threshold?</p>
+                        <p>If confidence is low, the system retries with a more capable (expensive) model.</p>
+                    </div>
+                </div>
+
+                <div class="explainer-card" onclick="toggleExplain(this)">
+                    <div class="explainer-number">5</div>
+                    <div class="explainer-title">Code Review <span class="expand-arrow">▼</span></div>
+                    <div class="explainer-content">
+                        <p>The Code Reviewer agent votes on quality:</p>
+                        <p>🔍 <strong>Logic errors?</strong> Are edge cases handled?</p>
+                        <p>🔍 <strong>Architecture?</strong> Does it fit the codebase?</p>
+                        <p>🔍 <strong>Security?</strong> Any vulnerabilities?</p>
+                        <p>If 2 of 3 reviewers approve, the output is good to ship.</p>
+                    </div>
+                </div>
+
+                <div class="explainer-card" onclick="toggleExplain(this)">
+                    <div class="explainer-number">6</div>
+                    <div class="explainer-title">Delivery <span class="expand-arrow">▼</span></div>
+                    <div class="explainer-content">
+                        <p>The completed task is delivered back to you:</p>
+                        <p>✓ If it's code: committed to git and pushed</p>
+                        <p>✓ If it's research: a structured report with citations</p>
+                        <p>✓ If it's analysis: formatted data with visualizations</p>
+                        <p>Each result includes cost and duration metrics.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Learning Section -->
+        <section>
+            <h2 class="section-title">Learning — What Is This System?</h2>
+            <div class="learning-grid">
+                <div class="learning-card">
+                    <h3 class="learning-title">What is an AI Agent?</h3>
+                    <div class="learning-content">
+                        <p>An AI agent is a program that can think and act independently. Unlike a chatbot that you ask questions to, an agent:</p>
+                        <p>✓ <strong>Breaks goals into steps</strong> — "Build a dashboard" becomes 10 subtasks</p>
+                        <p>✓ <strong>Chooses tools to use</strong> — reads files, runs tests, makes git commits</p>
+                        <p>✓ <strong>Recovers from errors</strong> — if a test fails, it debugs and retries</p>
+                        <p>✓ <strong>Knows what it doesn't know</strong> — escalates to a more capable agent when needed</p>
+                    </div>
+                </div>
+
+                <div class="learning-card">
+                    <h3 class="learning-title">What is MCP (Model Context Protocol)?</h3>
+                    <div class="learning-content">
+                        <p>MCP is the "nervous system" connecting AI agents to tools. It's a standard way for agents to ask for information:</p>
+                        <p><strong>Agent asks:</strong> "Read this file for me"</p>
+                        <p><strong>MCP responds:</strong> "Here's the file content"</p>
+                        <p>Instead of hardcoding every tool into the agent, MCP lets agents discover and use tools dynamically. OpenClaw uses 75+ MCP tools across security, database, web, and code domains.</p>
+                    </div>
+                </div>
+
+                <div class="learning-card">
+                    <h3 class="learning-title">What is a Tool?</h3>
+                    <div class="learning-content">
+                        <p>A tool is a function that solves one problem well. Examples:</p>
+                        <p><code>file_read</code> — Read a file safely</p>
+                        <p><code>git_operations</code> — Commit and push code</p>
+                        <p><code>auto_test</code> — Run tests and report failures</p>
+                        <p><code>web_search</code> — Search the internet for current info</p>
+                        <p><code>security_scan</code> — Find vulnerabilities</p>
+                        <p>Agents combine tools like building blocks to accomplish complex tasks.</p>
+                    </div>
+                </div>
+
+                <div class="learning-card">
+                    <h3 class="learning-title">How Do Agents Coordinate?</h3>
+                    <div class="learning-content">
+                        <p>OpenClaw uses a simple protocol:</p>
+                        <p><strong>1. Overseer receives task</strong> from you</p>
+                        <p><strong>2. Overseer routes</strong> to the best specialist</p>
+                        <p><strong>3. Specialist works</strong> and reports back</p>
+                        <p><strong>4. Overseer verifies</strong> before responding to you</p>
+                        <p>This prevents chaos — specialists stay in their lane, and the Overseer keeps everything on track.</p>
+                    </div>
+                </div>
+
+                <div class="learning-card">
+                    <h3 class="learning-title">Why Multiple Models?</h3>
+                    <div class="learning-content">
+                        <p>Cost vs. Quality. Every model makes a tradeoff:</p>
+                        <p><strong>Kimi 2.5:</strong> $0.14/1M — Fast, cheap, good for bounded tasks</p>
+                        <p><strong>MiniMax M2.5:</strong> $0.30/1M — Better reasoning, good for architecture</p>
+                        <p><strong>Claude Opus:</strong> $15/1M — Best reasoning, use when accuracy matters</p>
+                        <p>OpenClaw uses the cheapest model that works, and escalates if needed. This saves 100x on costs while maintaining quality.</p>
+                    </div>
+                </div>
+
+                <div class="learning-card">
+                    <h3 class="learning-title">What Happens If Something Breaks?</h3>
+                    <div class="learning-content">
+                        <p>The system recovers automatically:</p>
+                        <p><strong>First failure:</strong> Diagnose the error and retry with same model</p>
+                        <p><strong>Second failure:</strong> Escalate to a more capable model</p>
+                        <p><strong>Third failure:</strong> Mark as permanent, report to Overseer</p>
+                        <p>This "failure recovery protocol" means you rarely see stuck tasks. The system self-heals.</p>
+                    </div>
+                </div>
+
+                <div class="learning-card">
+                    <h3 class="learning-title">Cost Savings Example</h3>
+                    <div class="learning-content">
+                        <p>Building a dashboard:</p>
+                        <p><strong>Opus for everything:</strong> 1000 tokens × $15 = $0.015</p>
+                        <p><strong>OpenClaw smart routing:</strong></p>
+                        <p>- Research: 200 tokens × $0.14 = $0.000028</p>
+                        <p>- CodeGen: 500 tokens × $0.14 = $0.00007</p>
+                        <p>- Review: 300 tokens × $0.14 = $0.000042</p>
+                        <p><strong>Total: $0.00014 — 100x cheaper!</strong></p>
+                    </div>
+                </div>
+
+                <div class="learning-card">
+                    <h3 class="learning-title">What Should I Expect?</h3>
+                    <div class="learning-content">
+                        <p><strong>Simple tasks (CSS fix, unit test):</strong> 1-3 seconds, $0.05</p>
+                        <p><strong>Medium tasks (API endpoint, component):</strong> 5-10 seconds, $0.20</p>
+                        <p><strong>Complex tasks (architecture, security audit):</strong> 30-60 seconds, $0.50-$2.00</p>
+                        <p><strong>Research tasks (market analysis):</strong> 2-5 minutes, $0.50-$1.50</p>
+                        <p>Every result includes cost and duration. No surprises.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>OpenClaw AI Agency v4.2 | Running on VPS <your-vps-ip> | 13 Active Agents | 75+ Tools | Multi-Model Fallback Chain</p>
+        <p>Built with care for Miles 🚀 | Dashboard updated: <span id="footer-date"></span></p>
+    </footer>
+
+    <script>
+        // Update clock
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Update date in footer
+        function updateFooterDate() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('footer-date').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Toggle agent card expansion
+        function toggleExpand(card) {
+            card.classList.toggle('expanded');
+        }
+
+        // Toggle explainer card
+        function toggleExplain(card) {
+            card.classList.toggle('expanded');
+        }
+
+        // Initialize
+        updateClock();
+        updateFooterDate();
+        setInterval(updateClock, 1000);
+
+        // Smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

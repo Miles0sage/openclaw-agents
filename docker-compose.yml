@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  openclaw:
+    build: .
+    container_name: openclaw_app
+    env_file:
+      - .env
+    ports:
+      - "3000:3000" # Adjust port as needed
+    depends_on:
+      - db
+    volumes:
+      - ./data:/app/data # Persistent storage for application data
+
+  db:
+    image: postgres:13
+    container_name: openclaw_db
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/postgresql/data # Persistent storage for database
+
+volumes:
+  db_data:

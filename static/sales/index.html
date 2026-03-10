@@ -1,0 +1,2141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google-site-verification" content="cGWomLpit6o7KB9hUJmJPZhDhrRCnhNWHSLyYxbBTMI" />
+    <title>OpenClaw — AI-Powered Solutions for Local Businesses | Flagstaff, AZ</title>
+    <meta
+      name="description"
+      content="OpenClaw builds AI receptionists, websites, and CRM systems for local businesses in Flagstaff, Arizona. Get a free consultation today."
+    />
+    <meta
+      name="keywords"
+      content="AI receptionist, Flagstaff business, website design, CRM, booking system, local business AI"
+    />
+    <meta property="og:title" content="OpenClaw — AI for Local Businesses" />
+    <meta
+      property="og:description"
+      content="AI receptionists, modern websites, and smart CRMs built for Flagstaff businesses. Real clients. Real results."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://<your-domain>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============================================================
+   RESET & BASE
+   ============================================================ */
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg-primary: #0a0a0f;
+        --bg-secondary: #101018;
+        --bg-card: #14141e;
+        --bg-card-hover: #1a1a28;
+        --border: rgba(255, 255, 255, 0.06);
+        --border-accent: rgba(99, 102, 241, 0.3);
+        --text-primary: #f0f0f5;
+        --text-secondary: #9898b0;
+        --text-muted: #5c5c78;
+        --accent: #6366f1;
+        --accent-bright: #818cf8;
+        --accent-glow: rgba(99, 102, 241, 0.15);
+        --green: #10b981;
+        --green-glow: rgba(16, 185, 129, 0.15);
+        --amber: #f59e0b;
+        --amber-glow: rgba(245, 158, 11, 0.12);
+        --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+        --gradient-card: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.03) 0%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        --radius: 12px;
+        --radius-lg: 20px;
+        --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+        --shadow-glow: 0 0 60px rgba(99, 102, 241, 0.08);
+        --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      html {
+        font-family: var(--font);
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      body {
+        overflow-x: hidden;
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* ============================================================
+   NAVIGATION
+   ============================================================ */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        padding: 16px 0;
+        transition: var(--transition);
+        background: transparent;
+      }
+
+      .nav.scrolled {
+        background: rgba(10, 10, 15, 0.92);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 0;
+      }
+
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      .nav-logo {
+        font-weight: 800;
+        font-size: 1.5rem;
+        letter-spacing: -0.03em;
+        background: var(--gradient-accent);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 32px;
+        list-style: none;
+      }
+
+      .nav-links a {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        transition: color var(--transition);
+        position: relative;
+      }
+
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--accent);
+        transition: width var(--transition);
+      }
+
+      .nav-links a:hover {
+        color: var(--text-primary);
+      }
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+
+      .nav-cta {
+        padding: 10px 24px;
+        background: var(--accent);
+        color: #fff !important;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        transition: all var(--transition);
+        -webkit-text-fill-color: #fff !important;
+      }
+
+      .nav-cta:hover {
+        background: var(--accent-bright);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+      }
+
+      .nav-cta::after {
+        display: none !important;
+      }
+
+      .nav-mobile-toggle {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+      }
+
+      .nav-mobile-toggle span {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background: var(--text-primary);
+        margin: 5px 0;
+        transition: var(--transition);
+      }
+
+      /* ============================================================
+   HERO SECTION
+   ============================================================ */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        padding: 120px 0 80px;
+      }
+
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+      }
+
+      .hero-bg::before {
+        content: "";
+        position: absolute;
+        top: -40%;
+        left: -20%;
+        width: 80%;
+        height: 80%;
+        background: radial-gradient(ellipse, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+        animation: drift 20s ease-in-out infinite alternate;
+      }
+
+      .hero-bg::after {
+        content: "";
+        position: absolute;
+        bottom: -30%;
+        right: -20%;
+        width: 70%;
+        height: 70%;
+        background: radial-gradient(ellipse, rgba(139, 92, 246, 0.06) 0%, transparent 70%);
+        animation: drift 20s ease-in-out infinite alternate-reverse;
+      }
+
+      @keyframes drift {
+        0% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        100% {
+          transform: translate(40px, -30px) rotate(3deg);
+        }
+      }
+
+      .hero-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+        background-size: 80px 80px;
+        mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 20%, transparent 80%);
+        -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 20%, transparent 80%);
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 820px;
+        margin: 0 auto;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 20px;
+        background: var(--accent-glow);
+        border: 1px solid var(--border-accent);
+        border-radius: 100px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--accent-bright);
+        margin-bottom: 32px;
+        animation: fadeInUp 0.8s ease-out;
+      }
+
+      .hero-badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse-dot 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse-dot {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      .hero h1 {
+        font-size: clamp(2.8rem, 6vw, 4.5rem);
+        font-weight: 900;
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+        margin-bottom: 24px;
+        animation: fadeInUp 0.8s ease-out 0.15s both;
+      }
+
+      .hero h1 .highlight {
+        background: var(--gradient-accent);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-sub {
+        font-size: clamp(1.05rem, 2vw, 1.25rem);
+        color: var(--text-secondary);
+        max-width: 620px;
+        margin: 0 auto 40px;
+        line-height: 1.7;
+        animation: fadeInUp 0.8s ease-out 0.3s both;
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fadeInUp 0.8s ease-out 0.45s both;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 32px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        border: none;
+        transition: all var(--transition);
+        font-family: var(--font);
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+      }
+
+      .btn-primary:hover {
+        background: var(--accent-bright);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.12);
+        transform: translateY(-2px);
+      }
+
+      .hero-proof {
+        margin-top: 64px;
+        display: flex;
+        justify-content: center;
+        gap: 48px;
+        animation: fadeInUp 0.8s ease-out 0.6s both;
+      }
+
+      .hero-stat {
+        text-align: center;
+      }
+
+      .hero-stat-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        background: var(--gradient-accent);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-stat-label {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-top: 4px;
+        font-weight: 500;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ============================================================
+   SECTION COMMON
+   ============================================================ */
+      section {
+        padding: 100px 0;
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 64px;
+      }
+
+      .section-label {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--accent-bright);
+        margin-bottom: 16px;
+      }
+
+      .section-title {
+        font-size: clamp(2rem, 4vw, 2.8rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        margin-bottom: 16px;
+      }
+
+      .section-desc {
+        font-size: 1.05rem;
+        color: var(--text-secondary);
+        max-width: 560px;
+        margin: 0 auto;
+        line-height: 1.7;
+      }
+
+      /* ============================================================
+   SERVICES / PRICING
+   ============================================================ */
+      #services {
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+      }
+
+      .service-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 36px 28px;
+        position: relative;
+        transition: all var(--transition);
+        overflow: hidden;
+      }
+
+      .service-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gradient-accent);
+        opacity: 0;
+        transition: opacity var(--transition);
+      }
+
+      .service-card:hover {
+        border-color: var(--border-accent);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-glow);
+      }
+
+      .service-card:hover::before {
+        opacity: 1;
+      }
+
+      .service-card.featured {
+        border-color: var(--border-accent);
+        background: linear-gradient(180deg, rgba(99, 102, 241, 0.06) 0%, var(--bg-card) 40%);
+      }
+
+      .service-card.featured::before {
+        opacity: 1;
+      }
+
+      .service-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 4px 12px;
+        background: var(--accent);
+        color: #fff;
+        border-radius: 100px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .service-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+      }
+
+      .service-icon.phone {
+        background: rgba(16, 185, 129, 0.12);
+      }
+      .service-icon.web {
+        background: rgba(99, 102, 241, 0.12);
+      }
+      .service-icon.crm {
+        background: rgba(245, 158, 11, 0.12);
+      }
+      .service-icon.full {
+        background: rgba(139, 92, 246, 0.12);
+      }
+
+      .service-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .service-price {
+        margin-bottom: 16px;
+      }
+
+      .service-price-setup {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text-primary);
+      }
+
+      .service-price-monthly {
+        font-size: 0.88rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .service-desc {
+        font-size: 0.92rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .service-features {
+        list-style: none;
+      }
+
+      .service-features li {
+        position: relative;
+        padding-left: 24px;
+        font-size: 0.88rem;
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+        line-height: 1.5;
+      }
+
+      .service-features li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 7px;
+        width: 14px;
+        height: 14px;
+        background: var(--green);
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+        mask-size: contain;
+        -webkit-mask-size: contain;
+      }
+
+      /* ============================================================
+   CASE STUDIES
+   ============================================================ */
+      #results {
+        background: var(--bg-primary);
+      }
+
+      .cases-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 32px;
+      }
+
+      .case-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: all var(--transition);
+      }
+
+      .case-card:hover {
+        border-color: var(--border-accent);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-glow);
+      }
+
+      .case-header {
+        padding: 32px 28px 24px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .case-type {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent-bright);
+        margin-bottom: 8px;
+      }
+
+      .case-name {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+
+      .case-location {
+        font-size: 0.88rem;
+        color: var(--text-muted);
+      }
+
+      .case-body {
+        padding: 24px 28px;
+      }
+
+      .case-desc {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin-bottom: 20px;
+      }
+
+      .case-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .case-metric {
+        text-align: center;
+        padding: 12px 8px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+      }
+
+      .case-metric-value {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--green);
+      }
+
+      .case-metric-label {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+        font-weight: 500;
+      }
+
+      .case-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .case-tag {
+        padding: 4px 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .case-footer {
+        padding: 16px 28px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .case-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--green);
+      }
+
+      .case-status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse-dot 2s ease-in-out infinite;
+      }
+
+      .case-link {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--accent-bright);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: gap var(--transition);
+      }
+
+      .case-link:hover {
+        gap: 8px;
+      }
+
+      /* ============================================================
+   HOW IT WORKS
+   ============================================================ */
+      #process {
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .process-steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+        position: relative;
+      }
+
+      .process-steps::before {
+        content: "";
+        position: absolute;
+        top: 40px;
+        left: calc(16.66% + 32px);
+        right: calc(16.66% + 32px);
+        height: 2px;
+        background: linear-gradient(90deg, var(--accent), rgba(99, 102, 241, 0.2));
+      }
+
+      .step {
+        text-align: center;
+        position: relative;
+      }
+
+      .step-number {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: var(--bg-card);
+        border: 2px solid var(--border-accent);
+        color: var(--accent-bright);
+        position: relative;
+        z-index: 1;
+        transition: all var(--transition);
+      }
+
+      .step:hover .step-number {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+        box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+      }
+
+      .step-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .step-desc {
+        font-size: 0.92rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        max-width: 280px;
+        margin: 0 auto;
+      }
+
+      .step-time {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 4px 12px;
+        background: var(--accent-glow);
+        border-radius: 100px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--accent-bright);
+      }
+
+      /* ============================================================
+   WHY OPENCLAW
+   ============================================================ */
+      #why {
+        background: var(--bg-primary);
+      }
+
+      .why-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+      }
+
+      .why-card {
+        padding: 32px 24px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        transition: all var(--transition);
+      }
+
+      .why-card:hover {
+        border-color: var(--border-accent);
+        transform: translateY(-2px);
+      }
+
+      .why-icon {
+        font-size: 2rem;
+        margin-bottom: 16px;
+      }
+
+      .why-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .why-desc {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      /* ============================================================
+   CONTACT FORM
+   ============================================================ */
+      #contact {
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border);
+      }
+
+      .contact-layout {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 64px;
+        align-items: start;
+      }
+
+      .contact-info h3 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 16px;
+        letter-spacing: -0.02em;
+      }
+
+      .contact-info p {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        line-height: 1.7;
+        margin-bottom: 32px;
+      }
+
+      .contact-detail {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .contact-detail-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: var(--accent-glow);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+
+      .contact-detail-text {
+        font-size: 0.92rem;
+      }
+
+      .contact-detail-label {
+        color: var(--text-muted);
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .contact-detail-value {
+        color: var(--text-primary);
+        font-weight: 500;
+      }
+
+      .form-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 36px;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        letter-spacing: 0.02em;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-family: var(--font);
+        font-size: 0.95rem;
+        transition:
+          border-color var(--transition),
+          box-shadow var(--transition);
+        outline: none;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+      }
+
+      .form-group select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239898b0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        padding-right: 40px;
+      }
+
+      .form-group select option {
+        background: var(--bg-card);
+        color: var(--text-primary);
+      }
+
+      .form-group input::placeholder,
+      .form-group textarea::placeholder {
+        color: var(--text-muted);
+        opacity: 0.7;
+      }
+
+      .form-group select:invalid {
+        color: var(--text-muted);
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      .form-submit {
+        width: 100%;
+        padding: 16px;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 700;
+        font-family: var(--font);
+        cursor: pointer;
+        transition: all var(--transition);
+      }
+
+      .form-submit:hover {
+        background: var(--accent-bright);
+        box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+        transform: translateY(-2px);
+      }
+
+      .form-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .form-success {
+        display: none;
+        text-align: center;
+        padding: 40px 20px;
+      }
+
+      .form-success.show {
+        display: block;
+      }
+
+      .form-success-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: var(--green-glow);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2rem;
+      }
+
+      .form-success h4 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .form-success p {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+      }
+
+      /* ============================================================
+   FOOTER
+   ============================================================ */
+      .footer {
+        padding: 48px 0;
+        border-top: 1px solid var(--border);
+        background: var(--bg-primary);
+      }
+
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .footer-brand {
+        font-weight: 800;
+        font-size: 1.2rem;
+        background: var(--gradient-accent);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .footer-info {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 4px;
+      }
+
+      .footer-right {
+        text-align: right;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 24px;
+        list-style: none;
+      }
+
+      .footer-links a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        transition: color var(--transition);
+      }
+
+      .footer-links a:hover {
+        color: var(--text-primary);
+      }
+
+      .footer-copy {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-top: 8px;
+      }
+
+      /* ============================================================
+   SCROLL ANIMATIONS
+   ============================================================ */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition:
+          opacity 0.7s ease-out,
+          transform 0.7s ease-out;
+      }
+
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ============================================================
+   RESPONSIVE
+   ============================================================ */
+      @media (max-width: 900px) {
+        .process-steps {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .process-steps::before {
+          display: none;
+        }
+
+        .contact-layout {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+
+        .cases-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-proof {
+          gap: 32px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+        .nav-mobile-toggle {
+          display: block;
+        }
+
+        .nav-links.open {
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: rgba(10, 10, 15, 0.98);
+          backdrop-filter: blur(20px);
+          padding: 24px;
+          gap: 20px;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .hero {
+          padding: 100px 0 60px;
+          min-height: auto;
+        }
+        .hero h1 {
+          font-size: 2.2rem;
+        }
+        .hero-sub {
+          font-size: 1rem;
+        }
+
+        .hero-proof {
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .services-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .footer-inner {
+          flex-direction: column;
+          text-align: center;
+          gap: 24px;
+        }
+
+        .footer-right {
+          text-align: center;
+        }
+
+        section {
+          padding: 64px 0;
+        }
+        .section-title {
+          font-size: 1.8rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 0 16px;
+        }
+        .form-card {
+          padding: 24px 20px;
+        }
+        .service-card {
+          padding: 28px 20px;
+        }
+        .case-metrics {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+    <link rel="privacy-policy" href="https://<your-domain>/privacy" />
+  </head>
+  <body>
+    <div style="background:#f8f9fa;text-align:center;padding:8px;font-size:13px;font-family:system-ui,sans-serif;">
+      <a href="https://<your-domain>/privacy" style="color:#1a73e8;margin-right:16px;">Privacy Policy</a>
+      <a href="https://<your-domain>/terms" style="color:#1a73e8;">Terms of Service</a>
+    </div>
+    <!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+    <nav class="nav" id="nav">
+      <div class="nav-inner">
+        <a href="#hero" class="nav-logo">OpenClaw</a>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#services">Services</a></li>
+          <li><a href="#results">Results</a></li>
+          <li><a href="#process">How It Works</a></li>
+          <li><a href="#why">Why Us</a></li>
+          <li><a href="https://<your-domain>/privacy">Privacy Policy</a></li>
+          <li><a href="#contact" class="nav-cta">Free Consultation</a></li>
+        </ul>
+        <button class="nav-mobile-toggle" id="mobileToggle" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- ============================================================
+     HERO
+     ============================================================ -->
+    <section class="hero" id="hero">
+      <div class="hero-bg">
+        <div class="hero-grid"></div>
+      </div>
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Serving Flagstaff, AZ
+          </div>
+          <h1>AI That Works<br />For <span class="highlight">Your Business</span></h1>
+          <p class="hero-sub">
+            We build AI receptionists, modern websites, and smart booking systems that help local
+            businesses save time, capture more customers, and grow revenue.
+          </p>
+          <div class="hero-actions">
+            <a href="#contact" class="btn btn-primary">Get a Free Consultation</a>
+            <a href="#results" class="btn btn-secondary">See Our Work</a>
+          </div>
+          <div class="hero-proof">
+            <div class="hero-stat">
+              <div class="hero-stat-value">2</div>
+              <div class="hero-stat-label">Flagstaff Businesses Live</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-value">24/7</div>
+              <div class="hero-stat-label">AI Receptionist Uptime</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-value">3-5</div>
+              <div class="hero-stat-label">Days to Launch</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+     SERVICES
+     ============================================================ -->
+    <section id="services">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-label">Services &amp; Pricing</div>
+          <h2 class="section-title">Everything Your Business Needs to Compete</h2>
+          <p class="section-desc">
+            Purpose-built AI solutions, not off-the-shelf templates. Each system is
+            custom-configured for your business.
+          </p>
+        </div>
+
+        <div class="services-grid">
+          <!-- AI Receptionist -->
+          <div class="service-card reveal">
+            <div class="service-icon phone">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#10b981"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+                />
+              </svg>
+            </div>
+            <h3 class="service-name">AI Receptionist</h3>
+            <div class="service-price">
+              <div class="service-price-setup">$3,000 - $5,000</div>
+              <div class="service-price-monthly">+ $300 - $500 /month</div>
+            </div>
+            <p class="service-desc">
+              A phone agent that answers every call, books appointments, and handles FAQs — even at
+              2 AM on a Sunday.
+            </p>
+            <ul class="service-features">
+              <li>24/7 live AI phone answering</li>
+              <li>Books appointments automatically</li>
+              <li>Answers business-specific FAQs</li>
+              <li>Transfers to you for urgent calls</li>
+              <li>Custom voice and personality</li>
+            </ul>
+          </div>
+
+          <!-- Website + AI -->
+          <div class="service-card reveal">
+            <div class="service-icon web">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#6366f1"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+            </div>
+            <h3 class="service-name">Website + AI</h3>
+            <div class="service-price">
+              <div class="service-price-setup">$2,000 - $3,500</div>
+              <div class="service-price-monthly">+ $200 - $300 /month</div>
+            </div>
+            <p class="service-desc">
+              A modern, fast website with online ordering or booking built in. Optimized for Google
+              and mobile.
+            </p>
+            <ul class="service-features">
+              <li>Custom design, not a template</li>
+              <li>Online ordering or booking</li>
+              <li>SEO optimized for local search</li>
+              <li>Mobile-first responsive design</li>
+              <li>Analytics and performance tracking</li>
+            </ul>
+          </div>
+
+          <!-- CRM + Booking -->
+          <div class="service-card reveal">
+            <div class="service-icon crm">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#f59e0b"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <h3 class="service-name">CRM + Booking</h3>
+            <div class="service-price">
+              <div class="service-price-setup">$3,000 - $5,000</div>
+              <div class="service-price-monthly">+ $300 - $500 /month</div>
+            </div>
+            <p class="service-desc">
+              Keep track of every customer and never miss an appointment. Automated reminders reduce
+              no-shows by up to 40%.
+            </p>
+            <ul class="service-features">
+              <li>Full customer database</li>
+              <li>Automated appointment scheduling</li>
+              <li>SMS and email reminders</li>
+              <li>Walk-in and online booking</li>
+              <li>Revenue and analytics dashboard</li>
+            </ul>
+          </div>
+
+          <!-- Full Package -->
+          <div class="service-card featured reveal">
+            <span class="service-badge">Best Value</span>
+            <div class="service-icon full">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#8b5cf6"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+            </div>
+            <h3 class="service-name">The Full Package</h3>
+            <div class="service-price">
+              <div class="service-price-setup">$5,000 - $8,000</div>
+              <div class="service-price-monthly">+ $500 - $1,000 /month</div>
+            </div>
+            <p class="service-desc">
+              Everything above, fully integrated. Your phone, website, and customer system all
+              working together seamlessly.
+            </p>
+            <ul class="service-features">
+              <li>AI Receptionist included</li>
+              <li>Custom website with ordering/booking</li>
+              <li>Full CRM and scheduling system</li>
+              <li>All systems integrated end-to-end</li>
+              <li>Priority support and updates</li>
+              <li>Save 20%+ vs. buying separately</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+     CASE STUDIES
+     ============================================================ -->
+    <section id="results">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-label">Real Results</div>
+          <h2 class="section-title">Built for Flagstaff Businesses</h2>
+          <p class="section-desc">
+            These are not mockups or concept projects. These are real systems running for real
+            businesses in Flagstaff right now.
+          </p>
+        </div>
+
+        <div class="cases-grid">
+          <!-- Delhi Palace -->
+          <div class="case-card reveal">
+            <div class="case-header">
+              <div class="case-type">Restaurant</div>
+              <h3 class="case-name">Delhi Palace</h3>
+              <div class="case-location">Indian Restaurant &mdash; Flagstaff, AZ</div>
+            </div>
+            <div class="case-body">
+              <p class="case-desc">
+                Built a complete online ordering system with a 92-item menu, real-time kitchen
+                display, customer accounts, and Supabase backend. Replaced their outdated WordPress
+                site with a fast, modern experience.
+              </p>
+              <div class="case-metrics">
+                <div class="case-metric">
+                  <div class="case-metric-value">92</div>
+                  <div class="case-metric-label">Menu Items</div>
+                </div>
+                <div class="case-metric">
+                  <div class="case-metric-value">KDS</div>
+                  <div class="case-metric-label">Kitchen Display</div>
+                </div>
+                <div class="case-metric">
+                  <div class="case-metric-value">Live</div>
+                  <div class="case-metric-label">In Production</div>
+                </div>
+              </div>
+              <div class="case-tags">
+                <span class="case-tag">Online Ordering</span>
+                <span class="case-tag">Kitchen Display</span>
+                <span class="case-tag">SEO</span>
+                <span class="case-tag">Supabase</span>
+              </div>
+            </div>
+            <div class="case-footer">
+              <div class="case-status">
+                <span class="case-status-dot"></span>
+                Live in Production
+              </div>
+            </div>
+          </div>
+
+          <!-- Surgeon Cuts -->
+          <div class="case-card reveal">
+            <div class="case-header">
+              <div class="case-type">Barbershop</div>
+              <h3 class="case-name">Surgeon Cuts</h3>
+              <div class="case-location">Barbershop &mdash; Flagstaff, AZ</div>
+            </div>
+            <div class="case-body">
+              <p class="case-desc">
+                Built a full CRM with booking system and an AI receptionist that answers calls 24/7.
+                Handles scheduling for 4 barbers, manages walk-ins, and never puts a customer on
+                hold.
+              </p>
+              <div class="case-metrics">
+                <div class="case-metric">
+                  <div class="case-metric-value">4</div>
+                  <div class="case-metric-label">Barbers Managed</div>
+                </div>
+                <div class="case-metric">
+                  <div class="case-metric-value">24/7</div>
+                  <div class="case-metric-label">AI Receptionist</div>
+                </div>
+                <div class="case-metric">
+                  <div class="case-metric-value">Live</div>
+                  <div class="case-metric-label">In Production</div>
+                </div>
+              </div>
+              <div class="case-tags">
+                <span class="case-tag">AI Phone Agent</span>
+                <span class="case-tag">CRM</span>
+                <span class="case-tag">Booking</span>
+                <span class="case-tag">SMS Reminders</span>
+              </div>
+            </div>
+            <div class="case-footer">
+              <div class="case-status">
+                <span class="case-status-dot"></span>
+                Live in Production
+              </div>
+              <span class="case-link">
+                Call AI: (928) 325-9472
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+     HOW IT WORKS
+     ============================================================ -->
+    <section id="process">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-label">How It Works</div>
+          <h2 class="section-title">From Conversation to Launch in Days</h2>
+          <p class="section-desc">
+            No months-long timelines. No corporate runaround. We move fast because your business
+            does not wait.
+          </p>
+        </div>
+
+        <div class="process-steps">
+          <div class="step reveal">
+            <div class="step-number">1</div>
+            <h3 class="step-title">Free Consultation</h3>
+            <p class="step-desc">
+              We sit down (or get on a call), understand your business, and map out exactly what you
+              need. No pressure, no cost.
+            </p>
+            <span class="step-time">30 minutes</span>
+          </div>
+          <div class="step reveal">
+            <div class="step-number">2</div>
+            <h3 class="step-title">We Build It</h3>
+            <p class="step-desc">
+              Our AI-accelerated development process means your system is built, tested, and ready
+              to go in days, not months.
+            </p>
+            <span class="step-time">3 - 5 days</span>
+          </div>
+          <div class="step reveal">
+            <div class="step-number">3</div>
+            <h3 class="step-title">You Grow</h3>
+            <p class="step-desc">
+              Your new system goes live. We handle the tech, updates, and support. You focus on what
+              you do best: running your business.
+            </p>
+            <span class="step-time">Ongoing support</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+     WHY OPENCLAW
+     ============================================================ -->
+    <section id="why">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-label">Why OpenClaw</div>
+          <h2 class="section-title">Not Another Marketing Agency</h2>
+          <p class="section-desc">
+            We are engineers who build real systems, not salespeople who resell Wix templates.
+          </p>
+        </div>
+
+        <div class="why-grid">
+          <div class="why-card reveal">
+            <div class="why-icon">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#6366f1"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+            </div>
+            <h3 class="why-title">Local to Flagstaff</h3>
+            <p class="why-desc">
+              We are based in Flagstaff. We know the market, the customers, and the challenges local
+              businesses face up here.
+            </p>
+          </div>
+          <div class="why-card reveal">
+            <div class="why-icon">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#10b981"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="13 17 18 12 13 7" />
+                <polyline points="6 17 11 12 6 7" />
+              </svg>
+            </div>
+            <h3 class="why-title">AI-First Development</h3>
+            <p class="why-desc">
+              We use AI at every stage: development, testing, deployment. That is why we can deliver
+              in days what agencies take months to build.
+            </p>
+          </div>
+          <div class="why-card reveal">
+            <div class="why-icon">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#f59e0b"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg>
+            </div>
+            <h3 class="why-title">You Own Everything</h3>
+            <p class="why-desc">
+              No vendor lock-in. Your code, your data, your domain. If you ever leave, you take
+              everything with you.
+            </p>
+          </div>
+          <div class="why-card reveal">
+            <div class="why-icon">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#8b5cf6"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <h3 class="why-title">Real Support</h3>
+            <p class="why-desc">
+              When something breaks at 9 PM on a Friday, you call us directly. No ticket queues. No
+              offshore support teams. Just us.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+     CONTACT FORM
+     ============================================================ -->
+    <section id="contact">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-label">Get Started</div>
+          <h2 class="section-title">Let's Talk About Your Business</h2>
+          <p class="section-desc">
+            Fill out the form and we will reach out within 24 hours to schedule your free
+            consultation.
+          </p>
+        </div>
+
+        <div class="contact-layout reveal">
+          <div class="contact-info">
+            <h3>Ready to stop losing customers?</h3>
+            <p>
+              Every missed call is a missed customer. Every clunky website is a lost sale. Let us
+              fix that — with technology that works while you sleep.
+            </p>
+            <div class="contact-detail">
+              <div class="contact-detail-icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#6366f1"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              </div>
+              <div class="contact-detail-text">
+                <div class="contact-detail-label">Location</div>
+                <div class="contact-detail-value">Flagstaff, Arizona</div>
+              </div>
+            </div>
+            <div class="contact-detail">
+              <div class="contact-detail-icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#6366f1"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                  />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+              </div>
+              <div class="contact-detail-text">
+                <div class="contact-detail-label">Email</div>
+                <div class="contact-detail-value">hello@<your-domain></div>
+              </div>
+            </div>
+            <div class="contact-detail">
+              <div class="contact-detail-icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#6366f1"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+              </div>
+              <div class="contact-detail-text">
+                <div class="contact-detail-label">Website</div>
+                <div class="contact-detail-value"><your-domain></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <form id="leadForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="name">Your Name</label>
+                  <input type="text" id="name" name="name" placeholder="John Smith" required />
+                </div>
+                <div class="form-group">
+                  <label for="business">Business Name</label>
+                  <input
+                    type="text"
+                    id="business"
+                    name="business"
+                    placeholder="My Business LLC"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="phone">Phone Number</label>
+                  <input type="tel" id="phone" name="phone" placeholder="(928) 555-0123" required />
+                </div>
+                <div class="form-group">
+                  <label for="email">Email Address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="john@mybusiness.com"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="service">What Are You Interested In?</label>
+                <select id="service" name="service" required>
+                  <option value="" disabled selected>Select a service...</option>
+                  <option value="ai-receptionist">AI Receptionist</option>
+                  <option value="website">Website + AI</option>
+                  <option value="crm-booking">CRM + Booking System</option>
+                  <option value="full-package">The Full Package</option>
+                  <option value="not-sure">Not Sure Yet</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="message">Tell Us About Your Business</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  placeholder="What does your business do? What problems are you trying to solve?"
+                  rows="4"
+                ></textarea>
+              </div>
+              <button type="submit" class="form-submit" id="submitBtn">Send Message</button>
+              <p
+                style="
+                  text-align: center;
+                  margin-top: 16px;
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                "
+              >
+                Want to give us more details?
+                <a href="/intake" style="color: var(--accent-bright); text-decoration: underline"
+                  >Fill out the full intake form</a
+                >
+              </p>
+            </form>
+            <div class="form-success" id="formSuccess">
+              <div class="form-success-icon">
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#10b981"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <h4>Message Sent</h4>
+              <p>We will be in touch within 24 hours to schedule your free consultation.</p>
+              <p style="margin-top: 16px">
+                <a
+                  href="/intake"
+                  style="color: var(--accent-bright); text-decoration: underline; font-weight: 600"
+                  >Want to speed things up? Fill out our detailed intake form.</a
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+     FOOTER
+     ============================================================ -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-inner">
+          <div>
+            <div class="footer-brand">OpenClaw</div>
+            <div class="footer-info">AI-Powered Solutions for Local Businesses</div>
+            <div class="footer-info">Flagstaff, Arizona</div>
+          </div>
+          <div class="footer-right">
+            <ul class="footer-links">
+              <li><a href="#services">Services</a></li>
+              <li><a href="#results">Results</a></li>
+              <li><a href="#process">Process</a></li>
+              <li><a href="#contact">Contact</a></li>
+              <li><a href="https://<your-domain>/privacy">Privacy Policy</a></li>
+              <li><a href="https://<your-domain>/terms">Terms of Service</a></li>
+            </ul>
+            <div class="footer-copy">&copy; 2026 OpenClaw. All rights reserved.</div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+    <script>
+      (function () {
+        "use strict";
+
+        // --- NAV SCROLL ---
+        const nav = document.getElementById("nav");
+        let lastScroll = 0;
+
+        function handleScroll() {
+          const y = window.scrollY;
+          if (y > 60) {
+            nav.classList.add("scrolled");
+          } else {
+            nav.classList.remove("scrolled");
+          }
+          lastScroll = y;
+        }
+        window.addEventListener("scroll", handleScroll, { passive: true });
+
+        // --- MOBILE NAV ---
+        const toggle = document.getElementById("mobileToggle");
+        const links = document.getElementById("navLinks");
+
+        toggle.addEventListener("click", function () {
+          links.classList.toggle("open");
+          const spans = toggle.querySelectorAll("span");
+          if (links.classList.contains("open")) {
+            spans[0].style.transform = "rotate(45deg) translate(5px, 5px)";
+            spans[1].style.opacity = "0";
+            spans[2].style.transform = "rotate(-45deg) translate(5px, -5px)";
+          } else {
+            spans[0].style.transform = "";
+            spans[1].style.opacity = "";
+            spans[2].style.transform = "";
+          }
+        });
+
+        // Close mobile nav on link click
+        links.querySelectorAll("a").forEach(function (a) {
+          a.addEventListener("click", function () {
+            links.classList.remove("open");
+            const spans = toggle.querySelectorAll("span");
+            spans[0].style.transform = "";
+            spans[1].style.opacity = "";
+            spans[2].style.transform = "";
+          });
+        });
+
+        // --- SMOOTH SCROLL ---
+        document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+          a.addEventListener("click", function (e) {
+            e.preventDefault();
+            var target = document.querySelector(this.getAttribute("href"));
+            if (target) {
+              var offset = 80;
+              var y = target.getBoundingClientRect().top + window.pageYOffset - offset;
+              window.scrollTo({ top: y, behavior: "smooth" });
+            }
+          });
+        });
+
+        // --- SCROLL REVEAL ---
+        var reveals = document.querySelectorAll(".reveal");
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          {
+            threshold: 0.1,
+            rootMargin: "0px 0px -40px 0px",
+          },
+        );
+
+        reveals.forEach(function (el) {
+          observer.observe(el);
+        });
+
+        // --- FORM SUBMISSION ---
+        var form = document.getElementById("leadForm");
+        var submitBtn = document.getElementById("submitBtn");
+        var successMsg = document.getElementById("formSuccess");
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Client-side validation
+          var nameVal = document.getElementById("name").value.trim();
+          var emailVal = document.getElementById("email").value.trim();
+          if (!nameVal || !emailVal) {
+            showFormError("Please fill in your name and email address.");
+            return;
+          }
+          if (emailVal.indexOf("@") === -1 || emailVal.indexOf(".") === -1) {
+            showFormError("Please enter a valid email address.");
+            return;
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Sending...";
+          hideFormError();
+
+          var data = {
+            name: nameVal,
+            business: document.getElementById("business").value.trim(),
+            phone: document.getElementById("phone").value.trim(),
+            email: emailVal,
+            service: document.getElementById("service").value,
+            message: document.getElementById("message").value.trim(),
+          };
+
+          fetch("/api/leads", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          })
+            .then(function (res) {
+              if (!res.ok) {
+                return res.json().then(function (body) {
+                  throw new Error(body.error || "Submission failed");
+                });
+              }
+              return res.json();
+            })
+            .then(function (result) {
+              form.style.display = "none";
+              successMsg.classList.add("show");
+            })
+            .catch(function (err) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Send Message";
+              showFormError(
+                "Something went wrong: " +
+                  err.message +
+                  ". Please try again or email us at hello@<your-domain>.",
+              );
+            });
+        });
+
+        function showFormError(msg) {
+          var errEl = document.getElementById("formError");
+          if (!errEl) {
+            errEl = document.createElement("div");
+            errEl.id = "formError";
+            errEl.style.cssText =
+              "margin-top:16px;padding:14px 18px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:8px;color:#ef4444;font-size:0.9rem;line-height:1.5;";
+            form.parentNode.insertBefore(errEl, successMsg);
+          }
+          errEl.textContent = msg;
+          errEl.style.display = "block";
+        }
+
+        function hideFormError() {
+          var errEl = document.getElementById("formError");
+          if (errEl) errEl.style.display = "none";
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openclaw-config
+  namespace: openclaw
+data:
+  log-level: "info"
+  config.json: |
+    {
+      "name": "Cybershield Agency",
+      "version": "1.0.0",
+      "port": 8000,
+      "channels": {
+        "telegram": {
+          "enabled": true,
+          "botToken": "${TELEGRAM_BOT_TOKEN}",
+          "name": "Telegram Bot",
+          "type": "messaging",
+          "sessionKeyPrefix": "telegram"
+        },
+        "slack": {
+          "enabled": true,
+          "botToken": "${SLACK_BOT_TOKEN}",
+          "appToken": "${SLACK_APP_TOKEN}",
+          "signingSecret": "${SLACK_SIGNING_SECRET}",
+          "reportChannel": "${SLACK_REPORT_CHANNEL}",
+          "name": "Slack Bot",
+          "type": "messaging",
+          "sessionKeyPrefix": "slack",
+          "webhookUrl": "/slack/events"
+        },
+        "discord": {
+          "enabled": true,
+          "botToken": "${DISCORD_BOT_TOKEN}",
+          "intents": ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES", "MESSAGE_CONTENT"],
+          "status": {
+            "status": "online",
+            "activities": [
+              {
+                "name": "OpenClaw agents",
+                "type": "WATCHING"
+              }
+            ]
+          },
+          "autoReply": true,
+          "embedColor": "3498db"
+        }
+      },
+      "agents": {
+        "project_manager": {
+          "name": "Cybershield PM",
+          "emoji": "🎯",
+          "type": "coordinator",
+          "model": "claude-opus-4-6",
+          "apiProvider": "anthropic",
+          "thinking": {
+            "type": "adaptive",
+            "defaultEffort": "high"
+          }
+        },
+        "coder_agent": {
+          "name": "CodeGen Pro",
+          "emoji": "💻",
+          "type": "developer",
+          "model": "kimi-2.5",
+          "apiProvider": "deepseek"
+        },
+        "hacker_agent": {
+          "name": "Pentest AI",
+          "emoji": "🔒",
+          "type": "security",
+          "model": "kimi",
+          "apiProvider": "deepseek"
+        }
+      },
+      "logging": {
+        "level": "info",
+        "file": "/app/logs/openclaw.log",
+        "maxSize": "100mb",
+        "maxFiles": 5
+      },
+      "routing": {
+        "enabled": true,
+        "engine": "langgraph",
+        "agent_routing_enabled": true,
+        "complexityThresholds": {
+          "low": 30,
+          "high": 70
+        }
+      },
+      "quotas": {
+        "enabled": true,
+        "daily_limit_usd": 50,
+        "monthly_limit_usd": 1000,
+        "max_queue_size": 100
+      }
+    }

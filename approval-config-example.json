@@ -1,0 +1,104 @@
+{
+  "approval": {
+    "enabled": true,
+    "assistant_url": "${APPROVAL_SYSTEM_URL}",
+    "api_key": "${APPROVAL_API_KEY}",
+    "timeout_ms": 10000,
+    "fallback_strict": true,
+    "fallback_retry_interval": 60,
+    "health_check_interval": 300,
+    "retry_policy": {
+      "enabled": true,
+      "max_attempts": 3,
+      "backoff_multiplier": 1.5,
+      "initial_delay_ms": 1000
+    },
+    "constraints": {
+      "default": {
+        "cost_limit_usd": 5.0,
+        "time_limit_ms": 300000,
+        "resource_multiplier": 1.0
+      },
+      "by_task_type": {
+        "chat": {
+          "cost_limit_usd": 1.0,
+          "time_limit_ms": 30000,
+          "resource_multiplier": 1.0
+        },
+        "workflow": {
+          "cost_limit_usd": 10.0,
+          "time_limit_ms": 600000,
+          "resource_multiplier": 2.0
+        },
+        "batch": {
+          "cost_limit_usd": 50.0,
+          "time_limit_ms": 3600000,
+          "resource_multiplier": 4.0
+        },
+        "expensive_operation": {
+          "cost_limit_usd": 0.0,
+          "time_limit_ms": 0,
+          "resource_multiplier": 0.0,
+          "always_require_approval": true,
+          "approval_reason": "High-cost operations require explicit approval"
+        }
+      }
+    },
+    "budget": {
+      "daily_limit_usd": 20.0,
+      "monthly_limit_usd": 1000.0,
+      "cost_alert_threshold_percent": 80,
+      "enforcement": "hard"
+    },
+    "notifications": {
+      "slack": {
+        "enabled": false,
+        "webhook_url": "${APPROVAL_SLACK_WEBHOOK_URL}",
+        "notify_on": ["rejection", "fallback_mode", "constraint_violation"]
+      },
+      "email": {
+        "enabled": false,
+        "recipient": "admin@example.com",
+        "notify_on": ["rejection", "fallback_mode"]
+      }
+    },
+    "persistence": {
+      "enabled": true,
+      "directory": "${OPENCLAW_TASKS_DIR}",
+      "cleanup": {
+        "enabled": true,
+        "older_than_days": 30,
+        "keep_failed": true,
+        "keep_rejected": true
+      }
+    },
+    "monitoring": {
+      "enabled": true,
+      "log_all_requests": true,
+      "log_all_responses": true,
+      "metrics": {
+        "enabled": true,
+        "interval_ms": 60000
+      }
+    },
+    "projects": {
+      "barber-crm": {
+        "cost_limit_usd": 20.0,
+        "time_limit_ms": 300000,
+        "resource_multiplier": 1.5,
+        "require_approval_for": ["workflow", "batch"],
+        "constraint_overrides": {
+          "chat": {
+            "cost_limit_usd": 2.0
+          }
+        }
+      },
+      "delhi-palace": {
+        "cost_limit_usd": 10.0,
+        "time_limit_ms": 300000,
+        "resource_multiplier": 1.0,
+        "require_approval_for": ["workflow"]
+      }
+    }
+  }
+}

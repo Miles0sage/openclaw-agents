@@ -1,0 +1,41 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "gemini-2.5-flash",
+  "small_model": "gemini-2.0-flash-lite",
+  "provider": {
+    "gemini": {
+      "options": {
+        "apiKey": "{env:GEMINI_API_KEY}"
+      }
+    }
+  },
+  "permission": {
+    "edit": "allow",
+    "bash": "allow",
+    "write": "allow",
+    "read": "allow",
+    "grep": "allow",
+    "glob": "allow",
+    "list": "allow",
+    "patch": "allow",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "todowrite": "allow",
+    "todoread": "allow",
+    "lsp": "allow"
+  },
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 10000
+  },
+  "agents": {
+    "coder": { "model": "gemini-2.5-flash" },
+    "summarizer": { "model": "gemini-2.5-flash" },
+    "task": { "model": "gemini-2.0-flash-lite" },
+    "title": { "model": "gemini-2.0-flash-lite" }
+  },
+  "tools": {
+    "question": false
+  }
+}

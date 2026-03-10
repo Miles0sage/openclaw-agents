@@ -1,0 +1,11 @@
+══════════════════════════════════════════════════════════════
+🔑 CORRECT SSH KEY - RUN THIS ON GPU VPS NOW!
+══════════════════════════════════════════════════════════════
+
+On GPU VPS (<your-vps-ip>), run this:
+
+echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHs3uBWZbXIMeQXBJu1rX5atVtPsmCRO2jeMkl4ha4m1 vps-vastai' >> ~/.ssh/authorized_keys
+
+Then: exit
+
+══════════════════════════════════════════════════════════════

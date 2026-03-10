@@ -1,0 +1,11 @@
+node_modules/
+__pycache__/
+data/sessions/
+data/agent_outputs/
+data/checkpoints.db
+data/blackboard.db
+*.log
+.git/
+.worktrees/
+*.pyc
+.env

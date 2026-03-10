@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paws & Claws - Pet Grooming</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="#" class="logo">Paws & Claws</a>
+      <ul class="nav-links">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>Your Pet Deserves the Best Care</h1>
+      <p>Professional grooming services tailored to keep your furry friends looking and feeling their best.</p>
+      <a href="#contact" class="btn">Book an Appointment</a>
+    </div>
+  </section>
+
+  <!-- Services Grid -->
+  <section id="services" class="services">
+    <div class="container">
+      <h2>Our Services</h2>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">&#9986;</div>
+          <h3>Full Grooming</h3>
+          <p>Complete bath, haircut, nail trim, and ear cleaning for a fresh new look.</p>
+          <span class="price">From $45</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#128063;</div>
+          <h3>Bath & Brush</h3>
+          <p>Thorough wash with premium shampoo, blow-dry, and brushing.</p>
+          <span class="price">From $30</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#9997;</div>
+          <h3>Nail Trimming</h3>
+          <p>Safe and gentle nail clipping and filing for comfortable paws.</p>
+          <span class="price">From $15</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#128054;</div>
+          <h3>Teeth Cleaning</h3>
+          <p>Non-anesthetic dental cleaning for fresher breath and healthier gums.</p>
+          <span class="price">From $25</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#127800;</div>
+          <h3>De-shedding Treatment</h3>
+          <p>Specialized treatment to reduce shedding and keep coats healthy.</p>
+          <span class="price">From $40</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#128062;</div>
+          <h3>Puppy's First Groom</h3>
+          <p>A gentle introduction to grooming for puppies under 6 months.</p>
+          <span class="price">From $25</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Form -->
+  <section id="contact" class="contact">
+    <div class="container">
+      <h2>Book an Appointment</h2>
+      <form id="contact-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" name="name" placeholder="Jane Smith" required>
+            <span class="error-message"></span>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="jane@example.com" required>
+            <span class="error-message"></span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567" required>
+            <span class="error-message"></span>
+          </div>
+          <div class="form-group">
+            <label for="service">Service</label>
+            <select id="service" name="service" required>
+              <option value="">Select a service</option>
+              <option value="full-grooming">Full Grooming</option>
+              <option value="bath-brush">Bath & Brush</option>
+              <option value="nail-trimming">Nail Trimming</option>
+              <option value="teeth-cleaning">Teeth Cleaning</option>
+              <option value="de-shedding">De-shedding Treatment</option>
+              <option value="puppy-first">Puppy's First Groom</option>
+            </select>
+            <span class="error-message"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="pet-name">Pet's Name</label>
+          <input type="text" id="pet-name" name="pet-name" placeholder="Buddy" required>
+          <span class="error-message"></span>
+        </div>
+        <div class="form-group">
+          <label for="message">Additional Notes</label>
+          <textarea id="message" name="message" rows="4" placeholder="Any special requests or concerns..."></textarea>
+        </div>
+        <button type="submit" class="btn">Submit Booking</button>
+      </form>
+      <div id="form-success" class="form-success" hidden>
+        Thank you! We'll be in touch shortly to confirm your appointment.
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>Paws & Claws Pet Grooming &mdash; Making tails wag since 2020</p>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

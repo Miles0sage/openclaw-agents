@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VisionClaw — Open Source AI Smart Glasses</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #fafaf8;
+        --surface: #fff;
+        --text: #1a1a1a;
+        --muted: #6b7280;
+        --accent: #2563eb;
+        --accent2: #7c3aed;
+        --border: #e5e7eb;
+        --font: "Space Grotesk", sans-serif;
+        --mono: "IBM Plex Mono", monospace;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: var(--font);
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      /* Hero */
+      .hero {
+        padding: 120px 0 80px;
+        text-align: center;
+      }
+      .badge {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--accent);
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 100px;
+        padding: 4px 14px;
+        margin-bottom: 24px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .badge .dot {
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+      }
+      .hero h1 {
+        font-size: clamp(36px, 5vw, 56px);
+        font-weight: 700;
+        letter-spacing: -1.5px;
+        line-height: 1.1;
+        margin-bottom: 16px;
+      }
+      .hero h1 em {
+        font-style: normal;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero p {
+        font-size: 18px;
+        color: var(--muted);
+        max-width: 520px;
+        margin: 0 auto 32px;
+      }
+      .hero-cta {
+        display: inline-flex;
+        gap: 12px;
+      }
+      .btn {
+        font-family: var(--mono);
+        font-size: 14px;
+        font-weight: 600;
+        padding: 12px 28px;
+        border-radius: 8px;
+        transition: all 0.2s;
+        cursor: pointer;
+        border: none;
+      }
+      .btn-primary {
+        background: var(--text);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #333;
+        transform: translateY(-1px);
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .btn-outline:hover {
+        border-color: var(--text);
+      }
+
+      /* Specs */
+      .specs {
+        padding: 60px 0;
+      }
+      .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .spec {
+        background: var(--surface);
+        padding: 28px 20px;
+        text-align: center;
+      }
+      .spec-val {
+        font-family: var(--mono);
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+      .spec-label {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      /* Architecture */
+      .arch {
+        padding: 80px 0;
+      }
+      .arch h2 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .arch .sub {
+        color: var(--muted);
+        margin-bottom: 32px;
+      }
+      .arch-diagram {
+        background: #111827;
+        color: #d1d5db;
+        border-radius: 12px;
+        padding: 32px;
+        font-family: var(--mono);
+        font-size: 13px;
+        line-height: 2;
+        overflow-x: auto;
+        white-space: pre;
+      }
+      .arch-diagram .hl {
+        color: #60a5fa;
+      }
+      .arch-diagram .hl2 {
+        color: #a78bfa;
+      }
+      .arch-diagram .hl3 {
+        color: #34d399;
+      }
+
+      /* BOM */
+      .bom {
+        padding: 80px 0;
+      }
+      .bom h2 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 32px;
+      }
+      .bom-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .bom-table th {
+        font-family: var(--mono);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--muted);
+        text-align: left;
+        padding: 12px 16px;
+        border-bottom: 2px solid var(--border);
+      }
+      .bom-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+      }
+      .bom-table tr:last-child td {
+        border-bottom: none;
+        font-weight: 700;
+      }
+      .bom-table .price {
+        font-family: var(--mono);
+        color: var(--accent);
+      }
+
+      /* CTA */
+      .cta {
+        padding: 80px 0;
+        text-align: center;
+      }
+      .cta-box {
+        background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+        border: 1px solid #dbeafe;
+        border-radius: 16px;
+        padding: 48px 32px;
+      }
+      .cta-box h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .cta-box p {
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+
+      /* Footer */
+      .footer {
+        padding: 32px 0;
+        border-top: 1px solid var(--border);
+        text-align: center;
+      }
+      .footer p {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      @media (max-width: 768px) {
+        .specs-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .hero-cta {
+          flex-direction: column;
+          align-items: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero">
+      <div class="container">
+        <div class="badge"><span class="dot"></span> Open Source</div>
+        <h1>AI glasses you<br />build <em>yourself.</em></h1>
+        <p>
+          VisionClaw turns a $15 microcontroller into smart glasses with real-time AI vision, voice
+          commands, and 75+ agentic tools. Powered by OpenClaw.
+        </p>
+        <div class="hero-cta">
+          <a
+            href="https://github.com/Miles0sage/openclaw/tree/main/visionclaw"
+            class="btn btn-primary"
+            >View on GitHub</a
+          >
+          <a href="#bom" class="btn btn-outline">Bill of Materials</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="specs">
+      <div class="container">
+        <div class="specs-grid">
+          <div class="spec">
+            <div class="spec-val">$60</div>
+            <div class="spec-label">Total Build Cost</div>
+          </div>
+          <div class="spec">
+            <div class="spec-val">&lt;2s</div>
+            <div class="spec-label">Voice → Response</div>
+          </div>
+          <div class="spec">
+            <div class="spec-val">75+</div>
+            <div class="spec-label">AI Tools Built In</div>
+          </div>
+          <div class="spec">
+            <div class="spec-val">6hr</div>
+            <div class="spec-label">Battery (EgoTrigger)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="arch">
+      <div class="container">
+        <h2>How it works</h2>
+        <p class="sub">Camera + mic on your face. AI brain in the cloud. Connected by WebSocket.</p>
+        <div class="arch-diagram">
+          <span class="hl">┌─────────────────────┐</span>
+          <span class="hl2">┌──────────────────────┐</span>
+          <span class="hl3">┌────────────────────┐</span> <span class="hl">│ XIAO ESP32-S3 │</span>
+          <span class="hl2">│ OpenClaw Gateway │</span> <span class="hl3">│ AI Models │</span>
+          <span class="hl">│ │</span> <span class="hl2">│ │</span> <span class="hl3">│ │</span>
+          <span class="hl">│ OV2640 Camera ─────┼──┐ │ /ws/glasses │ ┌──┤ Groq Whisper STT │</span>
+          <span class="hl"
+            >│ PDM Microphone ────┼──┤ │ │ │ <span class="hl3">│ Gemini Vision │</span></span
+          >
+          <span class="hl"
+            >│ IMU (gestures) ────┼──┼─►│ Frame + Audio ├──┤
+            <span class="hl3">│ Claude / GPT-4o │</span></span
+          >
+          <span class="hl"
+            >│ Bone Audio ◄───────┼──┤ │ → Multimodal AI │ │
+            <span class="hl3">│ ElevenLabs TTS │</span></span
+          >
+          <span class="hl"
+            >│ OLED HUD ◄─────────┼──┘ │ → 75+ Agent Tools │ └──┤
+            <span class="hl3">Moondream (local) │</span></span
+          >
+          <span class="hl">│ │</span> <span class="hl2">│ │</span> <span class="hl3">│ │</span>
+          <span class="hl">└─────────────────────┘</span>
+          <span class="hl2">└──────────────────────┘</span>
+          <span class="hl3">└────────────────────┘</span> WebSocket Task Engine Distributed AI
+        </div>
+      </div>
+    </section>
+
+    <section class="bom" id="bom">
+      <div class="container">
+        <h2>Bill of Materials</h2>
+        <table class="bom-table">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Purpose</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>XIAO ESP32-S3 Sense</td>
+              <td>MCU + camera + microphone</td>
+              <td class="price">$15</td>
+            </tr>
+            <tr>
+              <td>400mAh LiPo Battery</td>
+              <td>2-3hr continuous, 6hr with EgoTrigger</td>
+              <td class="price">$8</td>
+            </tr>
+            <tr>
+              <td>Bone Conduction Exciter</td>
+              <td>Private audio — doesn't block ears</td>
+              <td class="price">$12</td>
+            </tr>
+            <tr>
+              <td>MAX98357A I2S Amplifier</td>
+              <td>Drives bone conduction speaker</td>
+              <td class="price">$4</td>
+            </tr>
+            <tr>
+              <td>BHI260AP IMU Breakout</td>
+              <td>Gesture control + head tracking</td>
+              <td class="price">$10</td>
+            </tr>
+            <tr>
+              <td>0.96" OLED Display</td>
+              <td>Optional HUD overlay</td>
+              <td class="price">$8</td>
+            </tr>
+            <tr>
+              <td>Privacy LED + Resistor</td>
+              <td>Shows when camera is active</td>
+              <td class="price">$0.50</td>
+            </tr>
+            <tr>
+              <td>Eyeglass Hinges</td>
+              <td>Frame mechanics</td>
+              <td class="price">$3</td>
+            </tr>
+            <tr>
+              <td>PETG Filament (50g)</td>
+              <td>3D printed frame</td>
+              <td class="price">$2</td>
+            </tr>
+            <tr>
+              <td><strong>Total</strong></td>
+              <td></td>
+              <td class="price"><strong>~$62</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="container">
+        <div class="cta-box">
+          <h2>Build yours this weekend.</h2>
+          <p>Full firmware, CAD files, and 7-day build guide included. All open source.</p>
+          <a
+            href="https://github.com/Miles0sage/openclaw/tree/main/visionclaw"
+            class="btn btn-primary"
+            >Get Started</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          VisionClaw is an open-source sub-project of <a href="/">OpenClaw</a>. Built in Flagstaff,
+          AZ.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

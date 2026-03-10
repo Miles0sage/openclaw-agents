@@ -1,0 +1,12 @@
+{
+  "name": "polymarket-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy --env production"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240925.0",
+    "wrangler": "^3.80.0"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "personal-assistant",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "deploy:prod": "wrangler deploy --env production",
+    "dev": "wrangler dev"
+  },
+  "dependencies": {
+    "hono": "^4.4.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240620.0",
+    "typescript": "^5.5.0",
+    "wrangler": "^4.0.0"
+  }
+}

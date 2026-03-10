@@ -1,0 +1,197 @@
+{
+  "name": "OpenClaw Agent Pipeline Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "openclaw-events",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook - Job Events",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "openclaw-events"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.body.event_type }}",
+              "rightValue": "job.completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-job-completed",
+      "name": "If Job Completed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [480, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.body.event_type }}",
+              "rightValue": "job.failed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-job-failed",
+      "name": "If Job Failed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [480, 400]
+    },
+    {
+      "parameters": {
+        "url": "http://172.24.0.1:18789/webhook/slack-test",
+        "authentication": "none",
+        "method": "POST",
+        "contentType": "application/json",
+        "body": "={{ JSON.stringify({text: `✅ Job Completed: ${$json.body.data.job_id || 'N/A'} by ${$json.body.data.agent || 'unknown'}`, attachments: [{color: '#36a64f', title: 'Job Completed', fields: [{title: 'Job ID', value: String($json.body.data.job_id || 'N/A')}, {title: 'Agent', value: String($json.body.data.agent || 'N/A')}, {title: 'Task', value: String($json.body.data.task_type || 'N/A')}]}]}) }}",
+        "options": {}
+      },
+      "id": "http-post-slack-completed",
+      "name": "HTTP POST - Slack Completed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [720, 150]
+    },
+    {
+      "parameters": {
+        "url": "http://172.24.0.1:18789/webhook/slack-test",
+        "authentication": "none",
+        "method": "POST",
+        "contentType": "application/json",
+        "body": "={{ JSON.stringify({text: `❌ Job Failed: ${$json.body.data.job_id || 'N/A'} on ${$json.body.data.agent || 'unknown'}`, attachments: [{color: '#d32f2f', title: 'Job Failed', fields: [{title: 'Job ID', value: String($json.body.data.job_id || 'N/A')}, {title: 'Agent', value: String($json.body.data.agent || 'N/A')}, {title: 'Error', value: String($json.body.data.reason || $json.body.data.error || 'Unknown')}]}]}) }}",
+        "options": {}
+      },
+      "id": "http-post-slack-failed",
+      "name": "HTTP POST - Slack Failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [720, 350]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {ok: true, received: true, event_id: $json.body.event_id} }}",
+        "options": {}
+      },
+      "id": "respond-ok",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [960, 300]
+    }
+  ],
+  "connections": {
+    "Webhook - Job Events": {
+      "main": [
+        [
+          {
+            "node": "If Job Completed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If Job Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Job Completed": {
+      "main": [
+        [
+          {
+            "node": "HTTP POST - Slack Completed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Job Failed": {
+      "main": [
+        [
+          {
+            "node": "HTTP POST - Slack Failed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP POST - Slack Completed": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP POST - Slack Failed": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {}
+}

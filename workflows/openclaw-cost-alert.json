@@ -1,0 +1,197 @@
+{
+  "name": "OpenClaw Cost Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "openclaw-events",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook - Cost Events",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "openclaw-events"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.body.event_type }}",
+              "rightValue": "cost.alert",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-cost-alert",
+      "name": "If Cost Alert",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [480, 200]
+    },
+    {
+      "parameters": {
+        "url": "http://172.24.0.1:18789/webhook/slack-test",
+        "authentication": "none",
+        "method": "POST",
+        "contentType": "application/json",
+        "body": "={{ JSON.stringify({text: `💰 Cost Alert: $${$json.body.data.amount || 'N/A'} (${$json.body.data.resource || 'N/A'})`, attachments: [{color: '#ff9800', title: 'Cost Alert', fields: [{title: 'Amount', value: String($json.body.data.amount || 'N/A')}, {title: 'Resource', value: String($json.body.data.resource || 'N/A')}, {title: 'Threshold', value: String($json.body.data.threshold || 'N/A')}, {title: 'Message', value: String($json.body.data.message || 'Cost threshold approached')}]}]}) }}",
+        "options": {}
+      },
+      "id": "http-post-slack-cost",
+      "name": "HTTP POST - Cost Alert to Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [720, 150]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.body.event_type }}",
+              "rightValue": "cost.threshold_exceeded",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-threshold-exceeded",
+      "name": "If Threshold Exceeded",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [480, 400]
+    },
+    {
+      "parameters": {
+        "url": "http://172.24.0.1:18789/webhook/slack-test",
+        "authentication": "none",
+        "method": "POST",
+        "contentType": "application/json",
+        "body": "={{ JSON.stringify({text: `🚨 COST THRESHOLD EXCEEDED: $${$json.body.data.total || 'N/A'} of $${$json.body.data.limit || 'N/A'} limit`, attachments: [{color: '#d32f2f', title: 'Critical Cost Alert', fields: [{title: 'Total Spent', value: String($json.body.data.total || 'N/A')}, {title: 'Limit', value: String($json.body.data.limit || 'N/A')}, {title: 'Overage', value: String($json.body.data.overage || '0')}, {title: 'Period', value: String($json.body.data.period || 'month')}]}]}) }}",
+        "options": {}
+      },
+      "id": "http-post-slack-threshold",
+      "name": "HTTP POST - Threshold Alert to Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [720, 350]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {ok: true, received: true, event_id: $json.body.event_id} }}",
+        "options": {}
+      },
+      "id": "respond-ok",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [960, 300]
+    }
+  ],
+  "connections": {
+    "Webhook - Cost Events": {
+      "main": [
+        [
+          {
+            "node": "If Cost Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If Threshold Exceeded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Cost Alert": {
+      "main": [
+        [
+          {
+            "node": "HTTP POST - Cost Alert to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Threshold Exceeded": {
+      "main": [
+        [
+          {
+            "node": "HTTP POST - Threshold Alert to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP POST - Cost Alert to Slack": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP POST - Threshold Alert to Slack": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {}
+}

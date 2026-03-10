@@ -1,0 +1,33 @@
+id: add-auth-middleware
+category: feature
+difficulty: medium
+description: |
+  Add JWT auth dependency and protect /api/protected endpoint.
+  Create src/middleware/auth.py with require_auth.
+agent_key: coder_agent
+department: engineering
+max_cost_usd: 0.08
+max_duration_sec: 90
+min_quality_score: 0.65
+tags: [auth, jwt, fastapi, security]
+
+setup:
+  files:
+    - path: src/main.py
+      content: |
+        from fastapi import FastAPI
+        app = FastAPI()
+        @app.get("/api/protected")
+        async def protected_route():
+            return {"message": "This should require auth"}
+    - path: src/config.py
+      content: |
+        SECRET_KEY = "super-secret-key-change-in-production"
+
+expected:
+  files:
+    - path: src/middleware/auth.py
+      must_exist: true
+      contains: ["jwt.decode", "Authorization", "Bearer", "HTTPException", "SECRET_KEY"]
+    - path: src/main.py
+      contains: ["require_auth", "Depends"]

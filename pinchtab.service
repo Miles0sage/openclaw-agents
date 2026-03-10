@@ -1,0 +1,17 @@
+[Unit]
+Description=PinchTab Browser Automation Server
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/pinchtab
+Restart=on-failure
+RestartSec=5
+Environment=DISPLAY=:99
+WorkingDirectory=/root
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

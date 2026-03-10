@@ -1,0 +1,67 @@
+name = "pa"
+main = "src/index.ts"
+compatibility_date = "2026-02-19"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[vars]
+GATEWAY_URL = "https://<your-domain>"
+GATEWAY_TOKEN = "f981afbc4a94f50a87cd0184cf560ec646e8f8a65a7234f603b980e43775f1a3"
+ENVIRONMENT = "development"
+RATE_LIMIT_PER_MINUTE = "30"
+
+# D1 Database binding (PA-only database)
+[[d1_databases]]
+binding = "DB"
+database_name = "pa-database"
+database_id = "b0947504-0b2e-4540-adbe-a9345403d47f"
+
+# KV bindings (shared with AI CEO worker)
+[[kv_namespaces]]
+binding = "KV_CACHE"
+id = "35795036d1084b8284a8c57f4b170618"
+
+[[kv_namespaces]]
+binding = "KV_SESSIONS"
+id = "a4119f70fe7d42ecb8b8b49569c11e32"
+
+[env.production]
+name = "pa"
+routes = [{ pattern = "<your-domain>/*", zone_name = "<your-domain>" }]
+
+[env.production.vars]
+ENVIRONMENT = "production"
+GATEWAY_URL = "https://<your-domain>"
+GATEWAY_TOKEN = "f981afbc4a94f50a87cd0184cf560ec646e8f8a65a7234f603b980e43775f1a3"
+RATE_LIMIT_PER_MINUTE = "30"
+
+[[env.production.kv_namespaces]]
+binding = "KV_CACHE"
+id = "35795036d1084b8284a8c57f4b170618"
+
+[[env.production.kv_namespaces]]
+binding = "KV_SESSIONS"
+id = "a4119f70fe7d42ecb8b8b49569c11e32"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "pa-database"
+database_id = "b0947504-0b2e-4540-adbe-a9345403d47f"
+
+[env.development]
+name = "pa-dev"
+vars = { ENVIRONMENT = "development" }
+
+# Cron triggers — PA-only tasks
+# 14:00 UTC = 7am MST (morning briefing)
+# 05:00 UTC = 10pm MST (evening summary)
+# 15:00 UTC = 8am MST Sunday (weekly planner)
+# Every 15 min for reminder checks
+[triggers]
+crons = ["0 14 * * *", "0 15 * * *", "0 5 * * *", "*/15 * * * *"]
+
+[env.production.triggers]
+crons = ["0 14 * * *", "0 15 * * *", "0 5 * * *", "*/15 * * * *"]
+
+[limits]
+cpu_ms = 50000

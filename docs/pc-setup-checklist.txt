@@ -1,0 +1,152 @@
+================================================================================
+  OPENCLAW PC SETUP CHECKLIST
+  For Miles - Keep this at your desk
+  Windows 11 | RTX 4060 | 32GB RAM
+================================================================================
+
+PHASE 1: SSH KEY SETUP (5 min)
+[ ] Open PowerShell as Administrator
+[ ] Run: ssh-keygen -t ed25519 -f $env:USERPROFILE\.ssh\openclaw -N ""
+[ ] Run: type $env:USERPROFILE\.ssh\openclaw.pub | ssh root@<your-vps-ip> "cat >> ~/.ssh/authorized_keys"
+[ ] Verify: ssh -i $env:USERPROFILE\.ssh\openclaw root@<your-vps-ip> "echo ok"
+    Expected output: "ok"
+
+PHASE 2: OLLAMA INSTALLATION (10 min)
+[ ] Open PowerShell (regular user, NOT admin)
+[ ] Run: winget install Ollama.Ollama
+[ ] Wait for installation to complete
+[ ] Verify: ollama --version
+    Expected: "ollama version X.X.X"
+[ ] Run: ollama pull qwen2.5:7b (5 min)
+[ ] Run: ollama pull deepseek-coder-v2:6.7b (5 min)
+[ ] Run: ollama pull nomic-embed-text (2 min)
+[ ] Verify: curl http://localhost:11434/api/tags
+    Expected: JSON with model names
+
+PHASE 3: SSH TUNNEL SETUP (5 min)
+[ ] Open NEW PowerShell window (keep this open always when connected)
+[ ] Run: ssh -R 11434:localhost:11434 -i $env:USERPROFILE\.ssh\openclaw -N root@<your-vps-ip>
+[ ] Window should show nothing (just hang there - that's correct)
+[ ] Leave this window open - this is your connection to VPS
+
+PHASE 4: VERIFICATION (2 min)
+[ ] Open another PowerShell window (3rd window)
+[ ] Run: ollama serve
+    Wait for output showing "Listening on 127.0.0.1:11434"
+[ ] Leave this window open (Ollama must be running)
+[ ] In first PowerShell window, verify tunnel is still there (no errors)
+[ ] On VPS (or from another machine), run: ./scripts/connect-pc.sh
+    Expected: All green checkmarks (✓)
+
+PHASE 5: CURSOR REMOTE EDITING (5 min)
+[ ] Download and install Cursor.sh if not already installed
+[ ] Open Cursor
+[ ] Press Cmd+Shift+P (or Ctrl+Shift+P)
+[ ] Type: Remote-SSH: Connect to Host
+[ ] Enter: root@<your-vps-ip>
+[ ] When prompted for OS, select: Linux
+[ ] Wait for remote server to install (1-2 min)
+[ ] Press Cmd+K Cmd+O
+[ ] Enter path: ./
+[ ] Press Enter
+[ ] Open any .py file and press Cmd+I for inline chat
+    You should see Cursor thinking with full repo context
+
+PHASE 6: GITHUB COPILOT (3 min)
+[ ] In Cursor, press Cmd+Shift+X (Extensions)
+[ ] Search: GitHub Copilot
+[ ] Click Install
+[ ] Press Cmd+Shift+P → "GitHub Copilot: Sign In"
+[ ] Browser opens, authorize with GitHub
+[ ] Return to Cursor - Copilot is now active
+[ ] Type in any file to see autocomplete suggestions
+
+PHASE 7: DAILY STARTUP (What to do each day)
+[ ] Window 1: ssh -R 11434:localhost:11434 -i $env:USERPROFILE\.ssh\openclaw -N root@<your-vps-ip>
+    Keep open (this is your tunnel)
+[ ] Window 2: ollama serve
+    Keep open (your local GPU)
+[ ] Window 3: Open Cursor
+[ ] Done! You're connected to OpenClaw
+
+================================================================================
+TROUBLESHOOTING QUICK FIXES
+================================================================================
+
+"SSH won't connect"
+→ Verify SSH key works: ssh -i $env:USERPROFILE\.ssh\openclaw root@<your-vps-ip>
+→ Check Windows Firewall: Allow "OpenSSH Client" through firewall
+
+"Ollama not found after winget install"
+→ Close and reopen PowerShell
+→ Try: C:\Users\<YourUsername>\AppData\Local\Programs\Ollama\ollama.exe serve
+
+"Tunnel shows 'ssh: connect to host...: Connection timed out'"
+→ Check internet connection
+→ Check if VPS is reachable: ping <your-vps-ip>
+
+"curl shows empty models list"
+→ Make sure Ollama is running: ollama serve (in another window)
+→ Model still downloading? Wait and try again
+
+"Cursor won't connect to VPS"
+→ Verify SSH works manually first: ssh -i ~/.ssh/openclaw root@<your-vps-ip>
+→ In Cursor: Cmd+Shift+P → "Remote-SSH: Show Remote Server Log"
+→ Check for errors in log
+
+"Copilot not completing code"
+→ Make sure GitHub Copilot extension is installed
+→ Sign in: Cmd+Shift+P → "GitHub Copilot: Sign In"
+→ Try toggling: Cmd+Shift+P → "Copilot: Enable"
+
+================================================================================
+MONITORING
+================================================================================
+
+To check everything is working from VPS:
+  ssh -i ~/.ssh/openclaw root@<your-vps-ip>
+  ./scripts/connect-pc.sh
+
+Monitor GPU on your PC:
+  Open PowerShell, run: nvidia-smi -l 1
+  Watch for GPU usage when OpenClaw uses models
+
+Test Ollama inference:
+  curl -X POST http://localhost:11434/api/generate \
+    -H "Content-Type: application/json" \
+    -d '{"model":"qwen2.5:7b","prompt":"Hello","stream":false}'
+
+================================================================================
+REFERENCE
+================================================================================
+
+VPS Address:     <your-vps-ip>
+Ollama Port:     11434
+SSH Key:         C:\Users\<You>\.ssh\openclaw
+Full Docs:       ./docs/pc-setup.md
+Quick Ref:       ./docs/pc-setup-quickref.md
+Verify Script:   ./scripts/connect-pc.sh
+
+Windows 11 Startup Tip:
+  Create scheduled task to run tunnel automatically:
+  1. Save script: C:\Scripts\start-tunnel.ps1
+  2. Open Task Scheduler
+  3. Create task to run script at login
+  4. Tunnel stays alive even if you restart
+
+================================================================================
+COMPLETION
+================================================================================
+
+Once all phases are complete:
+- [ ] You can edit OpenClaw code in Cursor with full AI assistance
+- [ ] Your RTX 4060 runs Qwen 7B and Deepseek Coder 6.7B locally
+- [ ] VPS agents use your GPU via secure SSH tunnel
+- [ ] GitHub Copilot works seamlessly on remote files
+- [ ] Everything is encrypted and secure
+
+Estimated total setup time: 30-45 minutes
+Daily connection time: 2 minutes (just start tunnel + Ollama)
+
+Good to go! 🚀
+================================================================================

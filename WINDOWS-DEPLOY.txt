@@ -1,0 +1,28 @@
+=================================================================
+🪟 WINDOWS DEPLOYMENT GUIDE - Copy/Paste Each Command
+=================================================================
+
+1. INSTALL WRANGLER (if not installed)
+   npm install -g wrangler
+
+2. CREATE PROJECT FOLDER
+   mkdir %USERPROFILE%\openclaw-worker
+   cd %USERPROFILE%\openclaw-worker
+
+3. CREATE WORKER FILE
+   Copy the cloudflare-worker.js content (see below)
+
+4. CREATE CONFIG FILE  
+   Copy the wrangler.toml content (see below)
+
+5. LOGIN TO CLOUDFLARE
+   wrangler login
+
+6. SET SECRETS
+   echo 7fca3b8d2e914a5c9d8f6b0a1c3e5d7f2a4b6c8d0e1f2a3b4c5d6e7f8a9b0c1d | wrangler secret put OPENCLAW_TOKEN
+   echo http://<your-vps-ip>:18789 | wrangler secret put OPENCLAW_GATEWAY
+
+7. DEPLOY
+   wrangler deploy
+
+=================================================================

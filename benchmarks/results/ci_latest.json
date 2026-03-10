@@ -1,0 +1,144 @@
+{
+  "suite_name": "easy",
+  "timestamp": "2026-03-09T07:52:31.520055+00:00",
+  "summary": {
+    "total": 5,
+    "passed": 0,
+    "failed": 5,
+    "pass_rate": 0.0,
+    "avg_score": 0.791,
+    "total_cost_usd": 0.0,
+    "total_duration_sec": 0.0
+  },
+  "by_difficulty": {
+    "easy": {
+      "total": 5,
+      "passed": 0,
+      "pass_rate": 0.0
+    }
+  },
+  "by_category": {
+    "feature": {
+      "total": 2,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    "bug_fix": {
+      "total": 2,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    "refactor": {
+      "total": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    }
+  },
+  "results": [
+    {
+      "problem_id": "add-404-page",
+      "category": "feature",
+      "difficulty": "easy",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/2",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "add-env-variable",
+      "category": "feature",
+      "difficulty": "easy",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/2",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "fix-button-color",
+      "category": "bug_fix",
+      "difficulty": "easy",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/1",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "fix-typo-in-readme",
+      "category": "bug_fix",
+      "difficulty": "easy",
+      "passed": false,
+      "overall_score": 0.785,
+      "file_checks": "0/1",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.5,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    },
+    {
+      "problem_id": "rename-function",
+      "category": "refactor",
+      "difficulty": "easy",
+      "passed": false,
+      "overall_score": 0.815,
+      "file_checks": "0/2",
+      "command_checks": "0/0",
+      "cost_usd": 0.0,
+      "duration_sec": 0.0,
+      "agent_key": "coder_agent",
+      "error": "",
+      "dimensions": {
+        "correctness": 1.0,
+        "completeness": 1.0,
+        "code_quality": 0.7,
+        "security": 0.6,
+        "instruction_following": 0.6
+      },
+      "tools_used": []
+    }
+  ]
+}

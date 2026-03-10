@@ -1,0 +1,253 @@
+{
+  "name": "OpenClaw Agent Pipeline Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "openclaw-events",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook - Job Events",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "openclaw-events"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.body.event_type }}",
+              "rightValue": "job.completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-job-completed",
+      "name": "If Job Completed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [480, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.body.event_type }}",
+              "rightValue": "job.failed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-job-failed",
+      "name": "If Job Failed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [480, 400]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "options": {},
+        "otherOptions": {},
+        "content": "slack",
+        "attachment": [
+          {
+            "fallback": "Job Completed",
+            "color": "#36a64f",
+            "title": "✅ Job Completed",
+            "fields": [
+              {
+                "title": "Job ID",
+                "value": "={{ $json.body.data.job_id || $json.body.data.id || 'N/A' }}",
+                "short": true
+              },
+              {
+                "title": "Agent",
+                "value": "={{ $json.body.data.agent || 'N/A' }}",
+                "short": true
+              },
+              {
+                "title": "Task Type",
+                "value": "={{ $json.body.data.task_type || $json.body.data.task || 'N/A' }}",
+                "short": true
+              },
+              {
+                "title": "Project",
+                "value": "={{ $json.body.data.project || 'default' }}",
+                "short": true
+              }
+            ],
+            "ts": "={{ Math.floor(Date.now() / 1000) }}"
+          }
+        ]
+      },
+      "id": "slack-job-completed",
+      "name": "Slack - Job Completed",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 3,
+      "position": [720, 150]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "options": {},
+        "otherOptions": {},
+        "content": "slack",
+        "attachment": [
+          {
+            "fallback": "Job Failed",
+            "color": "#d32f2f",
+            "title": "❌ Job Failed",
+            "fields": [
+              {
+                "title": "Job ID",
+                "value": "={{ $json.body.data.job_id || $json.body.data.id || 'N/A' }}",
+                "short": true
+              },
+              {
+                "title": "Agent",
+                "value": "={{ $json.body.data.agent || 'N/A' }}",
+                "short": true
+              },
+              {
+                "title": "Task Type",
+                "value": "={{ $json.body.data.task_type || $json.body.data.task || 'N/A' }}",
+                "short": true
+              },
+              {
+                "title": "Error",
+                "value": "={{ $json.body.data.reason || $json.body.data.error || 'Unknown error' }}",
+                "short": false
+              }
+            ],
+            "ts": "={{ Math.floor(Date.now() / 1000) }}"
+          }
+        ]
+      },
+      "id": "slack-job-failed",
+      "name": "Slack - Job Failed",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 3,
+      "position": [720, 350]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {ok: true, received: true, event_id: $json.body.event_id} }}",
+        "options": {}
+      },
+      "id": "respond-ok",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [960, 300]
+    }
+  ],
+  "connections": {
+    "Webhook - Job Events": {
+      "main": [
+        [
+          {
+            "node": "If Job Completed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If Job Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Job Completed": {
+      "main": [
+        [
+          {
+            "node": "Slack - Job Completed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Job Failed": {
+      "main": [
+        [
+          {
+            "node": "Slack - Job Failed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack - Job Completed": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack - Job Failed": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {}
+}

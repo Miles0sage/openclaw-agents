@@ -1,0 +1,27 @@
+id: rename-function
+category: refactor
+difficulty: easy
+description: |
+  Rename function doStuff to calculate_total in src/utils.py and update callers.
+agent_key: coder_agent
+max_cost_usd: 0.05
+max_duration_sec: 60
+
+setup:
+  files:
+    - path: src/utils.py
+      content: |
+        def doStuff(a, b):
+            return a + b
+    - path: src/main.py
+      content: |
+        from src.utils import doStuff
+        print(doStuff(1, 2))
+
+expected:
+  files:
+    - path: src/utils.py
+      contains: ["calculate_total"]
+      not_contains: ["doStuff"]
+    - path: src/main.py
+      contains: ["calculate_total"]

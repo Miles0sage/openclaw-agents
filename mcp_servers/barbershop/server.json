@@ -1,0 +1,76 @@
+{
+  "name": "openclaw-barbershop",
+  "display_name": "OpenClaw Barbershop Tools",
+  "description": "AI-powered barbershop & salon management tools — appointment scheduling, client management, service catalog, walk-in queues, SMS reminders, and performance analytics.",
+  "version": "1.0.0",
+  "author": {
+    "name": "OpenClaw",
+    "url": "https://openclaw.dev"
+  },
+  "repository": "https://github.com/openclaw-ai/mcp-barbershop",
+  "license": "MIT",
+  "categories": ["barbershop", "salon", "business", "ai-tools"],
+  "tags": [
+    "barbershop",
+    "salon",
+    "appointments",
+    "scheduling",
+    "clients",
+    "walk-ins",
+    "sms",
+    "analytics"
+  ],
+  "tools": [
+    {
+      "name": "manage_appointments",
+      "description": "Book, reschedule, cancel, check-in appointments. View today's schedule."
+    },
+    {
+      "name": "manage_clients",
+      "description": "Client profiles, preferences, visit history, search and registration."
+    },
+    {
+      "name": "manage_services",
+      "description": "Service catalog — pricing, duration, categories, staff assignment."
+    },
+    {
+      "name": "check_availability",
+      "description": "Find open time slots by date, barber, and service type."
+    },
+    {
+      "name": "manage_walkins",
+      "description": "Walk-in queue management — add, view queue, call next, wait estimates."
+    },
+    {
+      "name": "send_reminders",
+      "description": "SMS appointment reminders, follow-ups, birthday offers, promo messages."
+    },
+    {
+      "name": "shop_analytics",
+      "description": "Revenue, staff performance, client retention, business KPI reports."
+    }
+  ],
+  "pricing": {
+    "free": {
+      "calls_per_day": 100,
+      "price": 0
+    },
+    "pro": {
+      "calls_per_day": 10000,
+      "price_monthly": 29
+    },
+    "business": {
+      "calls_per_day": 100000,
+      "price_monthly": 149
+    }
+  },
+  "requirements": {
+    "python": ">=3.11",
+    "packages": ["fastmcp>=3.0.0"],
+    "optional": ["supabase", "stripe", "twilio"]
+  },
+  "transport": {
+    "stdio": "python -m mcp_servers.barbershop.server",
+    "http": "python -m mcp_servers.barbershop.server --http"
+  }
+}
