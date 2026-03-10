@@ -30,7 +30,6 @@ REQUIRED_STATIC_DIRS = [
     "static",
     "templates",
     "public/dashboard",
-    "dashboard_app",
 ]
 
 
