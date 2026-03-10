@@ -117,6 +117,59 @@ section{padding:5rem 2rem}
 .tier-3{border-color:rgba(236,72,153,.3);color:var(--pink)}
 .tier-4{border-color:rgba(34,197,94,.3);color:var(--green)}
 
+/* PIPELINE */
+.pipeline{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin-bottom:2.5rem}
+.pipe-stage{text-align:center;min-width:90px;padding:.75rem .5rem;position:relative}
+.pipe-icon{font-size:1.75rem;margin-bottom:.35rem}
+.pipe-label{font-size:.8rem;font-weight:700;color:var(--text)}
+.pipe-desc{font-size:.65rem;color:var(--text2);margin-top:.2rem;max-width:110px;margin-left:auto;margin-right:auto}
+.pipe-stage.active .pipe-icon{animation:pulse-glow 2s infinite}
+@keyframes pulse-glow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4)}}
+.pipe-connector{width:32px;height:2px;background:linear-gradient(90deg,var(--blue),var(--purple));opacity:.4;flex-shrink:0}
+.pipeline-features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+.pf-item{font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.5rem;padding:.6rem .75rem;background:var(--bg);border:1px solid var(--border);border-radius:.5rem}
+.pf-tag{font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:999px;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+.pf-tag.green{background:rgba(34,197,94,.1);color:var(--green)}
+.pf-tag.blue{background:rgba(59,130,246,.1);color:var(--blue)}
+.pf-tag.purple{background:rgba(139,92,246,.1);color:var(--purple)}
+.pf-tag.orange{background:rgba(245,158,11,.1);color:var(--orange)}
+
+/* DASHBOARD PREVIEW */
+.dashboard-preview{max-width:720px;margin:0 auto}
+.dash-panel{background:#0d1117;border:1px solid #21262d;border-radius:.75rem;overflow:hidden}
+.dash-header{display:flex;align-items:center;gap:.5rem;padding:.75rem 1rem;background:#161b22;border-bottom:1px solid #21262d;font-size:.8rem;color:#e6edf3;font-weight:600}
+.dash-dot{width:8px;height:8px;border-radius:50%}
+.dash-dot.live{background:var(--green);animation:pulse-dot 2s infinite}
+.dash-badge{margin-left:auto;font-size:.65rem;color:#484f58;font-weight:400}
+.dash-stats{display:flex;gap:1.5rem;padding:.75rem 1rem;border-bottom:1px solid #21262d}
+.ds{display:flex;align-items:center;gap:.35rem;font-size:.75rem}
+.ds-num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1rem}
+.ds-num.green{color:var(--green)}.ds-num.orange{color:var(--orange)}.ds-num.blue{color:var(--blue)}.ds-num.red{color:var(--red)}
+.ds-label{color:#484f58;font-size:.65rem;text-transform:uppercase;letter-spacing:.03em}
+.dash-job{padding:1rem;border-bottom:1px solid #21262d}
+.dash-job-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;font-size:.75rem}
+.dash-job-header code{color:#79c0ff;font-family:'JetBrains Mono',monospace;font-size:.7rem}
+.dash-priority{font-size:.6rem;font-weight:700;padding:.1rem .4rem;border-radius:999px;background:rgba(245,158,11,.15);color:var(--orange);border:1px solid rgba(245,158,11,.25)}
+.dash-status{font-weight:600}
+.dash-status.running{color:var(--green)}
+.dash-pipeline{display:flex;align-items:center;gap:0;margin-bottom:.6rem}
+.dp{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0}
+.dp.done{background:rgba(34,197,94,.2);outline:1px solid rgba(34,197,94,.3)}
+.dp.active{background:rgba(59,130,246,.2);outline:1px solid rgba(59,130,246,.4);animation:pulse-glow 2s infinite}
+.dp.pending{background:#161b22;outline:1px solid #21262d;opacity:.4}
+.dp-line{width:16px;height:2px;flex-shrink:0}
+.dp-line.done{background:var(--green);opacity:.5}
+.dp-line.pending{background:#21262d}
+.dash-meta{display:flex;gap:1.25rem;font-size:.7rem;color:#484f58}
+.dash-meta code{color:#8b949e;font-family:'JetBrains Mono',monospace}
+.dash-stream{padding:.75rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;line-height:1.8;max-height:140px;overflow:hidden}
+.stream-line{display:flex;gap:.5rem;align-items:center}
+.st{color:#484f58;min-width:50px}
+.sp{color:#79c0ff}
+.stool{color:#d2a8ff}
+.si{color:#484f58}
+.sc{color:#3fb950}
+
 /* FOOTER */
 footer{border-top:1px solid var(--border);padding:3rem 2rem;text-align:center}
 footer p{font-size:.85rem;color:var(--text2)}
@@ -133,6 +186,13 @@ footer .footer-links{display:flex;justify-content:center;gap:2rem;margin-bottom:
   .hero h1{font-size:2.2rem}
   .fallback{flex-direction:column;align-items:flex-start}
   .fallback-arrow{transform:rotate(90deg)}
+  .pipeline{gap:.25rem}
+  .pipe-connector{width:16px}
+  .pipe-stage{min-width:60px;padding:.5rem .25rem}
+  .pipe-icon{font-size:1.3rem}
+  .pipe-desc{display:none}
+  .dash-stats{gap:.75rem;flex-wrap:wrap}
+  .dash-meta{flex-wrap:wrap;gap:.5rem}
 }
 @media(max-width:480px){
   .flow{grid-template-columns:1fr}
@@ -146,8 +206,10 @@ footer .footer-links{display:flex;justify-content:center;gap:2rem;margin-bottom:
 <nav>
   <div class="logo"><span>OpenClaw</span></div>
   <div class="links">
+    <a href="#pipeline">Pipeline</a>
     <a href="#how">How it works</a>
     <a href="#agents">Agents</a>
+    <a href="#dashboard">Dashboard</a>
     <a href="#demo">Demo</a>
     <a href="https://github.com/Miles0sage/openclaw-agents" class="btn btn-ghost" target="_blank">GitHub</a>
   </div>
@@ -155,9 +217,9 @@ footer .footer-links{display:flex;justify-content:center;gap:2rem;margin-bottom:
 
 <!-- HERO -->
 <section class="hero">
-  <div class="badge">592 tests passing</div>
+  <div class="badge">190+ tests passing</div>
   <h1>Ship code with <span class="gradient">autonomous agents</span></h1>
-  <p>12 specialized AI agents. 75+ tools. Priority routing. Reflexion quality gates. Submit a task, get working code back.</p>
+  <p>12 specialized AI agents. 85+ tools. Priority routing. 7-phase execution pipeline. Reflexion quality gates. Submit a task, get working code back.</p>
   <div class="hero-buttons">
     <a href="https://github.com/Miles0sage/openclaw-agents" class="btn btn-primary" target="_blank">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -169,11 +231,11 @@ footer .footer-links{display:flex;justify-content:center;gap:2rem;margin-bottom:
 
 <!-- STATS -->
 <div class="stats-bar">
-  <div class="stat"><div class="num blue">510+</div><div class="label">Jobs Completed</div></div>
+  <div class="stat"><div class="num blue">270+</div><div class="label">Jobs Completed</div></div>
   <div class="stat"><div class="num purple">12</div><div class="label">AI Agents</div></div>
-  <div class="stat"><div class="num green">75+</div><div class="label">MCP Tools</div></div>
+  <div class="stat"><div class="num green">85+</div><div class="label">MCP Tools</div></div>
   <div class="stat"><div class="num orange">$0.15</div><div class="label">Avg Cost/Job</div></div>
-  <div class="stat"><div class="num green">592</div><div class="label">Tests Passing</div></div>
+  <div class="stat"><div class="num green">190+</div><div class="label">Tests Passing</div></div>
 </div>
 
 <!-- HOW IT WORKS -->
@@ -218,6 +280,138 @@ footer .footer-links{display:flex;justify-content:center;gap:2rem;margin-bottom:
         <span class="fallback-arrow">&rarr;</span>
         <div class="fallback-tier tier-4">Gemini Flash</div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section id="pipeline" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-label">Execution Pipeline</div>
+    <div class="section-title">7-phase autonomous execution</div>
+    <div class="section-sub">Every job flows through a battle-tested pipeline. Each phase has quality gates, cost tracking, and automatic self-repair.</div>
+    <div class="pipeline">
+      <div class="pipe-stage active">
+        <div class="pipe-icon">🔍</div>
+        <div class="pipe-label">Research</div>
+        <div class="pipe-desc">Reads codebase, understands context</div>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-stage active">
+        <div class="pipe-icon">📋</div>
+        <div class="pipe-label">Plan</div>
+        <div class="pipe-desc">Decomposes into steps</div>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-stage active">
+        <div class="pipe-icon">⚡</div>
+        <div class="pipe-label">Execute</div>
+        <div class="pipe-desc">Writes code, calls tools</div>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-stage">
+        <div class="pipe-icon">🔧</div>
+        <div class="pipe-label">Self-Repair</div>
+        <div class="pipe-desc">Ralph loop fixes errors</div>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-stage">
+        <div class="pipe-icon">📝</div>
+        <div class="pipe-label">Review</div>
+        <div class="pipe-desc">Code quality scoring</div>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-stage">
+        <div class="pipe-icon">✅</div>
+        <div class="pipe-label">Verify</div>
+        <div class="pipe-desc">Tests pass, output validated</div>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-stage">
+        <div class="pipe-icon">📦</div>
+        <div class="pipe-label">Deliver</div>
+        <div class="pipe-desc">Committed, reported, billed</div>
+      </div>
+    </div>
+    <div class="pipeline-features">
+      <div class="pf-item">
+        <span class="pf-tag green">Idempotent</span>
+        Job leases prevent duplicate execution
+      </div>
+      <div class="pf-item">
+        <span class="pf-tag blue">Cost-gated</span>
+        Budget limits enforced per-phase
+      </div>
+      <div class="pf-item">
+        <span class="pf-tag purple">Observable</span>
+        SSE streaming + WebSocket for live monitoring
+      </div>
+      <div class="pf-item">
+        <span class="pf-tag orange">Self-healing</span>
+        Automatic retry with diagnosis on failure
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard">
+  <div class="container">
+    <div class="section-label">Dashboard</div>
+    <div class="section-title">Real-time fleet monitoring</div>
+    <div class="section-sub">Watch jobs execute live. Phase timelines, cost breakdown, tool usage, SSE streaming — all in one view.</div>
+    <div class="dashboard-preview">
+      <div class="dash-panel">
+        <div class="dash-header">
+          <span class="dash-dot live"></span>
+          <span>Live Fleet Monitor</span>
+          <span class="dash-badge">Auto-refresh 5s</span>
+        </div>
+        <div class="dash-stats">
+          <div class="ds"><span class="ds-num green">2</span><span class="ds-label">Running</span></div>
+          <div class="ds"><span class="ds-num orange">1</span><span class="ds-label">Pending</span></div>
+          <div class="ds"><span class="ds-num blue">194</span><span class="ds-label">Done</span></div>
+          <div class="ds"><span class="ds-num red">3</span><span class="ds-label">Failed</span></div>
+        </div>
+        <div class="dash-job">
+          <div class="dash-job-header">
+            <code>job-20260310-c459bdc4</code>
+            <span class="dash-priority">P1</span>
+            <span class="dash-status running">● running</span>
+          </div>
+          <div class="dash-pipeline">
+            <span class="dp done">🔍</span>
+            <span class="dp-line done"></span>
+            <span class="dp done">📋</span>
+            <span class="dp-line done"></span>
+            <span class="dp active">⚡</span>
+            <span class="dp-line pending"></span>
+            <span class="dp pending">🔧</span>
+            <span class="dp-line pending"></span>
+            <span class="dp pending">📝</span>
+            <span class="dp-line pending"></span>
+            <span class="dp pending">✅</span>
+            <span class="dp-line pending"></span>
+            <span class="dp pending">📦</span>
+          </div>
+          <div class="dash-meta">
+            <span>Cost: <code>$0.029</code></span>
+            <span>Tools: <code>7 calls</code></span>
+            <span>Elapsed: <code>1m 24s</code></span>
+          </div>
+        </div>
+        <div class="dash-stream">
+          <div class="stream-line"><span class="st">21:17:49</span> <span class="sp">▸ Phase: execute</span></div>
+          <div class="stream-line"><span class="st">21:17:52</span> <span class="stool">file_read</span> <span class="si">src/settings.tsx</span></div>
+          <div class="stream-line"><span class="st">21:17:55</span> <span class="stool">file_edit</span> <span class="si">adding dark mode toggle</span></div>
+          <div class="stream-line"><span class="st">21:17:58</span> <span class="stool">shell_execute</span> <span class="si">npm test -- --run</span></div>
+          <div class="stream-line"><span class="st">21:18:02</span> <span class="sc">$ 0.0291</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:2rem">
+      <a href="https://gateway.overseerclaw.uk/dashboard/app/" class="btn btn-primary" target="_blank">Open Live Dashboard</a>
+      <a href="https://gateway.overseerclaw.uk/console/" class="btn btn-ghost" target="_blank" style="margin-left:.5rem">Job Console</a>
     </div>
   </div>
 </section>
@@ -393,23 +587,26 @@ python gateway.py
 <script>
 // Terminal animation
 const lines = [
-  { type: 'prompt', text: '$ ' , cmd: 'curl -X POST http://localhost:18789/job \\' },
-  { type: 'cmd', text: '    -H "Authorization: Bearer sk-xxx" \\' },
-  { type: 'cmd', text: '    -d \'{"description": "Add dark mode toggle to settings page"}\'' },
+  { type: 'prompt', text: '$ ' , cmd: 'curl -X POST https://gateway.overseerclaw.uk/api/job/create \\' },
+  { type: 'cmd', text: '    -H "X-Auth-Token: sk-xxx" \\' },
+  { type: 'cmd', text: '    -d \'{"project": "openclaw", "task": "Add dark mode toggle"}\'' },
   { type: 'blank' },
-  { type: 'comment', text: '# Overseer routing...' },
-  { type: 'response', text: '{"job_id": "j-4f8a", "status": "running"}' },
+  { type: 'response', text: '{"job_id": "job-20260310-c459bdc4", "status": "pending"}' },
   { type: 'blank' },
-  { type: 'comment', text: '# Agent: CodeGen Pro (Kimi 2.5) assigned' },
-  { type: 'comment', text: '# Reading settings.tsx...' },
-  { type: 'comment', text: '# Writing dark mode toggle component...' },
-  { type: 'comment', text: '# Running tests... 14 passed, 0 failed' },
-  { type: 'comment', text: '# Reflexion gate: PASS (score: 0.94)' },
+  { type: 'comment', text: '# ▸ Phase 1/7: Research' },
+  { type: 'comment', text: '#   file_read settings.tsx ✓  file_read theme.ts ✓  grep_search "dark" ✓' },
+  { type: 'comment', text: '# ▸ Phase 2/7: Plan' },
+  { type: 'comment', text: '#   3 steps planned · Agent: CodeGen Pro (Kimi 2.5) · $0.001' },
+  { type: 'comment', text: '# ▸ Phase 3/7: Execute' },
+  { type: 'comment', text: '#   file_edit settings.tsx ✓  file_write theme.ts ✓  7 tool calls · $0.008' },
+  { type: 'comment', text: '# ▸ Phase 5/7: Code Review' },
+  { type: 'comment', text: '#   Score: 0.94 · No issues found' },
+  { type: 'comment', text: '# ▸ Phase 6/7: Verify' },
+  { type: 'comment', text: '#   npm test — 14 passed, 0 failed' },
+  { type: 'comment', text: '# ▸ Phase 7/7: Deliver' },
   { type: 'blank' },
-  { type: 'success', text: '{"status": "completed",' },
-  { type: 'success', text: ' "agent": "CodeGen Pro",' },
-  { type: 'cost', text: ' "cost": "$0.003",' },
-  { type: 'cost', text: ' "duration": "34s",' },
+  { type: 'success', text: '{"status": "done", "agent": "CodeGen Pro",' },
+  { type: 'cost', text: ' "cost_usd": 0.0291, "duration": "1m 34s",' },
   { type: 'success', text: ' "files_changed": ["src/settings.tsx", "src/theme.ts"]}' },
   { type: 'blank' },
   { type: 'prompt', text: '$ ', cmd: '_' },
