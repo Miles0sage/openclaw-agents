@@ -102,6 +102,24 @@ curl http://localhost:8000/api/jobs
 
 ---
 
+## Quick Start with Docker
+
+```bash
+git clone https://github.com/Miles0sage/openclaw-agents.git
+cd openclaw-agents
+cp .env.example .env
+# Edit .env with your API keys
+docker compose up
+# Gateway: http://localhost:8000
+# Dashboard: http://localhost:3000
+```
+
+The gateway will be available at `http://localhost:8000` and the Next.js dashboard at `http://localhost:3000`.
+
+The compose setup mounts `./data` into the gateway container so job state and artifacts persist between restarts.
+
+---
+
 ### Supabase (Optional)
 
 By default OpenClaw stores jobs locally in JSON files — no database needed. For production use with multiple devices, real-time queries, and job history persistence, you can connect Supabase:
