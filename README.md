@@ -102,6 +102,27 @@ curl http://localhost:8000/api/jobs
 
 ---
 
+## Quick Start with Docker
+
+```bash
+# Clone
+git clone https://github.com/Miles0sage/openclaw-agents.git
+cd openclaw-agents
+
+# Configure
+cp .env.example .env
+# Edit .env — set GATEWAY_AUTH_TOKEN and at least one LLM provider key
+
+# Start gateway + dashboard
+docker compose up --build
+```
+
+The gateway will be available at `http://localhost:8000` and the Next.js dashboard at `http://localhost:3000`.
+
+The compose setup mounts `./data` into the gateway container so job state and artifacts persist between restarts.
+
+---
+
 ## Configuration
 
 ### Environment Variables
